@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Nutrition Tracker</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+<h1>My Nutrition Tracker</h1>
+<div id="app">
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button id="registerBtn">Register</button>
+  <button id="loginBtn">Login</button>
+  <input id="product" placeholder="Product Name">
+  <input id="fat" type="number" placeholder="Fat (g)">
+  <input id="protein" type="number" placeholder="Protein (g)">
+  <input id="fiber" type="number" placeholder="Fiber (g)">
+  <input id="carbs" type="number" placeholder="Carbs (g)">
+  <button id="addProductBtn">Add Product</button>
+  <h2>Products</h2>
+  <div id="product-list"></div>
+  <h2>Daily Totals</h2>
+  <div id="totals"></div>
+  <button id="refreshTotalsBtn">Refresh Totals</button>
+</div>
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
