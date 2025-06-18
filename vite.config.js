@@ -6,20 +6,20 @@ export default defineConfig({
     base: '/',
     build: {
         outDir: '../dist', // Output to /dist/
-        emptyOutDir: true
+        emptyOutDir: true,
     },
     server: {
         port: 5173,
         proxy: {
             '/api': {
                 target: 'http://localhost:3000',
-                changeOrigin: true
-            }
-        }
+                changeOrigin: true,
+            },
+        },
     },
     resolve: {
         alias: {
-            '@': resolve(__dirname, 'src')
-        }
-    }
+            '@': resolve(__dirname, 'src'),
+        },
+    },
 });

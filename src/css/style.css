@@ -4,10 +4,12 @@ body {
     margin: 0 auto;
     padding: 20px;
 }
-input, button {
+input,
+button {
     margin: 5px;
     padding: 8px;
 }
-#product-list, #totals {
+#product-list,
+#totals {
     margin-top: 10px;
 }

@@ -5,7 +5,7 @@ const ProductSchema = new mongoose.Schema({
     fat: { type: Number, default: 0 },
     protein: { type: Number, default: 0 },
     fiber: { type: Number, default: 0 },
-    carbs: { type: Number, default: 0 }
+    carbs: { type: Number, default: 0 },
 });
 
 export default mongoose.model('Product', ProductSchema);

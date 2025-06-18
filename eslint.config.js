@@ -1,4 +1,5 @@
 import { defineConfig } from 'eslint/config';
+import globals from 'globals';
 import path from 'path';
 import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
@@ -17,7 +18,10 @@ export default defineConfig([
         extends: compat.extends('eslint:recommended'),
 
         languageOptions: {
-            globals: {},
+            globals: {
+                ...globals.browser,
+                ...globals.node,
+            },
             ecmaVersion: 2022,
             sourceType: 'module',
 

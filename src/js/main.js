@@ -5,7 +5,7 @@ async function register() {
         const response = await fetch('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password }),
         });
         if (!response.ok) throw new Error(`Register failed: ${response.statusText}`);
         alert('Registered');
@@ -22,7 +22,7 @@ async function login() {
         const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password }),
         });
         if (!response.ok) throw new Error(`Login failed: ${response.statusText}`);
         const data = await response.json();
@@ -49,9 +49,9 @@ async function addProduct() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ name, fat, protein, fiber, carbs })
+            body: JSON.stringify({ name, fat, protein, fiber, carbs }),
         });
         if (!response.ok) throw new Error(`Add product failed: ${response.statusText}`);
         const product = await response.json();
@@ -72,7 +72,7 @@ async function loadProducts() {
         }
         console.log('Fetching products with token:', token);
         const response = await fetch('/api/products', {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) {
             const errorText = await response.text();
@@ -82,12 +82,18 @@ async function loadProducts() {
         console.log('Products fetched:', products);
         const list = document.getElementById('product-list');
         if (!list) throw new Error('product-list element not found');
-        list.innerHTML = products.length ? products.map(p => `
+        list.innerHTML = products.length
+            ? products
+                  .map(
+                      (p) => `
       <div>
         ${p.name} (Fat: ${p.fat}g, Protein: ${p.protein}g, Fiber: ${p.fiber}g, Carbs: ${p.carbs}g)
         <button onclick="logConsumption('${p._id}', 1)">Log 1 unit</button>
       </div>
-    `).join('') : '<p>No products found</p>';
+    `,
+                  )
+                  .join('')
+            : '<p>No products found</p>';
     } catch (error) {
         console.error('Load products error:', error);
         const list = document.getElementById('product-list');
@@ -103,9 +109,9 @@ async function logConsumption(productId, amount) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ productId, amount })
+            body: JSON.stringify({ productId, amount }),
         });
         if (!response.ok) throw new Error(`Log consumption failed: ${response.statusText}`);
         const log = await response.json();
@@ -125,7 +131,7 @@ async function getDailyTotals() {
             return;
         }
         const response = await fetch('/api/daily-totals', {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error(`Get totals failed: ${response.statusText}`);
         const totals = await response.json();
