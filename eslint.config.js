@@ -1,0 +1,54 @@
+import { defineConfig } from 'eslint/config';
+import path from 'path';
+import { fileURLToPath } from 'node:url';
+import js from '@eslint/js';
+import { FlatCompat } from '@eslint/eslintrc';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const compat = new FlatCompat({
+    baseDirectory: __dirname,
+    recommendedConfig: js.configs.recommended,
+    allConfig: js.configs.all,
+});
+
+export default defineConfig([
+    {
+        extends: compat.extends('eslint:recommended'),
+
+        languageOptions: {
+            globals: {},
+            ecmaVersion: 2022,
+            sourceType: 'module',
+
+            parserOptions: {
+                allowImportExportEverywhere: true,
+            },
+        },
+
+        rules: {
+            quotes: [
+                'error',
+                'single',
+                {
+                    avoidEscape: true,
+                },
+            ],
+            'no-undef': 'error',
+            strict: 'off',
+            semi: 'error',
+            'no-extra-semi': 'error',
+            'no-underscore-dangle': 'off',
+            'no-mixed-spaces-and-tabs': 'off',
+            'no-console': 'warn',
+            'no-unused-vars': 'warn',
+
+            'no-trailing-spaces': ['warn', { skipBlankLines: true }],
+
+            'no-unreachable': 'warn',
+            'no-alert': 'warn',
+
+            'brace-style': ['error', '1tbs', { allowSingleLine: true }],
+        },
+    },
+]);

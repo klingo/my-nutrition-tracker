@@ -1,4 +1,14 @@
-.idea/
-node_modules/
-dist/
-.env
+# Logs
+logs
+*.log
+npm-debug.log*
+
+node_modules
+dist
+*.local
+.vite
+/.env
+
+# Editor directories and files
+.vscode/*
+.idea

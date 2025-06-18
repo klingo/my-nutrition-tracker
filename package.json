@@ -1,24 +1,40 @@
 {
-  "name": "my-nutrition-tracker",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "start": "node server/server.js",
-    "dev:backend": "nodemon server/server.js",
-    "dev:frontend": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10",
-    "vite": "^6.3.5",
-    "dotenv": "^16.5.0"
-  },
-  "dependencies": {
-    "express": "^5.1.0",
-    "mongoose": "^8.16.0",
-    "bcrypt": "^6.0.0",
-    "jsonwebtoken": "^9.0.2",
-    "axios": "^1.10.0"
-  }
+    "name": "my-nutrition-tracker",
+    "private": true,
+    "version": "1.0.0",
+    "description": "MyNutritionTracker",
+    "author": {
+        "name": "Fabian Schär",
+        "email": "klingo@klingonium.com",
+        "url": "https://github.com/klingo"
+    },
+    "license": "CC BY-NC-SA 4.0",
+    "type": "module",
+    "scripts": {
+        "prepare": "husky .husky",
+        "start": "node server/server.js",
+        "dev:backend": "nodemon server/server.js",
+        "dev:frontend": "concurrently --kill-others \"vite\"",
+        "build": "vite build",
+        "preview": "vite preview",
+        "test": "vitest --watch=false"
+    },
+    "dependencies": {
+        "axios": "^1.10.0",
+        "bcrypt": "^6.0.0",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.16.0"
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.2",
+        "dotenv": "^16.5.0",
+        "eslint": "^9.29.0",
+        "husky": "^9.1.7",
+        "nodemon": "^3.1.10",
+        "lint-staged": "^16.1.2",
+        "prettier": "^3.5.3",
+        "vite": "^6.3.5",
+        "vitest": "^3.2.4"
+    }
 }
