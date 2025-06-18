@@ -1,4 +1,4 @@
-import { ENERGY_UNITS, ENERGY_CONVERSIONS } from '../models/constants/units';
+import { ENERGY_UNITS, ENERGY_CONVERSIONS } from '../models/constants/units.js';
 
 export const convertEnergy = {
     toKcal: (value, fromUnit) => {

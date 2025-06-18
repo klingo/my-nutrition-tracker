@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { UNITS } from '../constants/units';
-import { MEAL_TYPE } from '../constants/enums';
-import { convertWeight } from '../../utils/weightConversions';
+import { UNITS } from '../constants/units.js';
+import { MEAL_TYPE } from '../constants/enums.js';
+import { convertWeight } from '../../utils/weightConversions.js';
 
 const IntakeLogSchema = new mongoose.Schema(
     {

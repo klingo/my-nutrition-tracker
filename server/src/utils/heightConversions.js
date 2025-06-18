@@ -1,4 +1,4 @@
-import { HEIGHT_CONVERSIONS, HEIGHT_UNITS } from '../models/constants/units';
+import { HEIGHT_CONVERSIONS, HEIGHT_UNITS } from '../models/constants/units.js';
 
 export const convertHeight = {
     toCm: (value, fromUnit) => {

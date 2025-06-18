@@ -1,4 +1,4 @@
-import { WEIGHT_CONVERSIONS, WEIGHT_UNITS } from '../models/constants/units';
+import { WEIGHT_CONVERSIONS, WEIGHT_UNITS } from '../models/constants/units.js';
 
 export const convertWeight = {
     // For people

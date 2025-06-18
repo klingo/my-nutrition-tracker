@@ -22,11 +22,14 @@ export default defineConfig([
                 ...globals.browser,
                 ...globals.node,
             },
-            ecmaVersion: 2022,
+            ecmaVersion: 2024,
             sourceType: 'module',
 
             parserOptions: {
                 allowImportExportEverywhere: true,
+                ecmaFeatures: {
+                    jsx: true,
+                }
             },
         },
 
@@ -53,6 +56,17 @@ export default defineConfig([
             'no-alert': 'warn',
 
             'brace-style': ['error', '1tbs', { allowSingleLine: true }],
+
+            "no-var": "error",
+            "prefer-const": "warn",
+            "prefer-template": "warn",
+            "object-shorthand": "warn",
+            "no-const-assign": "error",
+            "no-duplicate-imports": "warn",
+            'no-useless-rename': 'warn',
+
         },
+
+        ignorePatterns: ['dist/**', 'node_modules/**']
     },
 ]);

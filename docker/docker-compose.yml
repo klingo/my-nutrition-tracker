@@ -1,0 +1,46 @@
+version: '3'
+services:
+    client:
+        build:
+            context: ../client
+            dockerfile: Dockerfile
+        ports:
+            - '3000:3000'
+        environment:
+            - VITE_API_URL=http://localhost:3001
+        depends_on:
+            - server
+        networks:
+            - tracker-net
+
+    server:
+        build:
+            context: ../server
+            dockerfile: Dockerfile
+        ports:
+            - '3001:3001'
+        environment:
+            - MONGO_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/nutritional_tracker
+            - JWT_SECRET=${JWT_SECRET}
+            - CORS_ORIGIN=http://localhost:3000
+        depends_on:
+            - mongo
+        networks:
+            - tracker-net
+
+    mongo:
+        image: mongo:7.0
+        volumes:
+            - mongodb_data:/data/db
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+        networks:
+            - tracker-net
+
+volumes:
+    mongodb_data:
+
+networks:
+    tracker-net:
+        driver: bridge

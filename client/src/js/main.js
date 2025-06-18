@@ -2,7 +2,7 @@ async function register() {
     try {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        const response = await fetch('/api/register', {
+        const response = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
@@ -19,7 +19,7 @@ async function login() {
     try {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        const response = await fetch('/api/login', {
+        const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
@@ -130,7 +130,7 @@ async function getDailyTotals() {
             console.warn('No token found for getDailyTotals');
             return;
         }
-        const response = await fetch('/api/daily-totals', {
+        const response = await fetch('/api/logs/daily-totals', {
             headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error(`Get totals failed: ${response.statusText}`);

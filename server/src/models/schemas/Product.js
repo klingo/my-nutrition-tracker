@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { UNITS } from '../constants/units';
+import { UNITS } from '../constants/units.js';
 
 const ProductSchema = new mongoose.Schema(
     {

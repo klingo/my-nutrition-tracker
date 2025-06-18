@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { HEIGHT_CONVERSIONS, UNITS, WEIGHT_CONVERSIONS } from '../constants/units';
-import { GENDER, ACTIVITY_LEVEL, ACTIVITY_MULTIPLIERS } from '../constants/enums';
-import { convertWeight } from '../../utils/weightConversions';
-import { convertHeight } from '../../utils/heightConversions';
+import { HEIGHT_CONVERSIONS, UNITS, WEIGHT_CONVERSIONS } from '../constants/units.js';
+import { GENDER, ACTIVITY_LEVEL, ACTIVITY_MULTIPLIERS } from '../constants/enums.js';
+import { convertWeight } from '../../utils/weightConversions.js';
+import { convertHeight } from '../../utils/heightConversions.js';
 
 const UserSchema = new mongoose.Schema(
     {
