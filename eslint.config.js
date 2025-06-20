@@ -29,7 +29,7 @@ export default defineConfig([
                 allowImportExportEverywhere: true,
                 ecmaFeatures: {
                     jsx: true,
-                }
+                },
             },
         },
 
@@ -48,25 +48,21 @@ export default defineConfig([
             'no-underscore-dangle': 'off',
             'no-mixed-spaces-and-tabs': 'off',
             'no-console': 'warn',
-            'no-unused-vars': 'warn',
-
+            'no-unused-vars': 'error',
             'no-trailing-spaces': ['warn', { skipBlankLines: true }],
-
             'no-unreachable': 'warn',
             'no-alert': 'warn',
-
             'brace-style': ['error', '1tbs', { allowSingleLine: true }],
 
-            "no-var": "error",
-            "prefer-const": "warn",
-            "prefer-template": "warn",
-            "object-shorthand": "warn",
-            "no-const-assign": "error",
-            "no-duplicate-imports": "warn",
+            'no-var': 'error',
+            'prefer-const': 'warn',
+            'prefer-template': 'warn',
+            'object-shorthand': 'warn',
+            'no-const-assign': 'error',
+            'no-duplicate-imports': 'warn',
             'no-useless-rename': 'warn',
-
         },
 
-        ignorePatterns: ['dist/**', 'node_modules/**']
+        ignores: ['dist/**', 'node_modules/**'],
     },
 ]);

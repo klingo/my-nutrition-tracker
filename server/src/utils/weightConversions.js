@@ -4,7 +4,8 @@ export const convertWeight = {
     // For people
     toKg: (value, fromUnit) => {
         if (fromUnit === WEIGHT_UNITS.KILOGRAM) return value;
-        if (fromUnit === WEIGHT_UNITS.POUND) return value * WEIGHT_CONVERSIONS[WEIGHT_UNITS.POUND][WEIGHT_UNITS.KILOGRAM];
+        if (fromUnit === WEIGHT_UNITS.POUND)
+            return value * WEIGHT_CONVERSIONS[WEIGHT_UNITS.POUND][WEIGHT_UNITS.KILOGRAM];
         throw new Error('Unsupported weight unit for person');
     },
 
