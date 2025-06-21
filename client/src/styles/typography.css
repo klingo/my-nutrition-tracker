@@ -1,0 +1,15 @@
+@import './fonts.css';
+
+:root {
+    /* Typography */
+    --font-primary: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+
+    --font-size-medium: 0.875rem;
+
+    --font-weight-thin: 100;
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    --font-weight-black: 900;
+}

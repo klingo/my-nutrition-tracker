@@ -1,0 +1,41 @@
+/* Global font application */
+body {
+    font-family: var(--font-primary);
+    font-weight: var(--font-weight-regular);
+    line-height: 1.6;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-primary);
+    font-weight: var(--font-weight-bold);
+}
+
+/* Example utility classes */
+.font-thin {
+    font-weight: var(--font-weight-thin);
+}
+.font-light {
+    font-weight: var(--font-weight-light);
+}
+.font-regular {
+    font-weight: var(--font-weight-regular);
+}
+.font-medium {
+    font-weight: var(--font-weight-medium);
+}
+.font-bold {
+    font-weight: var(--font-weight-bold);
+}
+.font-black {
+    font-weight: var(--font-weight-black);
+}
+
+.font-italic {
+    font-style: italic;
+}

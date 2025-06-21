@@ -1,0 +1,89 @@
+@import '../../../styles/typography.css';
+@import '../../../styles/colors.css';
+@import '../../../styles/layout.css';
+
+.button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 64px;
+    outline: none;
+    line-height: inherit;
+    user-select: none;
+    overflow: visible;
+
+    padding: 0 16px;
+    font-family: var(--font-primary), sans-serif;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    height: 36px;
+    border-radius: var(--border-radius);
+
+    cursor: pointer;
+}
+
+.button + .button {
+    margin-left: 16px;
+}
+
+.button.primary {
+    background-color: var(--primary-color);
+    border: none;
+}
+
+.button.primary:hover {
+    background-color: var(--primary-color-hover);
+}
+
+.button.primary:active {
+    background-color: var(--primary-color-active);
+    transition: var(--transition-fast);
+}
+
+.button.secondary {
+    background-color: var(--secondary-color);
+    border-color: rgba(0, 0, 0, 0.2);
+    border-width: 1px;
+    border-style: solid;
+}
+
+.button.secondary:hover {
+    background-color: var(--secondary-color-hover);
+}
+
+.button.secondary:active {
+    background-color: var(--secondary-color-active);
+}
+
+.button.mute {
+    background-color: transparent;
+    border: none;
+}
+
+.button.mute:hover {
+    background-color: var(--secondary-color-hover);
+}
+
+.button.mute:active {
+    background-color: var(--secondary-color-active);
+}
+
+.button.primary .label {
+    color: var(--text-primary-color-inverted);
+}
+
+.button.secondary .label {
+    color: var(--text-primary-color);
+}
+
+.button.mute .label {
+    color: var(--text-primary-color);
+}
+
+.button .label {
+    position: relative;
+    box-sizing: border-box;
+}
