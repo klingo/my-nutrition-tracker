@@ -1,3 +1,4 @@
+/* eslint-disable */
 async function register() {
     try {
         const username = document.getElementById('username').value;

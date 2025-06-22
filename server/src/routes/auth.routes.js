@@ -5,6 +5,30 @@ import { User } from '../models/index.js';
 
 const router = express.Router();
 
+// Helper function to generate tokens
+const generateTokens = (user) => {
+    const accessToken = jwt.sign(
+        {
+            userId: user._id,
+            username: user.username,
+            type: 'access',
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }, // Short-lived
+    );
+
+    const refreshToken = jwt.sign(
+        {
+            userId: user._id,
+            type: 'refresh',
+        },
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+        { expiresIn: '30d' }, // Long-lived
+    );
+
+    return { accessToken, refreshToken };
+};
+
 router.post('/register', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -22,15 +46,55 @@ router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
+
         if (user && (await bcrypt.compare(password, user.password))) {
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            res.json({ token });
+            const { accessToken, refreshToken } = generateTokens(user);
+
+            // Optionally store refresh token in database for revocation
+            // user.refreshToken = refreshToken;
+            // await user.save();
+
+            res.json({
+                accessToken,
+                refreshToken,
+            });
         } else {
             res.status(401).send('Invalid credentials');
         }
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).send('Server error');
+    }
+});
+
+// New endpoint to refresh access token
+router.post('/refresh', async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(401).send('Refresh token required');
+        }
+
+        // Verify refresh token
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET);
+
+        if (decoded.type !== 'refresh') {
+            return res.status(401).send('Invalid token type');
+        }
+
+        // Get user and generate new access token
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+            return res.status(401).send('User not found');
+        }
+
+        const { accessToken } = generateTokens(user);
+
+        res.json({ accessToken });
+    } catch (error) {
+        console.error('Refresh token error:', error);
+        res.status(401).send('Invalid refresh token');
     }
 });
 
