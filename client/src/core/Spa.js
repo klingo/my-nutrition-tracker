@@ -2,14 +2,17 @@ import Router from './Router.js';
 import LoginPage from '@/pages/LoginPage.js';
 import OverviewPage from '@/pages/OverviewPage.js';
 import NotFoundPage from '@/pages/NotFoundPage.js';
-import Navigation from '@/components/ui/Navigation/Navigation.js';
+import Navigation from '@/components/Navigation/Navigation.js';
+import ProductsPage from '@/pages/ProductsPage.js';
 
 class Spa {
     constructor() {
-        this.spaContainer = document.getElementById('spa');
+        this.headerContainer = document.getElementById('header');
         this.navContainer = document.getElementById('nav');
-        this.router = new Router();
+        this.mainContainer = document.getElementById('main');
+        this.footerContainer = document.getElementById('footer');
         this.navigation = new Navigation();
+        this.router = new Router(this.navigation);
     }
 
     async init() {
@@ -20,21 +23,14 @@ class Spa {
     }
 
     async renderNavigation() {
-        if (this.navContainer) {
-            this.navContainer.innerHTML = '';
-            const navElement = await this.navigation.render();
-            this.navContainer.appendChild(navElement);
-        }
-    }
-
-    async refreshNavigation() {
-        await this.renderNavigation();
+        await this.navigation.render();
     }
 
     setupRoutes() {
         this.router.addRoute('/', () => this.renderPage(OverviewPage));
         this.router.addRoute('/login', () => this.renderPage(LoginPage));
         this.router.addRoute('/overview', () => this.renderPage(OverviewPage));
+        this.router.addRoute('/products', () => this.renderPage(ProductsPage));
         this.router.addRoute('/404', () => this.renderPage(NotFoundPage));
     }
 
@@ -50,14 +46,14 @@ class Spa {
 
     async renderPage(PageClass) {
         try {
-            this.spaContainer.innerHTML = '';
+            this.mainContainer.innerHTML = '';
             const page = new PageClass(this.router);
             const content = await page.render();
-            this.spaContainer.appendChild(content);
+            this.mainContainer.appendChild(content);
             if (page.mount) page.mount();
         } catch (error) {
             console.error('Error rendering page:', error);
-            this.spaContainer.innerHTML = '<div class="error">Something went wrong</div>';
+            this.mainContainer.innerHTML = '<div class="error">Something went wrong</div>';
         }
     }
 }

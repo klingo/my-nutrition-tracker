@@ -1,6 +1,6 @@
-@import '../../../styles/typography.css';
-@import '../../../styles/colors.css';
-@import '../../../styles/layout.css';
+@import '@/styles/typography.css';
+@import '@/styles/colors.css';
+@import '@/styles/layout.css';
 
 .button {
     position: relative;

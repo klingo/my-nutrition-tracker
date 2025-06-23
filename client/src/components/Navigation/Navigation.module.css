@@ -1,0 +1,80 @@
+.nav {
+    border-bottom: 1px solid var(--color-palette-200);
+}
+
+.nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0 24px;
+    height: 48px;
+}
+
+.nav ul li {
+    display: flex;
+    float: left;
+    height: 100%;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.nav ul li a {
+    display: block;
+    height: 48px;
+    padding-left: 24px;
+    padding-right: 24px;
+    align-content: center;
+    text-align: center;
+    white-space: nowrap;
+    text-decoration: none;
+    user-select: none;
+    background-color: transparent;
+    color: var(--text-primary-color);
+    transition: all 0.2s ease;
+}
+.nav ul li a img {
+    vertical-align: middle;
+}
+
+.nav ul li a:hover,
+.nav ul li button:hover {
+    background-color: var(--color-palette-50);
+}
+
+.nav ul li a:focus,
+.nav ul li button:focus {
+    background-color: var(--color-palette-100);
+}
+
+.nav ul li a:active,
+.nav ul li button:active {
+    background-color: var(--color-palette-200);
+}
+
+.nav ul li.active a {
+    box-shadow: inset 0 -2px 0 var(--color-palette-900);
+}
+
+.nav ul li.active a:not(:focus) {
+    color: var(--primary-color);
+}
+
+.nav ul li.logout {
+    margin-left: auto;
+}
+
+.nav ul li button {
+    height: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    padding: 0 16px;
+    align-items: center;
+}
+
+.nav ul li button img {
+    width: 24px;
+    height: 24px;
+}

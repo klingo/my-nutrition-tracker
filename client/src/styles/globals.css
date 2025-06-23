@@ -1,3 +1,35 @@
 @import 'colors.css';
 @import 'typography.css';
 @import 'layout.css';
+
+body {
+    display: grid;
+    grid-template-areas:
+        'nav'
+        'header'
+        'main'
+        'footer';
+    grid-template-rows: auto auto 1fr auto;
+    min-height: 100vh;
+    margin: 0;
+
+    font-family: var(--font-primary), sans-serif;
+    font-weight: var(--font-weight-regular);
+    line-height: 1.6;
+}
+
+header {
+    grid-area: header;
+}
+
+nav {
+    grid-area: nav;
+}
+
+main {
+    grid-area: main;
+}
+
+footer {
+    grid-area: footer;
+}

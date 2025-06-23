@@ -49,7 +49,7 @@ class LoginPage extends BasePage {
                 messageDiv.innerHTML = '<p style="color: green;">Login successful!</p>';
 
                 if (spaInstance) {
-                    await spaInstance.refreshNavigation();
+                    await spaInstance.renderNavigation();
                 }
 
                 // Navigate to overview page

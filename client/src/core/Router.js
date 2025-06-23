@@ -1,12 +1,13 @@
 import authService from '@/services/AuthService.js';
 
 class Router {
-    constructor() {
+    constructor(navigation = null) {
         this.routes = {};
         this.currentRoute = null;
+        this.navigation = navigation;
 
         // Define which routes need authentication
-        this.protectedRoutes = ['/', '/overview', '/log-intake', '/profile'];
+        this.protectedRoutes = ['/', '/overview', '/log-intake', '/products', '/profile'];
         this.publicRoutes = ['/login', '/register'];
     }
 
@@ -23,6 +24,10 @@ class Router {
         // Check authentication before navigating
         if (!(await this.canAccess(path))) {
             return; // Access denied, redirect already handled
+        }
+
+        if (this.navigation) {
+            this.navigation.updateActiveState(path);
         }
 
         // Update browser history and current route
