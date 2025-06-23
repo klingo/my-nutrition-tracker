@@ -1,3 +1,5 @@
+import styles from './BasePage.module.css';
+
 class BasePage {
     constructor(router = null) {
         this.router = router;
@@ -22,7 +24,8 @@ class BasePage {
     // Helper method to create DOM elements
     createElement(tag, className = '') {
         const element = document.createElement(tag);
-        if (className) element.className = className;
+        element.classList.add(styles.page);
+        if (className) element.classList.add(className);
         return element;
     }
 }

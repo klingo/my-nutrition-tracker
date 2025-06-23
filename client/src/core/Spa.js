@@ -1,5 +1,5 @@
 import Router from './Router.js';
-import LoginPage from '@/pages/LoginPage.js';
+import LoginPage from '@/pages/LoginPage/LoginPage.js';
 import OverviewPage from '@/pages/OverviewPage.js';
 import NotFoundPage from '@/pages/NotFoundPage.js';
 import Navigation from '@/components/Navigation/Navigation.js';
