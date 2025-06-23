@@ -1,0 +1,111 @@
+.input {
+    display: flex;
+    flex-direction: column;
+    /*height: 40px;*/
+}
+
+.input .label {
+    height: 56px;
+    overflow: visible;
+    padding: 0 16px;
+
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: baseline;
+    position: relative;
+    box-sizing: border-box;
+
+    background-color: var(--color-palette-100);
+}
+
+.input .label img {
+    display: inline-block;
+    align-self: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.input .label input {
+    display: flex;
+    align-self: end;
+    margin-bottom: 8px;
+    height: 28px;
+    padding: 0;
+
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+    background: none;
+
+    font-size: var(--mnt-body-1-font-size);
+    font-weight: var(--mnt-body-1-font-weight);
+}
+
+/* Override autocomplete styles */
+.input .label input:-webkit-autofill,
+.input .label input:-webkit-autofill:hover,
+.input .label input:-webkit-autofill:focus,
+.input .label input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--color-palette-100) inset !important;
+    -webkit-text-fill-color: inherit !important;
+    background-color: transparent !important;
+}
+
+.input .label input:focus {
+    outline: none;
+}
+
+.input .label input:focus + .outline {
+    outline: 1px solid var(--primary-color);
+}
+
+.input .label .outline {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    text-align: left;
+    pointer-events: none;
+    z-index: 1;
+
+    border-color: var(--primary-color);
+    border-radius: 4px;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.input .label:has(img) .outline .floatinglabel {
+    left: 48px;
+}
+
+.input .label .outline .floatinglabel {
+    position: relative;
+    display: inline-block;
+    align-self: baseline;
+    transform-origin: left top;
+    left: 16px;
+    right: initial;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+
+    transition:
+        transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+        color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    color: var(--color-palette-700);
+}
+
+.input .label input:focus + .outline > .floatinglabel,
+.input .label input:valid + .outline > .floatinglabel,
+.input .label input:not(:placeholder-shown) + .outline > .floatinglabel {
+    transform: translateY(-100%) scale(0.75);
+    z-index: 2;
+}

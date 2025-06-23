@@ -1,8 +1,11 @@
 import styles from './LoginPage.module.css';
 import accountCircle from '@/assets/icons/actions/account_circle_24dp.svg';
+import lock from '@/assets/icons/actions/lock_24dp.svg';
 import BasePage from '../BasePage.js';
 import authService from '@/services/AuthService.js';
 import { spaInstance } from '@/core/Spa.js';
+import Input from '@/components/Input/index.js';
+import { INPUT_TYPES } from '@/components/Input/Input.js';
 
 class LoginPage extends BasePage {
     async render() {
@@ -29,33 +32,40 @@ class LoginPage extends BasePage {
         form.classList.add(styles.form);
         container.append(form);
 
-        const usernameInput = document.createElement('input');
-        usernameInput.setAttribute('type', 'text');
-        usernameInput.setAttribute('name', 'username');
-        usernameInput.setAttribute('placeholder', 'Username');
-        usernameInput.setAttribute('required', '');
-        usernameInput.setAttribute('autocomplete', 'username');
-        usernameInput.setAttribute('autofocus', '');
-        usernameInput.setAttribute('id', 'username');
-        usernameInput.setAttribute('aria-describedby', 'username-help');
-        usernameInput.setAttribute('aria-invalid', 'false');
-        usernameInput.setAttribute('aria-required', 'true');
-        usernameInput.setAttribute('aria-label', 'Username');
-        form.append(usernameInput);
+        const usernameInput = new Input({
+            name: 'username',
+            id: 'username',
+            placeholder: 'Username',
+            required: true,
+            autocomplete: 'username',
+            autofocus: true,
+            leadingIcon: accountCircle,
+        });
+        usernameInput.mount(form);
 
-        const passwordInput = document.createElement('input');
-        passwordInput.setAttribute('type', 'password');
-        passwordInput.setAttribute('name', 'password');
-        passwordInput.setAttribute('placeholder', 'Password');
-        passwordInput.setAttribute('required', '');
-        passwordInput.setAttribute('autocomplete', 'current-password');
-        passwordInput.setAttribute('id', 'password');
-        passwordInput.setAttribute('aria-describedby', 'password-help');
-        passwordInput.setAttribute('aria-invalid', 'false');
-        passwordInput.setAttribute('aria-required', 'true');
-        passwordInput.setAttribute('aria-label', 'Password');
-        passwordInput.setAttribute('title', 'Password');
-        form.append(passwordInput);
+        const passwordInput = new Input({
+            type: INPUT_TYPES.PASSWORD,
+            name: 'password',
+            id: 'password',
+            placeholder: 'Password',
+            required: true,
+            autocomplete: 'current-password',
+            leadingIcon: lock,
+        });
+        passwordInput.mount(form);
+        // const passwordInput = document.createElement('input');
+        // passwordInput.setAttribute('type', 'password');
+        // passwordInput.setAttribute('name', 'password');
+        // passwordInput.setAttribute('placeholder', 'Password');
+        // passwordInput.setAttribute('required', '');
+        // passwordInput.setAttribute('autocomplete', 'current-password');
+        // passwordInput.setAttribute('id', 'password');
+        // passwordInput.setAttribute('aria-describedby', 'password-help');
+        // passwordInput.setAttribute('aria-invalid', 'false');
+        // passwordInput.setAttribute('aria-required', 'true');
+        // passwordInput.setAttribute('aria-label', 'Password');
+        // passwordInput.setAttribute('title', 'Password');
+        // form.append(passwordInput);
 
         const loginButton = document.createElement('button');
         loginButton.setAttribute('type', 'submit');
