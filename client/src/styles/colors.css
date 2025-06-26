@@ -1,39 +1,57 @@
 :root {
-    /* Color Palette: Blue Gray */
-    --color-palette-50: #e8eaf6;
-    --color-palette-100: #c5cae9;
-    --color-palette-200: #9fa8da;
-    --color-palette-300: #7986cb;
-    --color-palette-400: #5c6bc0;
-    --color-palette-500: #3f51b5;
-    --color-palette-600: #3949ab;
-    --color-palette-700: #303f9f;
-    --color-palette-800: #283593;
-    --color-palette-900: #1a237e;
-    --color-palette-a100: #8c9eff;
-    --color-palette-a200: #536dfe;
-    --color-palette-a400: #3d5afe;
-    --color-palette-a700: #304ffe;
-
     /* Colors */
-    --color-white: #fff;
+    --color-primary: #ffffff;
+    --color-primary-variant: #aeaeb1;
+    --color-secondary: #2a2931;
+    --color-secondary-variant: #1d1d23;
+    --color-black: #000000;
 
-    --primary-color: var(--color-palette-900);
-    --primary-color-hover: var(--color-palette-800);
-    --primary-color-active: var(--color-palette-700);
+    /* Color backgrounds */
+    --color-surface: #373740;
+    --color-background: #33333d;
+    --color-error: #b00020;
+    --color-status-bar: #27272f;
+    --color-overlay-background: #1e1e1e;
 
-    --secondary-color: var(--color-white);
-    --secondary-color-hover: var(--color-palette-50);
-    --secondary-color-active: var(--color-palette-100);
+    /* On colors */
+    --color-on-primary: #2a2931;
+    --color-on-secondary: #fff;
+    --color-on-background: #fff;
+    --color-on-surface: #fff;
+    --color-on-error: #fff;
 
-    --error-color: #b00020;
+    --color-input-background: #26282f;
 
-    /* # */
+    /* Color palettes */
+    --color-accent-green-800: #007d51;
+    --color-accent-green-700: #018e5d;
+    --color-accent-green-600: #09a16b;
+    --color-accent-green-500: #12b076;
+    --color-accent-green-300: #6cc89e;
 
-    /* Text Colors */
-    --text-primary-color: #1c1c1c;
-    --text-primary-color-inverted: #e3e3e3;
-    --text-secondary-color: #000;
-    --text-white-color: #fff;
-    --text-black-color: #000;
+    --color-accent-dark-green-800: #045d56;
+    --color-accent-dark-green-600: #007c75;
+    --color-accent-dark-green-400: #239a95;
+
+    --color-accent-orange-400: #ff6759;
+    --color-accent-orange-300: #f3827c;
+    --color-accent-orange-100: #ffd3d6;
+
+    --color-accent-yellow-600: #ffad00;
+    --color-accent-yellow-300: #ffcf44;
+    --color-accent-yellow-200: #ffdd7c;
+
+    --color-accent-purple-700: #773ac3;
+    --color-accent-purple-400: #9f65dc;
+    --color-accent-purple-100: #decaf7;
+
+    --color-accent-blue-600: #0082fb;
+    --color-accent-blue-300: #58b2ff;
+    --color-accent-blue-100: #b9ddff;
+
+    --color-accent-grey-900: #1e1e26;
+    --color-accent-grey-800: #3f3f48;
+    --color-accent-grey-700: #5e5e67;
+    --color-accent-grey-600: #72727c;
+    --color-accent-grey-500: #9b9aa5;
 }

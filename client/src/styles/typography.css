@@ -3,6 +3,7 @@
 :root {
     /* Typography */
     --font-primary: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --font-secondary: 'Roboto Condensed', 'Helvetica', 'Arial', sans-serif;
 
     --font-size-medium: 0.875rem;
 

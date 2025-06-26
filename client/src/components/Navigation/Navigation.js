@@ -1,7 +1,6 @@
 import styles from './Navigation.module.css';
 import authService from '@/services/AuthService.js';
 import { spaInstance } from '@/core/Spa.js';
-import logoutIcon from '@/assets/icons/ui-actions/logout_24dp.svg';
 
 class Navigation {
     constructor() {
@@ -47,18 +46,16 @@ class Navigation {
     createLogoutBtn() {
         const li = document.createElement('li');
         const button = document.createElement('button');
-        const img = document.createElement('img');
+        const icon = document.createElement('div');
 
         li.classList.add(styles.logout);
 
-        img.src = logoutIcon;
-        img.alt = '';
-        img.setAttribute('aria-hidden', 'true');
+        icon.classList.add(styles.logoutIcon);
 
         button.setAttribute('type', 'button');
         button.setAttribute('aria-label', 'Logout');
         button.setAttribute('title', 'Logout');
-        button.append(img);
+        button.append(icon);
         button.addEventListener('click', async () => {
             authService.logout();
             if (spaInstance) {

@@ -24,10 +24,12 @@ header {
 
 nav {
     grid-area: nav;
+    background-color: var(--color-status-bar);
 }
 
 main {
     grid-area: main;
+    background-color: var(--color-background);
 }
 
 footer {

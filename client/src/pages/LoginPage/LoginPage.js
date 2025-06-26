@@ -6,6 +6,8 @@ import authService from '@/services/AuthService.js';
 import { spaInstance } from '@/core/Spa.js';
 import Input from '@/components/Input/index.js';
 import { INPUT_TYPES } from '@/components/Input/Input.js';
+import { ICONS } from '@/components/Button/Button.js';
+import { Button } from '@/components';
 
 class LoginPage extends BasePage {
     async render() {
@@ -66,6 +68,13 @@ class LoginPage extends BasePage {
         // passwordInput.setAttribute('aria-label', 'Password');
         // passwordInput.setAttribute('title', 'Password');
         // form.append(passwordInput);
+
+        const logButton = new Button({ children: 'Login', icon: ICONS.LOGIN, type: 'primary' });
+        logButton.mount(form);
+        const log2Button = new Button({ children: 'Login', icon: ICONS.LOGIN, type: 'secondary' });
+        log2Button.mount(form);
+        const log3Button = new Button({ children: 'Login', icon: ICONS.LOGIN, type: 'mute' });
+        log3Button.mount(form);
 
         const loginButton = document.createElement('button');
         loginButton.setAttribute('type', 'submit');

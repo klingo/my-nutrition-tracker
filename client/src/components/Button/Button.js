@@ -1,46 +1,82 @@
 import styles from './Button.module.css';
+import Component from '@/components/Component';
 
-export const BUTTON_TYPES = {
+export const TYPES = {
     PRIMARY: 'primary',
     SECONDARY: 'secondary',
     MUTE: 'mute',
+};
+
+export const ICONS = {
+    ADD: styles.add,
+    DELETE: styles.delete,
+    HOME: styles.home,
+    LOGIN: styles.login,
+    LOGOUT: styles.logout,
 };
 
 /**
  * Represents a customizable Button component.
  * @class Button
  */
-export default class Button {
+export default class Button extends Component {
     /**
-     *
-     * @param children
-     * @param {'primary'|'secondary'|´mute'} [type='secondary'] - Button type
-     * @param size
+     * @param {string|HTMLElement|[string|HTMLElement]} children
+     * @param {'primary'|'secondary'|'mute'} [type='secondary'] - Button type
+     * @param icon
      * @param onClick
      * @param disabled
      */
-    constructor({ children = '', type = BUTTON_TYPES.SECONDARY, size = 'medium', onClick, disabled = false } = {}) {
-        if (!Object.values(BUTTON_TYPES).includes(type)) {
-            throw new Error(`Invalid button type "${type}". Must be one of: ${Object.values(BUTTON_TYPES).join(', ')}`);
-        } else {
-            this.type = type;
-        }
+    constructor({ children = '', type = TYPES.SECONDARY, icon = null, onClick, disabled = false } = {}) {
+        super();
 
+        this.type = this.#validateType(type);
+        this.icon = this.#validateIcon(icon);
         this.children = children;
-        this.size = size;
         this.onClick = onClick;
         this.disabled = disabled;
+    }
 
-        this.element = null;
+    #validateType(type) {
+        if (!Object.values(TYPES).includes(type)) {
+            throw new Error(`Invalid button type "${type}". Must be one of: ${Object.values(TYPES).join(', ')}`);
+        }
+        return type;
+    }
+
+    #validateIcon(icon) {
+        if (icon && !Object.values(ICONS).includes(icon)) {
+            throw new Error(`Invalid button icon "${icon}". Must be one of: ${Object.values(ICONS).join(', ')}`);
+        }
+        return icon;
     }
 
     render() {
-        const button = document.createElement('button');
+        const button = this.#createButton();
+        this.#addIcon(button);
+        this.#addLabel(button);
+        this.#configureButton(button);
+        this.element = button;
+        return button;
+    }
 
+    #createButton() {
+        const button = document.createElement('button');
         button.classList.add(styles.button);
         button.classList.add(styles[this.type]);
-        // this.disabled ? button.classList.add(styles.disabled) : '';
+        return button;
+    }
 
+    #addIcon(button) {
+        if (this.icon) {
+            const icon = document.createElement('div');
+            icon.classList.add(styles.icon);
+            icon.classList.add(this.icon);
+            button.appendChild(icon);
+        }
+    }
+
+    #addLabel(button) {
         const span = document.createElement('span');
         span.classList.add(styles.label);
         if (typeof this.children === 'string') {
@@ -56,23 +92,14 @@ export default class Button {
                 }
             });
         }
-
         button.appendChild(span);
-        button.disabled = this.disabled;
-
-        if (this.onClick) {
-            button.addEventListener('click', this.onClick);
-        }
-
-        this.element = button;
-        return button;
     }
 
-    mount(parent) {
-        if (!this.element) {
-            this.render();
+    #configureButton(button) {
+        button.disabled = this.disabled;
+        // TODO: implement disabled state
+        if (this.onClick && !this.disabled) {
+            button.addEventListener('click', this.onClick);
         }
-        parent.appendChild(this.element);
-        return this;
     }
 }

@@ -12,74 +12,134 @@
 
     padding: 0 16px;
     font-family: var(--font-primary), sans-serif;
-    font-size: var(--font-size-medium);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--mnt-body-2-font-size);
+    font-weight: var(--mnt-body-2-font-weight);
     text-transform: uppercase;
     height: 36px;
     border-radius: var(--border-radius);
 
     cursor: pointer;
+    transition:
+        background-color 0.2s ease-in-out,
+        color 0.2s ease-in-out,
+        border-color 0.2s ease-in-out,
+        box-shadow 0.2s ease-in-out;
 }
 
-.button + .button {
-    margin-left: 16px;
-}
-
+/* Primary Button */
 .button.primary {
-    background-color: var(--primary-color);
+    background-color: var(--color-accent-green-700);
+    color: var(--color-black);
     border: none;
 }
 
 .button.primary:hover {
-    background-color: var(--primary-color-hover);
+    background-color: var(--color-accent-green-600);
 }
 
 .button.primary:active {
-    background-color: var(--primary-color-active);
-    transition: var(--transition-fast);
+    background-color: var(--color-accent-green-500);
 }
 
+/* Secondary Button */
 .button.secondary {
-    background-color: var(--secondary-color);
-    border-color: rgba(0, 0, 0, 0.2);
-    border-width: 1px;
-    border-style: solid;
+    background-color: transparent;
+    color: var(--color-primary-variant);
+    border: 2px solid var(--color-accent-grey-600);
 }
 
 .button.secondary:hover {
-    background-color: var(--secondary-color-hover);
+    background-color: var(--color-accent-grey-800);
+    color: var(--color-primary);
 }
 
 .button.secondary:active {
-    background-color: var(--secondary-color-active);
+    background-color: var(--color-accent-grey-700);
+    color: var(--color-primary);
 }
 
+/* Muted Button */
 .button.mute {
     background-color: transparent;
+    color: var(--color-primary-variant);
     border: none;
 }
 
 .button.mute:hover {
-    background-color: var(--secondary-color-hover);
+    background-color: var(--color-accent-grey-800);
+    color: var(--color-primary);
 }
 
 .button.mute:active {
-    background-color: var(--secondary-color-active);
+    background-color: var(--color-accent-grey-700);
+    color: var(--color-primary);
 }
 
-.button.primary .label {
-    color: var(--text-primary-color-inverted);
-}
-
-.button.secondary .label {
-    color: var(--text-primary-color);
-}
-
-.button.mute .label {
-    color: var(--text-primary-color);
-}
-
+/* Button Label */
 .button .label {
     position: relative;
     box-sizing: border-box;
+}
+
+.button.primary .label {
+    color: var(--color-black);
+}
+
+/* Button Icon */
+.button .icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    margin-left: -4px;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+
+    transition:
+        background-color 0.2s ease-in-out,
+        color 0.2s ease-in-out,
+        border-color 0.2s ease-in-out,
+        box-shadow 0.2s ease-in-out;
+}
+
+.button.primary .icon {
+    background-color: var(--color-black);
+}
+
+.button.secondary .icon,
+.button.mute .icon {
+    background-color: var(--color-primary-variant);
+}
+
+.button.secondary:hover .icon,
+.button.mute:hover .icon {
+    background-color: var(--color-primary);
+}
+
+.button .icon.login {
+    mask-image: url('../../assets/icons/ui-actions/login_24dp.svg');
+    -webkit-mask-image: url('../../assets/icons/ui-actions/login_24dp.svg');
+}
+
+.button .icon.logout {
+    mask-image: url('../../assets/icons/ui-actions/logout_24dp.svg');
+    -webkit-mask-image: url('../../assets/icons/ui-actions/logout_24dp.svg');
+}
+
+.button .icon.add {
+    mask-image: url('../../assets/icons/ui-actions/add_24dp.svg');
+    -webkit-mask-image: url('../../assets/icons/ui-actions/add_24dp.svg');
+}
+
+.button .icon.delete {
+    mask-image: url('../../assets/icons/ui-actions/delete_24dp.svg');
+    -webkit-mask-image: url('../../assets/icons/ui-actions/delete_24dp.svg');
+}
+
+.button .icon.home {
+    mask-image: url('../../assets/icons/ui-actions/home_24dp.svg');
+    -webkit-mask-image: url('../../assets/icons/ui-actions/home_24dp.svg');
 }
