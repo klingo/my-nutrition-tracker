@@ -36,6 +36,7 @@
 .nav ul li a:hover,
 .nav ul li button:hover {
     background-color: var(--color-surface);
+    color: var(--color-primary);
 }
 
 .nav ul li a:focus,
