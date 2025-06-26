@@ -1,11 +1,9 @@
 import styles from './LoginPage.module.css';
-import accountCircle from '@/assets/icons/actions/account_circle_24dp.svg';
-import lock from '@/assets/icons/actions/lock_24dp.svg';
 import BasePage from '../BasePage.js';
 import authService from '@/services/AuthService.js';
 import { spaInstance } from '@/core/Spa.js';
-import Input from '@/components/Input/index.js';
-import { INPUT_TYPES } from '@/components/Input/Input.js';
+import Input from '@/components/Input';
+import { INPUT_ICONS, TYPES } from '@/components/Input/Input.js';
 import { ICONS } from '@/components/Button/Button.js';
 import { Button } from '@/components';
 
@@ -16,8 +14,8 @@ class LoginPage extends BasePage {
         const container = document.createElement('div');
         container.classList.add(styles.overlay);
 
-        const logo = document.createElement('img');
-        logo.setAttribute('src', accountCircle);
+        const logo = document.createElement('div');
+        logo.classList.add(styles.icon, styles.home);
         logo.setAttribute('alt', '');
         logo.setAttribute('aria-hidden', 'true');
         container.append(logo);
@@ -41,18 +39,18 @@ class LoginPage extends BasePage {
             required: true,
             autocomplete: 'username',
             autofocus: true,
-            leadingIcon: accountCircle,
+            leadingIcon: INPUT_ICONS.ACCOUNT,
         });
         usernameInput.mount(form);
 
         const passwordInput = new Input({
-            type: INPUT_TYPES.PASSWORD,
+            type: TYPES.PASSWORD,
             name: 'password',
             id: 'password',
             placeholder: 'Password',
             required: true,
             autocomplete: 'current-password',
-            leadingIcon: lock,
+            leadingIcon: INPUT_ICONS.LOCK,
         });
         passwordInput.mount(form);
         // const passwordInput = document.createElement('input');
@@ -71,18 +69,6 @@ class LoginPage extends BasePage {
 
         const logButton = new Button({ children: 'Login', icon: ICONS.LOGIN, type: 'primary' });
         logButton.mount(form);
-        const log2Button = new Button({ children: 'Login', icon: ICONS.LOGIN, type: 'secondary' });
-        log2Button.mount(form);
-        const log3Button = new Button({ children: 'Login', icon: ICONS.LOGIN, type: 'mute' });
-        log3Button.mount(form);
-
-        const loginButton = document.createElement('button');
-        loginButton.setAttribute('type', 'submit');
-        loginButton.textContent = 'Login';
-        loginButton.setAttribute('id', 'login-button');
-        loginButton.setAttribute('aria-label', 'Login');
-        loginButton.setAttribute('title', 'Login');
-        form.append(loginButton);
 
         this.element.append(container);
 

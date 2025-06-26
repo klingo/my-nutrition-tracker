@@ -15,9 +15,22 @@ main {
     padding: 24px;
 }
 
-.overlay img {
+.overlay .icon {
     width: 48px;
     height: 48px;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+
+    background-color: var(--color-primary);
+}
+
+.overlay .icon.home {
+    mask-image: url('../../assets/icons/actions/account_circle_24dp.svg');
+    -webkit-mask-image: url('../../assets/icons/actions/account_circle_24dp.svg');
 }
 
 .overlay h1 {

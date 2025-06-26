@@ -1,7 +1,6 @@
 .input {
     display: flex;
     flex-direction: column;
-    /*height: 40px;*/
 }
 
 .input .label {
@@ -14,16 +13,32 @@
     align-items: baseline;
     position: relative;
     box-sizing: border-box;
-
-    background-color: var(--color-palette-100);
 }
 
-.input .label img {
+.input .label .icon {
     display: inline-block;
     align-self: center;
     width: 24px;
     height: 24px;
     margin-right: 8px;
+    background-color: var(--color-primary);
+
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}
+
+.input .label .icon.account {
+    mask-image: url('../../assets/icons/ui-actions/logout_24dp.svg');
+    -webkit-mask-image: url('../../assets/icons/ui-actions/logout_24dp.svg');
+}
+
+.input .label .icon.lock {
+    mask-image: url('../../assets/icons/actions/lock_24dp.svg');
+    -webkit-mask-image: url('../../assets/icons/actions/lock_24dp.svg');
 }
 
 .input .label input {
@@ -40,6 +55,7 @@
 
     font-size: var(--mnt-body-1-font-size);
     font-weight: var(--mnt-body-1-font-weight);
+    color: var(--color-primary);
 }
 
 /* Override autocomplete styles */
@@ -57,7 +73,7 @@
 }
 
 .input .label input:focus + .outline {
-    outline: 1px solid var(--primary-color);
+    outline: 1px solid var(--color-primary);
 }
 
 .input .label .outline {
@@ -75,13 +91,13 @@
     pointer-events: none;
     z-index: 1;
 
-    border-color: var(--primary-color);
+    border-color: var(--color-primary);
     border-radius: 4px;
     border-width: 1px;
     border-style: solid;
 }
 
-.input .label:has(img) .outline .floatinglabel {
+.input .label:has(.icon) .outline .floatinglabel {
     left: 48px;
 }
 
@@ -99,8 +115,6 @@
     transition:
         transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
         color 150ms cubic-bezier(0.4, 0, 0.2, 1);
-
-    color: var(--color-palette-700);
 }
 
 .input .label input:focus + .outline > .floatinglabel,

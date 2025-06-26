@@ -1,6 +1,6 @@
 :root {
     /* Colors */
-    --color-primary: #ffffff;
+    --color-primary: #fefefe;
     --color-primary-variant: #aeaeb1;
     --color-secondary: #2a2931;
     --color-secondary-variant: #1d1d23;
@@ -15,10 +15,10 @@
 
     /* On colors */
     --color-on-primary: #2a2931;
-    --color-on-secondary: #fff;
-    --color-on-background: #fff;
-    --color-on-surface: #fff;
-    --color-on-error: #fff;
+    --color-on-secondary: #fefefe;
+    --color-on-background: #fefefe;
+    --color-on-surface: #fefefe;
+    --color-on-error: #fefefe;
 
     --color-input-background: #26282f;
 

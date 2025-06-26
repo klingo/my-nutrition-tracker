@@ -8,10 +8,10 @@
     --font-size-medium: 0.875rem;
 
     --font-weight-thin: 100;
-    --font-weight-light: 300;
-    --font-weight-regular: 400;
-    --font-weight-medium: 500;
-    --font-weight-bold: 700;
+    --font-weight-light: 200;
+    --font-weight-regular: 300;
+    --font-weight-medium: 400;
+    --font-weight-bold: 600;
     --font-weight-black: 900;
 
     --mnt-header-1-font-size: 28px;
@@ -22,7 +22,7 @@
     --mnt-header-3-font-weight: 400;
 
     --mnt-body-1-font-size: 16px;
-    --mnt-body-1-font-weight: 400;
+    --mnt-body-1-font-weight: 300;
     --mnt-body-2-font-size: 14px;
     --mnt-body-2-font-weight: 400;
     --mnt-body-3-font-size: 12px;

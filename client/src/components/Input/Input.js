@@ -1,17 +1,23 @@
 import styles from './Input.module.css';
+import Component from '@/components/Component';
 
-export const INPUT_TYPES = {
+export const TYPES = {
     TEXT: 'text',
     PASSWORD: 'password',
     EMAIL: 'email',
     NUMBER: 'number',
 };
 
+export const INPUT_ICONS = {
+    ACCOUNT: styles.account,
+    LOCK: styles.lock,
+};
+
 /**
  * Represents a customizable Input component.
  * @class Input
  */
-export default class Input {
+export default class Input extends Component {
     /**
      * @param {'text'|'password'|´email'|'number'} [type='text'] - Input type
      * @param {string} placeholder
@@ -19,7 +25,7 @@ export default class Input {
      * @param {boolean} disabled
      */
     constructor({
-        type = INPUT_TYPES.TEXT,
+        type = TYPES.TEXT,
         name = '',
         id = '',
         label = '',
@@ -32,11 +38,10 @@ export default class Input {
         disabled = false,
         leadingIcon = null,
     } = {}) {
-        if (!Object.values(INPUT_TYPES).includes(type)) {
-            throw new Error(`Invalid input type "${type}". Must be one of: ${Object.values(INPUT_TYPES).join(', ')}`);
-        } else {
-            this.type = type;
-        }
+        super();
+
+        this.type = this.#validateType(type);
+        this.leadingIcon = this.#validateLeadingIcon(leadingIcon);
         this.name = name;
         this.id = id;
         this.label = label;
@@ -47,9 +52,22 @@ export default class Input {
         this.minLength = minLength;
         this.maxLength = maxLength;
         this.disabled = disabled;
-        this.leadingIcon = leadingIcon;
+    }
 
-        this.element = null;
+    #validateType(type) {
+        if (!Object.values(TYPES).includes(type)) {
+            throw new Error(`Invalid input type "${type}". Must be one of: ${Object.values(TYPES).join(', ')}`);
+        }
+        return type;
+    }
+
+    #validateLeadingIcon(leadingIcon) {
+        if (leadingIcon && !Object.values(INPUT_ICONS).includes(leadingIcon)) {
+            throw new Error(
+                `Invalid leadingIcon "${leadingIcon}". Must be one of: ${Object.values(INPUT_ICONS).join(', ')}`,
+            );
+        }
+        return leadingIcon;
     }
 
     render() {
@@ -60,13 +78,7 @@ export default class Input {
         label.classList.add(styles.label);
         div.appendChild(label);
 
-        if (this.leadingIcon) {
-            const icon = document.createElement('img');
-            icon.setAttribute('src', this.leadingIcon);
-            icon.setAttribute('alt', '');
-            icon.setAttribute('aria-hidden', 'true');
-            label.append(icon);
-        }
+        this.#addLeadingIcon(label);
 
         const input = document.createElement('input');
         label.appendChild(input);
@@ -112,6 +124,17 @@ export default class Input {
 
         this.element = div;
         return this.element;
+    }
+
+    #addLeadingIcon(label) {
+        if (this.leadingIcon) {
+            const icon = document.createElement('div');
+            icon.classList.add(styles.icon);
+            icon.classList.add(this.leadingIcon);
+            icon.setAttribute('alt', '');
+            icon.setAttribute('aria-hidden', 'true');
+            label.appendChild(icon);
+        }
     }
 
     mount(parent) {
