@@ -50,6 +50,7 @@ export default defineConfig({
             enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
             bundleName: 'my-nutrition-tracker-client',
             uploadToken: process.env.CODECOV_TOKEN,
+            debug: true,
         }),
     ],
     server: {
