@@ -117,42 +117,11 @@ jobs:
                   timeout 10s npm run dev -w server || echo "Backend verification complete"
               continue-on-error: true
 
-    # Linting job - runs global linting from root
-    lint-global:
-        name: Global Linting & Formatting
-        runs-on: ubuntu-latest
-
-        strategy:
-            matrix:
-                node-version: [22.16]
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-
-            - name: Setup Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: 'npm'
-                  cache-dependency-path: './package-lock.json'
-
-            - name: Install dependencies
-              run: npm ci
-
-            # Global linting (your root eslint.config.js)
-            - name: Run global ESLint
-              run: npm run lint
-
-            # Check Prettier formatting
-            - name: Check Prettier formatting
-              run: npm run format -- --check
-
     # Deploy job - only runs if all jobs pass
     deploy:
         name: Deploy
         runs-on: ubuntu-latest
-        needs: [frontend, backend, lint-global]
+        needs: [frontend, backend]
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
         steps:

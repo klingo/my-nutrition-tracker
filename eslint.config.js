@@ -63,6 +63,6 @@ export default defineConfig([
             'no-useless-rename': 'warn',
         },
 
-        ignores: ['dist/**', 'node_modules/**'],
+        ignores: ['**/dist/**/*', '**/node_modules/**', '**/coverage/**/*'],
     },
 ]);
