@@ -10,13 +10,22 @@ export default defineConfig({
         },
     },
     test: {
+        run: true,
         environment: 'jsdom',
+        testTimeout: 10000,
+        watch: false,
         setupFiles: ['./__test__/setup.js'],
         css: {
             modules: {
                 classNameStrategy: 'non-scoped',
             },
             include: [/.+/],
+        },
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'json', 'html', 'lcov'],
+            reportsDirectory: './coverage',
+            exclude: ['node_modules/', 'dist/', '**/*.config.js', '**/__test__/**', 'coverage/'],
         },
     },
     build: {

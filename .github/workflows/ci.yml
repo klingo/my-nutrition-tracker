@@ -1,0 +1,66 @@
+
+name: CI/CD Pipeline
+
+# Trigger the workflow on push and pull requests to main branch
+on:
+    push:
+        branches: [ main, develop ]
+    pull_request:
+        branches: [ main ]
+
+jobs:
+    test-and-build:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [18.x, 20.x]
+
+        steps:
+            # Step 1: Checkout the repository
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            # Step 2: Setup Node.js
+            - name: Setup Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+
+            # Step 3: Install dependencies
+            - name: Install dependencies
+              run: npm ci
+
+            # Step 4: Run linting (if you have ESLint configured)
+            - name: Run ESLint
+              run: npm run lint
+              continue-on-error: false
+
+            # Step 5: Run unit tests with Vitest
+            - name: Run tests
+              run: npm run test
+
+            # Step 6: Run tests with coverage
+            - name: Run tests with coverage
+              run: npm run test:coverage
+
+            # Step 7: Upload coverage reports (optional)
+            - name: Upload coverage to Codecov
+              uses: codecov/codecov-action@v3
+              with:
+                  file: ./coverage/lcov.info
+                  flags: unittests
+                  name: codecov-umbrella
+                  fail_ci_if_error: false
+
+            # Step 8: Build the project
+            - name: Build project
+              run: npm run build
+
+            # Step 9: Cache build artifacts (optional)
+            - name: Cache build
+              uses: actions/cache@v3
+              with:
+                  path: dist
+                  key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
