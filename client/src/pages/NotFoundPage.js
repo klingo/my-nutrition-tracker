@@ -1,4 +1,4 @@
-import BasePage from './BasePage.js';
+import BasePage from './BasePage/BasePage.js';
 
 class NotFoundPage extends BasePage {
     async render() {

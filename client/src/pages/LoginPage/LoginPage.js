@@ -1,5 +1,5 @@
 import styles from './LoginPage.module.css';
-import BasePage from '../BasePage.js';
+import BasePage from '../BasePage/BasePage.js';
 import authService from '@/services/AuthService.js';
 import { spaInstance } from '@/core/Spa.js';
 import Input from '@/components/Input';

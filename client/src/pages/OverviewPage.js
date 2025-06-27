@@ -1,4 +1,4 @@
-import BasePage from './BasePage.js';
+import BasePage from './BasePage/BasePage.js';
 import authService from '@/services/AuthService.js';
 
 class OverviewPage extends BasePage {
