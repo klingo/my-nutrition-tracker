@@ -29,8 +29,10 @@ const sslOptions = {
     key: fs.readFileSync(path.resolve(process.env.SSL_KEY_PATH)),
 };
 
-https.createServer(sslOptions, app).listen(PORT, () => {
-    console.log(`API Server running on https://localhost:${PORT}`);
-});
+export function startServer() {
+    return https.createServer(sslOptions, app).listen(PORT, () => {
+        console.log(`API Server running on https://localhost:${PORT}`);
+    });
+}
 
 export default app;
