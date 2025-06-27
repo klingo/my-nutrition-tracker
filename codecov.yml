@@ -23,3 +23,27 @@ flags:
     backend:
         paths:
             - server/
+component_management:
+    default_rules:
+        statuses:
+            -type: project
+            target: auto
+            branches:
+                - '!main'
+    individual_components:
+        - component_id: module_components
+          name: components
+          paths:
+              - client/src/components/**
+        - component_id: module_pages
+          name: pages
+          paths:
+              - client/src/pages/**
+        - component_id: module_core
+          name: core
+          paths:
+              - client/src/core/**
+          statuses:
+              - type: project
+                target: auto
+              - type: patch
