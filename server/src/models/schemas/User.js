@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { HEIGHT_CONVERSIONS, UNITS, WEIGHT_CONVERSIONS } from '../constants/units.js';
 import { GENDER, ACTIVITY_LEVEL, ACTIVITY_MULTIPLIERS } from '../constants/enums.js';
+import { HEIGHT_UNITS, WEIGHT_UNITS } from '../constants/units.js';
 import { convertWeight } from '../../utils/weightConversions.js';
 import { convertHeight } from '../../utils/heightConversions.js';
 
@@ -31,11 +31,11 @@ const UserSchema = new mongoose.Schema(
             dateOfBirth: { type: Date },
             height: {
                 value: { type: Number, min: 0 },
-                unit: { type: String, enum: UNITS.HEIGHT },
+                unit: { type: String, enum: HEIGHT_UNITS },
             },
             weight: {
                 value: { type: Number, min: 0 },
-                unit: { type: String, enum: UNITS.PERSON_WEIGHT },
+                unit: { type: String, enum: WEIGHT_UNITS },
             },
             gender: {
                 type: String,

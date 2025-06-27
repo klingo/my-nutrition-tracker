@@ -13,7 +13,7 @@ app.use(express.json());
 app.use('/api', routes);
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Something went wrong!' });
 });
