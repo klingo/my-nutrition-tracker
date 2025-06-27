@@ -35,6 +35,10 @@ export default defineConfig({
             //     },
             // }
         },
+        reporters: ['default', 'junit'],
+        outputFile: {
+            junit: '../test-results/junit.xml',
+        },
     },
     build: {
         rollupOptions: {

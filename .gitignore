@@ -21,7 +21,7 @@ npm-debug.log*
 dist
 build
 coverage
-
+test-results
 
 # IDE
 .idea
