@@ -7,7 +7,7 @@ class Router {
         this.navigation = navigation;
 
         // Define which routes need authentication
-        this.protectedRoutes = ['/', '/overview', '/log-intake', '/products', '/profile'];
+        this.protectedRoutes = ['/overview', '/log-intake', '/products', '/profile'];
         this.publicRoutes = ['/login', '/register'];
     }
 
@@ -21,14 +21,25 @@ class Router {
     }
 
     async navigate(path) {
-        // Check authentication before navigating
-        if (!(await this.canAccess(path))) {
-            return; // Access denied, redirect already handled
+        // Handle root path redirect FIRST
+        if (path === '/') {
+            const isAuthenticated = await authService.isAuthenticated();
+            const redirectPath = isAuthenticated ? '/overview' : '/login';
+
+            window.history.replaceState({ path: redirectPath }, '', redirectPath);
+            this.currentRoute = redirectPath;
+
+            if (this.navigation) this.navigation.updateActiveState(redirectPath);
+
+            const handler = this.routes[redirectPath];
+            if (handler) await handler();
+            return;
         }
 
-        if (this.navigation) {
-            this.navigation.updateActiveState(path);
-        }
+        // Check authentication before navigating
+        if (!(await this.canAccess(path))) return; // Access denied, redirect already handled
+
+        if (this.navigation) this.navigation.updateActiveState(path);
 
         // Update browser history and current route
         if (path !== this.currentRoute) {
@@ -38,9 +49,7 @@ class Router {
 
         // Execute route handler
         const handler = this.routes[path] || this.routes['/404'];
-        if (handler) {
-            await handler();
-        }
+        if (handler) await handler();
     }
 
     async handleRoute() {
@@ -56,6 +65,7 @@ class Router {
             if (isAuthenticated && this.publicRoutes.includes(path)) {
                 window.history.replaceState({ path: '/overview' }, '', '/overview');
                 this.currentRoute = '/overview';
+                if (this.navigation) this.navigation.updateActiveState('/overview');
                 const handler = this.routes['/overview'];
                 if (handler) await handler();
                 return false;
@@ -65,6 +75,7 @@ class Router {
             if (!isAuthenticated && this.protectedRoutes.includes(path)) {
                 window.history.replaceState({ path: '/login' }, '', '/login');
                 this.currentRoute = '/login';
+                if (this.navigation) this.navigation.updateActiveState('/login');
                 const handler = this.routes['/login'];
                 if (handler) await handler();
                 return false;

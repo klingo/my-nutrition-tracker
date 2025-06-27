@@ -27,7 +27,6 @@ class Spa {
     }
 
     setupRoutes() {
-        this.router.addRoute('/', () => this.renderPage(OverviewPage));
         this.router.addRoute('/login', () => this.renderPage(LoginPage));
         this.router.addRoute('/overview', () => this.renderPage(OverviewPage));
         this.router.addRoute('/products', () => this.renderPage(ProductsPage));

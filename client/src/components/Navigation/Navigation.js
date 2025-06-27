@@ -24,7 +24,7 @@ class Navigation {
 
             ul.append(this.createLogoutBtn());
         } else {
-            ul.append(this.createNavItem('Login', '/login'));
+            ul.append(this.createNavItem('Login', '/login', currentPath));
         }
 
         return this.element;

@@ -101,9 +101,7 @@ class LoginPage extends BasePage {
                 }
 
                 // Navigate to overview page
-                setTimeout(() => {
-                    this.router.navigate('/overview');
-                }, 1000);
+                this.router.navigate('/overview');
             } else {
                 // messageDiv.innerHTML = '<p style="color: red;">Login failed!</p>';
             }
