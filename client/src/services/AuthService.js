@@ -1,3 +1,5 @@
+import { EncodeUtil } from '@/utils/EncodeUtil.js';
+
 class AuthService {
     constructor() {
         this.accessToken = localStorage.getItem('accessToken');
@@ -6,14 +8,24 @@ class AuthService {
 
     async login(username, password) {
         try {
+            if (!username || !password) {
+                throw new Error('Username and password are required');
+            }
+
+            // Simple encoding - hides from Network tab
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({
+                    username: EncodeUtil.encode(username),
+                    password: EncodeUtil.encode(password),
+                    encoded: true,
+                }),
             });
 
             if (!response.ok) {
-                throw new Error(`Login failed: ${response.statusText}`);
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Login failed: ${response.statusText}`);
             }
 
             const data = await response.json();
@@ -73,15 +85,16 @@ class AuthService {
         if (!token) return true;
 
         try {
-            const payload = JSON.parse(atob(token.split('.')[1])); // ✅ Fixed
-            return payload.exp < Date.now() / 1000;
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const isExpired = payload.exp < Date.now() / 1000;
+            if (isExpired) console.log('Token expired at:', new Date(payload.exp * 1000));
+            return isExpired;
         } catch (error) {
-            console.error('Token refresh error:', error);
+            console.error('Token validation error:', error);
             return true;
         }
     }
 
-    // Add the missing method
     isRefreshTokenExpired() {
         return this.isTokenExpired(this.refreshToken);
     }
@@ -99,7 +112,7 @@ class AuthService {
                 username: payload.username,
             };
         } catch (error) {
-            console.error('Token refresh error:', error);
+            console.error('Token parsing error:', error);
             return null;
         }
     }

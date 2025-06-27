@@ -44,7 +44,18 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        let { username, password } = req.body;
+
+        // Decode if encoded (simple base64 decoding)
+        if (req.body.encoded) {
+            try {
+                username = Buffer.from(req.body.username, 'base64').toString('utf-8');
+                password = Buffer.from(req.body.password, 'base64').toString('utf-8');
+            } catch {
+                return res.status(400).json({ message: 'Invalid encoded data' });
+            }
+        }
+
         const user = await User.findOne({ username });
 
         if (user && (await bcrypt.compare(password, user.password))) {
