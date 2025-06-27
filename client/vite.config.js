@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import { codecovVitePlugin } from '@codecov/vite-plugin';
 import { resolve } from 'path';
+import fs from 'fs';
+import 'dotenv/config';
 
 export default defineConfig({
     root: 'src',
@@ -54,17 +56,21 @@ export default defineConfig({
             enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
             bundleName: 'my-nutrition-tracker-client',
             uploadToken: process.env.CODECOV_TOKEN,
-            debug: true,
+            telemetry: false,
         }),
     ],
     server: {
-        port: 3000,
+        https: {
+            key: fs.readFileSync(resolve(__dirname, process.env.SSL_KEY_PATH)),
+            cert: fs.readFileSync(resolve(__dirname, process.env.SSL_CERT_PATH)),
+        },
+        port: process.env.PORT || 3000,
         open: true,
         proxy: {
             '/api': {
-                target: 'http://localhost:3001',
+                target: 'https://localhost:3001',
                 changeOrigin: true,
-                secure: false,
+                secure: false, // Change this to false for self-signed certificates
             },
         },
     },

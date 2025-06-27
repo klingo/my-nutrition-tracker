@@ -10,12 +10,13 @@ node_modules
 /client/.env
 /server/.env
 
+# SSL Certificates
+/ssl/
 
 # Logs
 logs
 *.log
 npm-debug.log*
-
 
 # Build outputs
 dist
