@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { codecovVitePlugin } from '@codecov/vite-plugin';
 import { resolve } from 'path';
 
 export default defineConfig({
@@ -43,6 +44,14 @@ export default defineConfig({
         outDir: '../dist',
         emptyOutDir: true,
     },
+    plugins: [
+        // Put the Codecov vite plugin after all other plugins
+        codecovVitePlugin({
+            enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+            bundleName: 'my-nutrition-tracker-frontend',
+            uploadToken: process.env.CODECOV_TOKEN,
+        }),
+    ],
     server: {
         port: 3000,
         open: true,
