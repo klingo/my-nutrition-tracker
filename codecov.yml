@@ -23,13 +23,14 @@ flags:
     backend:
         paths:
             - server/
+
 component_management:
     default_rules:
         statuses:
-            -type: project
-            target: auto
-            branches:
-                - '!main'
+            - type: project
+              target: auto
+              branches:
+                  - '!main'
     individual_components:
         - component_id: module_components
           name: components
