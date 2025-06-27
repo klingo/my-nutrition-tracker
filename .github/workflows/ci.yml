@@ -41,10 +41,12 @@ jobs:
             # Step 5: Run unit tests with Vitest
             - name: Run tests
               run: npm run test
+              working-directory: ./client
 
             # Step 6: Run tests with coverage
             - name: Run tests with coverage
               run: npm run test:coverage
+              working-directory: ./client
 
             # Step 7: Upload coverage reports (optional)
             - name: Upload coverage to Codecov
