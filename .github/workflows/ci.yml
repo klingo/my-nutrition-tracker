@@ -14,7 +14,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [18.x, 20.x]
+                node-version: [22.16]
 
         steps:
             # Step 1: Checkout the repository
@@ -35,6 +35,7 @@ jobs:
             # Step 4: Run linting (if you have ESLint configured)
             - name: Run ESLint
               run: npm run lint
+              working-directory: ./client
               continue-on-error: false
 
             # Step 5: Run unit tests with Vitest
