@@ -81,9 +81,9 @@
     width: 24px;
     height: 24px;
     background-color: var(--color-primary-variant);
-    mask: url('../../assets/icons/ui-actions/logout_24dp.svg') no-repeat center;
+    mask: url('/public/assets/icons/ui-actions/logout_24dp.svg') no-repeat center;
     mask-size: contain;
-    -webkit-mask: url('../../assets/icons/ui-actions/logout_24dp.svg') no-repeat center;
+    -webkit-mask: url('/public/assets/icons/ui-actions/logout_24dp.svg') no-repeat center;
     -webkit-mask-size: contain;
 }
 

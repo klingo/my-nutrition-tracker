@@ -35,18 +35,18 @@
 }
 
 .input .label .icon.account {
-    mask-image: url('../../assets/icons/ui-actions/logout_24dp.svg');
-    -webkit-mask-image: url('../../assets/icons/ui-actions/logout_24dp.svg');
+    mask-image: url('/public/assets/icons/ui-actions/logout_24dp.svg');
+    -webkit-mask-image: url('/public/assets/icons/ui-actions/logout_24dp.svg');
 }
 
 .input .label .icon.person {
-    mask-image: url('../../assets/icons/social/person_24dp.svg');
-    -webkit-mask-image: url('../../assets/icons/social/person_24dp.svg');
+    mask-image: url('/public/assets/icons/social/person_24dp.svg');
+    -webkit-mask-image: url('/public/assets/icons/social/person_24dp.svg');
 }
 
 .input .label .icon.lock {
-    mask-image: url('../../assets/icons/actions/lock_24dp.svg');
-    -webkit-mask-image: url('../../assets/icons/actions/lock_24dp.svg');
+    mask-image: url('/public/assets/icons/actions/lock_24dp.svg');
+    -webkit-mask-image: url('/public/assets/icons/actions/lock_24dp.svg');
 }
 
 .input .label input {

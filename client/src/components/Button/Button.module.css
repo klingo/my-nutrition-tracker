@@ -120,26 +120,26 @@
 }
 
 .button .icon.login {
-    mask-image: url('../../assets/icons/ui-actions/login_24dp.svg');
-    -webkit-mask-image: url('../../assets/icons/ui-actions/login_24dp.svg');
+    mask-image: url('/public/assets/icons/ui-actions/login_24dp.svg');
+    -webkit-mask-image: url('/public/assets/icons/ui-actions/login_24dp.svg');
 }
 
 .button .icon.logout {
-    mask-image: url('../../assets/icons/ui-actions/logout_24dp.svg');
-    -webkit-mask-image: url('../../assets/icons/ui-actions/logout_24dp.svg');
+    mask-image: url('/public/assets/icons/ui-actions/logout_24dp.svg');
+    -webkit-mask-image: url('/public/assets/icons/ui-actions/logout_24dp.svg');
 }
 
 .button .icon.add {
-    mask-image: url('../../assets/icons/ui-actions/add_24dp.svg');
-    -webkit-mask-image: url('../../assets/icons/ui-actions/add_24dp.svg');
+    mask-image: url('/public/assets/icons/ui-actions/add_24dp.svg');
+    -webkit-mask-image: url('/public/assets/icons/ui-actions/add_24dp.svg');
 }
 
 .button .icon.delete {
-    mask-image: url('../../assets/icons/ui-actions/delete_24dp.svg');
-    -webkit-mask-image: url('../../assets/icons/ui-actions/delete_24dp.svg');
+    mask-image: url('/public/assets/icons/ui-actions/delete_24dp.svg');
+    -webkit-mask-image: url('/public/assets/icons/ui-actions/delete_24dp.svg');
 }
 
 .button .icon.home {
-    mask-image: url('../../assets/icons/ui-actions/home_24dp.svg');
-    -webkit-mask-image: url('../../assets/icons/ui-actions/home_24dp.svg');
+    mask-image: url('/public/assets/icons/ui-actions/home_24dp.svg');
+    -webkit-mask-image: url('/public/assets/icons/ui-actions/home_24dp.svg');
 }
