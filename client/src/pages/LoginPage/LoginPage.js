@@ -24,10 +24,6 @@ class LoginPage extends BasePage {
         h1.textContent = 'Welcome Back!';
         container.append(h1);
 
-        const h2 = document.createElement('h2');
-        h2.textContent = "Don't have an account yet? Too bad! :-(";
-        container.append(h2);
-
         const form = document.createElement('form');
         form.classList.add(styles.form);
         container.append(form);
@@ -53,6 +49,23 @@ class LoginPage extends BasePage {
             leadingIcon: INPUT_ICONS.LOCK,
         });
         passwordInput.mount(form);
+
+        const authActions = document.createElement('div');
+        authActions.classList.add(styles.authActions);
+        form.append(authActions);
+
+        // TODO: introduce new component
+        const rememberMeCheckbox = document.createElement('span');
+        rememberMeCheckbox.classList.add(styles.rememberMe);
+        rememberMeCheckbox.textContent = '[ ] Remember me';
+        authActions.append(rememberMeCheckbox);
+
+        // TODO: introduce new component
+        const forgotPasswordLink = document.createElement('a');
+        forgotPasswordLink.classList.add(styles.forgotPassword);
+        forgotPasswordLink.textContent = 'Forgot password?';
+        authActions.append(forgotPasswordLink);
+
         // const passwordInput = document.createElement('input');
         // passwordInput.setAttribute('type', 'password');
         // passwordInput.setAttribute('name', 'password');
@@ -73,8 +86,12 @@ class LoginPage extends BasePage {
         // const registerButton = new Button({ children: 'Register', type: 'secondary' });
         // registerButton.mount(container);
 
-        this.element.append(container);
+        const signupElement = document.createElement('span');
+        signupElement.classList.add(styles.signup);
+        signupElement.textContent = "Don't have an account? Sign up.";
+        container.append(signupElement);
 
+        this.element.append(container);
         return this.element;
     }
 

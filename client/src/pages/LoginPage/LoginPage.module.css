@@ -12,11 +12,12 @@ main {
     background-color: var(--color-overlay-background);
     padding: 24px;
     margin-top: 20vh;
+    gap: 24px;
 }
 
 .overlay .icon {
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     mask-size: contain;
     mask-repeat: no-repeat;
     mask-position: center;
@@ -24,12 +25,12 @@ main {
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-position: center;
 
-    background-color: var(--color-primary);
+    background-color: var(--color-primary-variant);
 }
 
 .overlay .icon.home {
-    mask-image: url('../../assets/icons/actions/account_circle_24dp.svg');
-    -webkit-mask-image: url('../../assets/icons/actions/account_circle_24dp.svg');
+    mask-image: url('../../assets/icons/actions/account_circle_64dp.svg');
+    -webkit-mask-image: url('../../assets/icons/actions/account_circle_64dp.svg');
 }
 
 .overlay h1 {
@@ -50,4 +51,26 @@ main {
     flex-direction: column;
     width: 100%;
     gap: 8px;
+}
+
+.form .auth-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.form .auth-actions .remember-me {
+    color: var(--color-primary-variant);
+    text-decoration: line-through;
+}
+
+.form .auth-actions .forgot-password {
+    color: var(--color-primary-variant);
+    text-decoration: line-through;
+}
+
+.signup {
+    color: var(--color-primary-variant);
+    text-decoration: line-through;
 }
