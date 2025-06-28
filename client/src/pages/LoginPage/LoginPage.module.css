@@ -15,24 +15,6 @@ main {
     gap: 24px;
 }
 
-.overlay .icon {
-    width: 64px;
-    height: 64px;
-    mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    -webkit-mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-
-    background-color: var(--color-primary-variant);
-}
-
-.overlay .icon.home {
-    mask-image: url('../../assets/icons/actions/account_circle_64dp.svg');
-    -webkit-mask-image: url('../../assets/icons/actions/account_circle_64dp.svg');
-}
-
 .overlay h1 {
     margin-top: 8px;
     margin-bottom: 8px;

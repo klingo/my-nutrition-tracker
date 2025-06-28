@@ -14,11 +14,11 @@ class LoginPage extends BasePage {
         const container = document.createElement('div');
         container.classList.add(styles.overlay);
 
-        const logo = document.createElement('div');
-        logo.classList.add(styles.icon, styles.home);
-        logo.setAttribute('alt', '');
-        logo.setAttribute('aria-hidden', 'true');
-        container.append(logo);
+        const logoImg = document.createElement('img');
+        logoImg.setAttribute('src', '/assets/logo/android-chrome-192x192.png');
+        logoImg.setAttribute('alt', '');
+        logoImg.setAttribute('aria-hidden', 'true');
+        container.append(logoImg);
 
         const h1 = document.createElement('h1');
         h1.textContent = 'Welcome Back!';
