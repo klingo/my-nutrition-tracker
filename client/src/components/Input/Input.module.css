@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     background-color: var(--color-input-background);
+    border-radius: 4px;
 }
 
 .input .label {
@@ -100,10 +101,8 @@
     pointer-events: none;
     z-index: 1;
 
-    border-color: var(--color-primary);
+    border: 1px solid transparent;
     border-radius: 4px;
-    border-width: 1px;
-    border-style: solid;
 }
 
 .input .label:has(.icon) .outline .floatinglabel {
@@ -132,4 +131,8 @@
 .input .label input:not(:placeholder-shown) + .outline > .floatinglabel {
     transform: translateY(-100%) scale(0.75);
     z-index: 2;
+}
+
+.input .label input:focus + .outline > .floatinglabel {
+    color: var(--color-primary);
 }
