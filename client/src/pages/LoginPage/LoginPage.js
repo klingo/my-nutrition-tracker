@@ -4,7 +4,7 @@ import authService from '@/services/AuthService.js';
 import { spaInstance } from '@/core/Spa.js';
 import Input from '@/components/Input';
 import { INPUT_ICONS, TYPES } from '@/components/Input/Input.js';
-import { ICONS } from '@/components/Button/Button.js';
+import { BUTTON_ICONS } from '@/components/Button/Button.js';
 import { Button } from '@/components';
 
 class LoginPage extends BasePage {
@@ -67,8 +67,11 @@ class LoginPage extends BasePage {
         // passwordInput.setAttribute('title', 'Password');
         // form.append(passwordInput);
 
-        const logButton = new Button({ children: 'Login', icon: ICONS.LOGIN, type: 'primary' });
-        logButton.mount(form);
+        const loginButton = new Button({ children: 'Login', icon: BUTTON_ICONS.LOGIN, type: 'primary' });
+        loginButton.mount(form);
+
+        // const registerButton = new Button({ children: 'Register', type: 'secondary' });
+        // registerButton.mount(container);
 
         this.element.append(container);
 

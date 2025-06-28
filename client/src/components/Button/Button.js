@@ -1,13 +1,13 @@
 import styles from './Button.module.css';
 import Component from '@/components/Component';
 
-export const TYPES = {
+export const BUTTON_TYPES = {
     PRIMARY: 'primary',
     SECONDARY: 'secondary',
     MUTE: 'mute',
 };
 
-export const ICONS = {
+export const BUTTON_ICONS = {
     ADD: styles.add,
     DELETE: styles.delete,
     HOME: styles.home,
@@ -27,7 +27,7 @@ export default class Button extends Component {
      * @param onClick
      * @param disabled
      */
-    constructor({ children = '', type = TYPES.SECONDARY, icon = null, onClick, disabled = false } = {}) {
+    constructor({ children = '', type = BUTTON_TYPES.SECONDARY, icon = null, onClick, disabled = false } = {}) {
         super();
 
         this.type = this.#validateType(type);
@@ -38,15 +38,15 @@ export default class Button extends Component {
     }
 
     #validateType(type) {
-        if (!Object.values(TYPES).includes(type)) {
-            throw new Error(`Invalid button type "${type}". Must be one of: ${Object.values(TYPES).join(', ')}`);
+        if (!Object.values(BUTTON_TYPES).includes(type)) {
+            throw new Error(`Invalid button type "${type}". Must be one of: ${Object.values(BUTTON_TYPES).join(', ')}`);
         }
         return type;
     }
 
     #validateIcon(icon) {
-        if (icon && !Object.values(ICONS).includes(icon)) {
-            throw new Error(`Invalid button icon "${icon}". Must be one of: ${Object.values(ICONS).join(', ')}`);
+        if (icon && !Object.values(BUTTON_ICONS).includes(icon)) {
+            throw new Error(`Invalid button icon "${icon}". Must be one of: ${Object.values(BUTTON_ICONS).join(', ')}`);
         }
         return icon;
     }
