@@ -39,7 +39,7 @@ class LoginPage extends BasePage {
             required: true,
             autocomplete: 'username',
             autofocus: true,
-            leadingIcon: INPUT_ICONS.ACCOUNT,
+            leadingIcon: INPUT_ICONS.PERSON,
         });
         usernameInput.mount(form);
 

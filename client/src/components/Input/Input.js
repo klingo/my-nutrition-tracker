@@ -10,6 +10,7 @@ export const TYPES = {
 
 export const INPUT_ICONS = {
     ACCOUNT: styles.account,
+    PERSON: styles.person,
     LOCK: styles.lock,
 };
 
