@@ -118,7 +118,7 @@ export default class Input extends Component {
 
         if (this.placeholder) {
             const floatingLabel = document.createElement('span');
-            floatingLabel.classList.add(styles.floatinglabel);
+            floatingLabel.classList.add(styles.floatingLabel);
             floatingLabel.textContent = this.placeholder;
             outline.appendChild(floatingLabel);
         }

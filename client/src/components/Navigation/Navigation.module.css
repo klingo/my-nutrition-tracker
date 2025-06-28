@@ -77,7 +77,7 @@
     height: 24px;
 }
 
-.nav ul li button div.logoutIcon {
+.nav ul li button div.logout-icon {
     width: 24px;
     height: 24px;
     background-color: var(--color-primary-variant);
@@ -87,6 +87,6 @@
     -webkit-mask-size: contain;
 }
 
-.nav ul li button:hover div.logoutIcon {
+.nav ul li button:hover div.logout-icon {
     background-color: var(--color-primary);
 }
