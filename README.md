@@ -1,7 +1,9 @@
-# MyNutritionTracker
+# My Nutrition Tracker
 
 [![CI/CD Pipeline](https://github.com/klingo/my-nutrition-tracker/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/klingo/my-nutrition-tracker/actions/workflows/ci.yml)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+![My Nutrition Tracker Logo](/client/src/public/assets/logo/apple-touch-icon.png)
 
 A simple nutrition tracking application to help users log and monitor their dietary intake.
 
