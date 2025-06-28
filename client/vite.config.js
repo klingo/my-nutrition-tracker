@@ -60,10 +60,14 @@ export default defineConfig({
         }),
     ],
     server: {
-        https: {
-            key: fs.readFileSync(resolve(__dirname, process.env.SSL_KEY_PATH)),
-            cert: fs.readFileSync(resolve(__dirname, process.env.SSL_CERT_PATH)),
-        },
+        // Only configure HTTPS if SSL paths are provided
+        ...(process.env.SSL_KEY_PATH &&
+            process.env.SSL_CERT_PATH && {
+                https: {
+                    key: fs.readFileSync(resolve(__dirname, process.env.SSL_KEY_PATH)),
+                    cert: fs.readFileSync(resolve(__dirname, process.env.SSL_CERT_PATH)),
+                },
+            }),
         port: process.env.PORT || 3000,
         open: true,
         proxy: {
