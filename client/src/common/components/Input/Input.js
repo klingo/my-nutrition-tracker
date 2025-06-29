@@ -21,23 +21,26 @@ export const INPUT_ICONS = {
 export default class Input extends BaseComponent {
     /**
      * @param {'text'|'password'|´email'|'number'} [type='text'] - Input type
-     * @param {string} placeholder
+     * @param {string} label
      * @param {number} maxLength
+     * @param {boolean} required
      * @param {boolean} disabled
+     * @param {string} leadingIcon
      */
     constructor({
         type = TYPES.TEXT,
         name = '',
         id = '',
         label = '',
-        placeholder = '',
-        required = false,
-        autocomplete = 'off',
+        autocorrect = 'off',
+        spellcheck = 'false',
+        autocomplete,
         autofocus = false,
         minLength = 0,
         maxLength = 255,
+        required = false,
         disabled = false,
-        leadingIcon = null,
+        leadingIcon = '',
     } = {}) {
         super();
 
@@ -46,8 +49,9 @@ export default class Input extends BaseComponent {
         this.name = name;
         this.id = id;
         this.label = label;
-        this.placeholder = placeholder;
         this.required = required;
+        this.autocorrect = autocorrect;
+        this.spellcheck = spellcheck;
         this.autocomplete = autocomplete;
         this.autofocus = autofocus;
         this.minLength = minLength;
@@ -82,6 +86,7 @@ export default class Input extends BaseComponent {
         this.#addLeadingIcon(label);
 
         const input = document.createElement('input');
+        input.placeholder = '';
         label.appendChild(input);
 
         input.type = this.type;
@@ -89,17 +94,13 @@ export default class Input extends BaseComponent {
 
         if (this.name) input.setAttribute('name', this.name);
         if (this.id) input.setAttribute('id', this.id);
-        if (this.required) {
-            input.setAttribute('required', '');
-            input.setAttribute('aria-required', 'true');
-        }
+        if (this.autocorrect) input.setAttribute('autocorrect', this.autocorrect);
+        if (this.spellcheck) input.setAttribute('spellcheck', this.spellcheck);
         if (this.autocomplete) input.setAttribute('autocomplete', this.autocomplete);
         if (this.autofocus) input.setAttribute('autofocus', '');
+
         input.setAttribute('minlength', this.minLength.toString());
         input.setAttribute('maxlength', this.maxLength.toString());
-
-        input.placeholder = '';
-        // input.placeholder = this.placeholder;
         input.maxLength = this.maxLength;
 
         // usernameInput.setAttribute('aria-describedby', 'username-help');
@@ -107,8 +108,13 @@ export default class Input extends BaseComponent {
         // usernameInput.setAttribute('aria-required', 'true');
         // usernameInput.setAttribute('aria-label', 'Username');
 
+        if (this.required) {
+            input.required = true;
+            input.setAttribute('aria-required', 'true');
+        }
+
         if (this.disabled) {
-            input.setAttribute('disabled', '');
+            input.disabled = true;
             input.setAttribute('aria-disabled', 'true');
         }
 
@@ -116,10 +122,10 @@ export default class Input extends BaseComponent {
         outline.classList.add(styles.outline);
         label.appendChild(outline);
 
-        if (this.placeholder) {
+        if (this.label) {
             const floatingLabel = document.createElement('span');
             floatingLabel.classList.add(styles.floatingLabel);
-            floatingLabel.textContent = this.placeholder;
+            floatingLabel.textContent = this.label;
             outline.appendChild(floatingLabel);
         }
 
@@ -136,13 +142,5 @@ export default class Input extends BaseComponent {
             icon.setAttribute('aria-hidden', 'true');
             label.appendChild(icon);
         }
-    }
-
-    mount(parent) {
-        if (!this.element) {
-            this.render();
-        }
-        parent.appendChild(this.element);
-        return this;
     }
 }

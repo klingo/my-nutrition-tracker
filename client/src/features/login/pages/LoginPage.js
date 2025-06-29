@@ -36,7 +36,7 @@ class LoginPage extends BasePage {
         const usernameInput = new Input({
             name: 'username',
             id: 'username',
-            placeholder: 'Username',
+            label: 'Username',
             required: true,
             autocomplete: 'username',
             autofocus: true,
@@ -48,7 +48,7 @@ class LoginPage extends BasePage {
             type: TYPES.PASSWORD,
             name: 'password',
             id: 'password',
-            placeholder: 'Password',
+            label: 'Password',
             required: true,
             autocomplete: 'current-password',
             leadingIcon: INPUT_ICONS.LOCK,

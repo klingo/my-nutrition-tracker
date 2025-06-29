@@ -23,11 +23,11 @@ export default class Button extends BaseComponent {
     /**
      * @param {string|HTMLElement|[string|HTMLElement]} children
      * @param {'primary'|'secondary'|'mute'} [type='secondary'] - Button type
-     * @param icon
+     * @param {string} icon
      * @param onClick
      * @param disabled
      */
-    constructor({ children = '', type = BUTTON_TYPES.SECONDARY, icon = null, onClick, disabled = false } = {}) {
+    constructor({ children = '', type = BUTTON_TYPES.SECONDARY, icon, onClick, disabled = false } = {}) {
         super();
 
         this.type = this.#validateType(type);
@@ -57,7 +57,7 @@ export default class Button extends BaseComponent {
         this.#addLabel(button);
         this.#configureButton(button);
         this.element = button;
-        return button;
+        return this.element;
     }
 
     #createButton() {
@@ -96,7 +96,10 @@ export default class Button extends BaseComponent {
     }
 
     #configureButton(button) {
-        button.disabled = this.disabled;
+        if (this.disabled) {
+            button.disabled = true;
+            button.setAttribute('aria-disabled', 'true');
+        }
         // TODO: implement disabled state
         if (this.onClick && !this.disabled) {
             button.addEventListener('click', this.onClick);
