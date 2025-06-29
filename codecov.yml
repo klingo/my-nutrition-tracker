@@ -32,14 +32,14 @@ component_management:
               branches:
                   - '!main'
     individual_components:
-        - component_id: module_components
-          name: components
+        - component_id: module_common
+          name: common
           paths:
-              - client/src/components/**
-        - component_id: module_pages
+              - client/src/common/**
+        - component_id: module_features
           name: pages
           paths:
-              - client/src/pages/**
+              - client/src/features/**
         - component_id: module_core
           name: core
           paths:
