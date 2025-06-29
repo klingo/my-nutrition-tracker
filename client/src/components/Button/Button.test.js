@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import Button from './Button';
+import Button from '@/components/Button';
 
 describe('Button', () => {
     it('should render with correct type class', () => {
@@ -51,6 +51,14 @@ describe('Button', () => {
     it('should render with disabled state', () => {
         const button = new Button({ disabled: true }).render();
         expect(button.disabled).toBe(true, 'Button should be disabled');
+    });
+
+    it('should render with click event', () => {
+        let clicked = false;
+        const onClick = () => (clicked = true);
+        const button = new Button({ onClick }).render();
+        button.click();
+        expect(clicked).toBe(true, 'Button should trigger click');
     });
 
     it('should not render with click event when disabled', () => {
