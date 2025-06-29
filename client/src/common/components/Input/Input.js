@@ -22,6 +22,7 @@ export default class Input extends BaseComponent {
     /**
      * @param {'text'|'password'|´email'|'number'} [type='text'] - Input type
      * @param {string} label
+     * @param {boolean} autocorrect
      * @param {number} maxLength
      * @param {boolean} required
      * @param {boolean} disabled
@@ -32,9 +33,9 @@ export default class Input extends BaseComponent {
         name = '',
         id = '',
         label = '',
-        autocorrect = 'off',
-        spellcheck = 'false',
-        autocomplete,
+        autocorrect = true,
+        spellcheck = true,
+        autocomplete = '',
         autofocus = false,
         minLength = 0,
         maxLength = 255,
@@ -94,8 +95,8 @@ export default class Input extends BaseComponent {
 
         if (this.name) input.setAttribute('name', this.name);
         if (this.id) input.setAttribute('id', this.id);
-        if (this.autocorrect) input.setAttribute('autocorrect', this.autocorrect);
-        if (this.spellcheck) input.setAttribute('spellcheck', this.spellcheck);
+        if (!this.autocorrect) input.setAttribute('autocorrect', 'off');
+        if (!this.spellcheck) input.setAttribute('spellcheck', 'false');
         if (this.autocomplete) input.setAttribute('autocomplete', this.autocomplete);
         if (this.autofocus) input.setAttribute('autofocus', '');
 

@@ -83,30 +83,42 @@ describe('Input', () => {
     });
 
     describe('autocorrect', () => {
-        it('should set autocorrect correctly if provided', () => {
-            const input = new Input({ autocorrect: 'on' }).render();
+        it('should set autocorrect correctly if "false" provided', () => {
+            const input = new Input({ autocorrect: false }).render();
             const inputElement = input.querySelector('input');
-            expect(inputElement.getAttribute('autocorrect')).not.toBe('off');
+            expect(inputElement.getAttribute('autocorrect')).toBe('off');
+        });
+
+        it('should set autocorrect to default if "true"" provided', () => {
+            const input = new Input({ autocorrect: true }).render();
+            const inputElement = input.querySelector('input');
+            expect(inputElement.getAttribute('autocorrect')).toBeNull();
         });
 
         it('should set autocorrect to default if not provided', () => {
             const input = new Input().render();
             const inputElement = input.querySelector('input');
-            expect(inputElement.getAttribute('autocorrect')).toBe('off');
+            expect(inputElement.getAttribute('autocorrect')).toBeNull();
         });
     });
 
     describe('spellcheck', () => {
-        it('should set spellcheck correctly if provided', () => {
-            const input = new Input({ spellcheck: 'true' }).render();
+        it('should set spellcheck correctly if "false" provided', () => {
+            const input = new Input({ spellcheck: false }).render();
             const inputElement = input.querySelector('input');
-            expect(inputElement.getAttribute('spellcheck')).toBe('true');
+            expect(inputElement.getAttribute('spellcheck')).toBe('false');
+        });
+
+        it('should set spellcheck to default if "true" provided', () => {
+            const input = new Input({ spellcheck: true }).render();
+            const inputElement = input.querySelector('input');
+            expect(inputElement.getAttribute('spellcheck')).toBeNull();
         });
 
         it('should set spellcheck to default if not provided', () => {
             const input = new Input().render();
             const inputElement = input.querySelector('input');
-            expect(inputElement.getAttribute('spellcheck')).toBe('false');
+            expect(inputElement.getAttribute('spellcheck')).toBeNull();
         });
     });
 
