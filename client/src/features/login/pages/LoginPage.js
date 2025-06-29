@@ -3,8 +3,6 @@ import BasePage from '@core/base/BasePage';
 import { defaultAuthenticatedRoute } from '@core/config/routes.js';
 import authService from '@common/services/AuthService.js';
 import { appInstance } from '@/main.js';
-import { INPUT_ICONS, TYPES } from '@common/components/Input/Input.js';
-import { BUTTON_ICONS } from '@common/components/Button/Button.js';
 import { Button, Input } from '@common/components';
 import logo from '@assets/logo/android-chrome-192x192.png';
 
@@ -42,12 +40,12 @@ class LoginPage extends BasePage {
             required: true,
             autocomplete: 'username',
             autofocus: true,
-            leadingIcon: INPUT_ICONS.PERSON,
+            icon: 'person',
         });
         usernameInput.mount(form);
 
         const passwordInput = new Input({
-            type: TYPES.PASSWORD,
+            type: 'password',
             name: 'password',
             id: 'password',
             label: 'Password',
@@ -55,7 +53,7 @@ class LoginPage extends BasePage {
             spellcheck: false,
             required: true,
             autocomplete: 'current-password',
-            leadingIcon: INPUT_ICONS.LOCK,
+            icon: 'lock',
         });
         passwordInput.mount(form);
 
@@ -89,7 +87,7 @@ class LoginPage extends BasePage {
         // passwordInput.setAttribute('title', 'Password');
         // form.append(passwordInput);
 
-        const loginButton = new Button({ children: 'Login', icon: BUTTON_ICONS.LOGIN, type: 'primary' });
+        const loginButton = new Button({ children: 'Login', icon: 'login', type: 'primary' });
         loginButton.mount(form);
 
         // const registerButton = new Button({ children: 'Register', type: 'secondary' });

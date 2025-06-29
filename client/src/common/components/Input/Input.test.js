@@ -22,8 +22,8 @@ describe('Input', () => {
 
     describe('type', () => {
         it('should create an input with default type', () => {
-            const input = new Input();
-            expect(input.type).toBe('text');
+            const input = new Input().render();
+            expect(input.querySelector('input').type).toBe('text');
         });
 
         it('should create an input with password type if provided', () => {
@@ -157,25 +157,19 @@ describe('Input', () => {
         });
     });
 
-    describe('leadingIcon', () => {
-        it('should throw error for invalid leadingIcon', () => {
-            expect(() => new Input({ leadingIcon: 'invalid' })).toThrow(/Invalid leadingIcon "invalid"/);
-        });
-
-        it('should render input element with correct type', () => {
-            const input = new Input().render();
-            expect(input.querySelector('input').type).toBe('text');
+    describe('icon', () => {
+        it('should throw error for invalid icon', () => {
+            expect(() => new Input({ icon: 'invalid' })).toThrow(/Invalid input icon "invalid"/);
         });
 
         it('should render leading icon if provided', () => {
-            const input = new Input({ leadingIcon: 'lock' }).render();
+            const input = new Input({ icon: 'lock' }).render();
             expect(input.querySelector('.icon.lock')).not.toBeNull();
         });
 
-        it('should throw error for invalid leadingIcon', () => {
-            expect(() => new Input({ leadingIcon: 'invalid-leadingIcon' })).toThrow(
-                'Invalid leadingIcon "invalid-leadingIcon". Must be one of: account, person, lock',
-                'Should throw error for invalid leadingIcon',
+        it('should throw error for invalid icon', () => {
+            expect(() => new Input({ icon: 'invalid-leadingIcon' })).toThrow(
+                'Invalid input icon "invalid-leadingIcon". Must be one of: account, person, lock',
             );
         });
 

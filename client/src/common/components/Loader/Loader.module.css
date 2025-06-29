@@ -1,0 +1,41 @@
+.loader {
+    border-style: solid;
+    border-color: var(--color-accent-grey-800);
+    border-top-color: var(--color-accent-green-700);
+    border-radius: 50%;
+
+    animation: spin 1.5s linear infinite;
+}
+
+.loader.small {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
+
+.loader.normal {
+    width: 24px;
+    height: 24px;
+    border-width: 4px;
+}
+
+.loader.medium {
+    width: 36px;
+    height: 36px;
+    border-width: 6px;
+}
+
+.loader.large {
+    width: 48px;
+    height: 48px;
+    border-width: 8px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
