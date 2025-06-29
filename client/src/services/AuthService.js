@@ -1,4 +1,4 @@
-import { EncodeUtil } from '@/utils/EncodeUtil.js';
+import { EncodeUtil } from '@utils/EncodeUtil.js';
 
 class AuthService {
     constructor() {

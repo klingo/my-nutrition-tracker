@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import Button from '@/components/Button';
+import Button from '@components/Button';
 
 describe('Button', () => {
     it('should render with correct type class', () => {

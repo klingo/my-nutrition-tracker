@@ -1,6 +1,6 @@
 import styles from './Navigation.module.css';
-import authService from '@/services/AuthService.js';
-import { spaInstance } from '@/core/Spa.js';
+import authService from '@services/AuthService.js';
+import { spaInstance } from '@/app/App.js';
 
 class Navigation {
     constructor() {

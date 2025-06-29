@@ -1,11 +1,11 @@
 import Router from './Router.js';
-import LoginPage from '@/pages/LoginPage/LoginPage.js';
-import OverviewPage from '@/pages/OverviewPage.js';
-import NotFoundPage from '@/pages/NotFoundPage.js';
-import Navigation from '@/components/Navigation/Navigation.js';
-import ProductsPage from '@/pages/ProductsPage.js';
+import LoginPage from '@pages/LoginPage/LoginPage.js';
+import OverviewPage from '@pages/OverviewPage.js';
+import NotFoundPage from '@pages/NotFoundPage.js';
+import Navigation from '@components/Navigation/Navigation.js';
+import ProductsPage from '@pages/ProductsPage.js';
 
-class Spa {
+class App {
     constructor() {
         this.headerContainer = document.getElementById('header');
         this.navContainer = document.getElementById('nav');
@@ -60,7 +60,7 @@ class Spa {
 let spaInstance;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    spaInstance = new Spa();
+    spaInstance = new App();
     await spaInstance.init();
 });
 

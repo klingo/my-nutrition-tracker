@@ -1,11 +1,10 @@
 import styles from './LoginPage.module.css';
-import BasePage from '../BasePage/BasePage.js';
-import authService from '@/services/AuthService.js';
-import { spaInstance } from '@/core/Spa.js';
-import Input from '@/components/Input';
-import { INPUT_ICONS, TYPES } from '@/components/Input/Input.js';
-import { BUTTON_ICONS } from '@/components/Button/Button.js';
-import { Button } from '@/components';
+import BasePage from '@pages/BasePage/BasePage.js';
+import authService from '@services/AuthService.js';
+import { spaInstance } from '@/app/App.js';
+import { INPUT_ICONS, TYPES } from '@components/Input/Input.js';
+import { BUTTON_ICONS } from '@components/Button/Button.js';
+import { Button, Input } from '@components';
 
 class LoginPage extends BasePage {
     async render() {

@@ -1,5 +1,5 @@
 import styles from './Input.module.css';
-import Component from '@/components/Component';
+import Component from '@components/Component';
 
 export const TYPES = {
     TEXT: 'text',

@@ -1,5 +1,5 @@
 import styles from './Button.module.css';
-import Component from '@/components/Component';
+import Component from '@components/Component';
 
 export const BUTTON_TYPES = {
     PRIMARY: 'primary',

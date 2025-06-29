@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import Component from '@/components/Component/Component.js';
+import Component from '@components/Component';
 
 describe('Component', () => {
     describe('render', () => {
