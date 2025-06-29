@@ -44,7 +44,6 @@ export default defineConfig({
     build: {
         rollupOptions: {
             external: ['**/*.test.js'],
-            input: resolve(__dirname, 'src/app/App.js'),
         },
         outDir: 'dist',
         emptyOutDir: true,
@@ -80,11 +79,11 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': resolve(__dirname, 'src'),
-            '@components': resolve(__dirname, 'src/components'),
-            '@pages': resolve(__dirname, 'src/pages'),
-            '@services': resolve(__dirname, 'src/services'),
-            '@utils': resolve(__dirname, 'src/utils'),
+            '@common': resolve(__dirname, 'src/common'),
+            '@core': resolve(__dirname, 'src/core'),
+            '@features': resolve(__dirname, 'src/features'),
             '@styles': resolve(__dirname, 'src/styles'),
+            '@assets': resolve(__dirname, 'src/assets'),
         },
     },
 });
