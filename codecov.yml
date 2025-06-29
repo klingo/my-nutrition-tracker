@@ -32,19 +32,43 @@ component_management:
               branches:
                   - '!main'
     individual_components:
-        - component_id: module_common
-          name: common
+        - component_id: core_base
+          name: Core Base
           paths:
-              - client/src/common/**
-        - component_id: module_features
-          name: pages
+              - client/src/core/base/**
+        - component_id: core_config
+          name: Core Config
           paths:
-              - client/src/features/**
-        - component_id: module_core
-          name: core
+              - client/src/core/config/**
+        - component_id: core_router
+          name: Core Router
           paths:
-              - client/src/core/**
-          statuses:
-              - type: project
-                target: auto
-              - type: patch
+              - client/src/core/router/**
+        - component_id: common_components
+          name: Common Components
+          paths:
+              - client/src/common/components**
+        - component_id: common_services
+          name: Common Services
+          paths:
+              - client/src/common/services**
+        - component_id: common_utils
+          name: Common Utils
+          paths:
+              - client/src/common/utils**
+        - component_id: features_common
+          name: Features Common
+          paths:
+              - client/src/features/common/**
+        - component_id: features_common
+          name: Features Common
+          paths:
+              - client/src/features/login/**
+        - component_id: features_login
+          name: Features Login
+          paths:
+              - client/src/features/overview/**
+        - component_id: features_products
+          name: Features Products
+          paths:
+              - client/src/features/products/**
