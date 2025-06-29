@@ -1,0 +1,59 @@
+.message-box {
+    display: flex;
+    border-radius: var(--border-radius);
+    padding: 8px;
+    color: var(--color-on-primary);
+}
+
+.message-box.success {
+    background-color: var(--color-accent-green-100);
+}
+
+.message-box.info {
+    background-color: var(--color-accent-blue-100);
+}
+
+.message-box.warning {
+    background-color: var(--color-accent-yellow-100);
+}
+
+.message-box.error {
+    background-color: var(--color-accent-orange-100);
+}
+
+.message-box .icon {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    margin-right: 8px;
+    background-color: var(--color-on-primary);
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}
+
+.message-box.success .icon {
+    mask-image: url('@assets/icons/ui-actions/check_circle_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/ui-actions/check_circle_24dp.svg');
+}
+
+.message-box.info .icon {
+    mask-image: url('@assets/icons/actions/info_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/actions/info_24dp.svg');
+}
+.message-box.warning .icon {
+    mask-image: url('@assets/icons/actions/warning_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/actions/warning_24dp.svg');
+}
+
+.message-box.error .icon {
+    mask-image: url('@assets/icons/actions/error_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/actions/error_24dp.svg');
+}
+
+.message-box span {
+    align-self: center;
+}
