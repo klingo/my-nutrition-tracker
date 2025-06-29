@@ -11,12 +11,13 @@ main {
     border-radius: 8px;
     background-color: var(--color-overlay-background);
     padding: 24px;
-    margin-top: 20vh;
+    margin-top: 15vh;
     gap: 24px;
 }
 
 .overlay img {
-    user-select: none;
+    margin-top: 20px;
+    pointer-events: none;
 }
 
 .overlay h1 {

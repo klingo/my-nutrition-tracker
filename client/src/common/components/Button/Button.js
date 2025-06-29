@@ -7,16 +7,16 @@ import BaseComponent from '@core/base/BaseComponent';
  */
 export default class Button extends BaseComponent {
     /**
-     * @param {string|HTMLElement|[string|HTMLElement]} children
+     * @param {string} text
      * @param {'primary'|'secondary'|'mute'} [type='secondary'] - Button type
      * @param {string} icon
      * @param {function} onClick
      * @param {boolean} disabled
      */
-    constructor({ children = '', type = 'secondary', icon, onClick = null, disabled = false } = {}) {
+    constructor({ text = '', type = 'secondary', icon = '', onClick = null, disabled = false } = {}) {
         super();
 
-        this.children = children;
+        this.text = text;
         this.type = this.#validateType(type);
         this.icon = this.#validateIcon(icon);
         this.onClick = onClick;
@@ -40,11 +40,10 @@ export default class Button extends BaseComponent {
     }
 
     render() {
-        const button = this.#createButton();
-        this.#addIcon(button);
-        this.#addLabel(button);
-        this.#configureButton(button);
-        this.element = button;
+        this.element = this.#createButton();
+        this.#addIcon(this.element);
+        this.#addLabel(this.element);
+        this.#configureButton(this.element);
         return this.element;
     }
 
@@ -65,27 +64,34 @@ export default class Button extends BaseComponent {
     #addLabel(button) {
         const labelSpan = document.createElement('span');
         labelSpan.classList.add(styles.label);
-        const childrenArray = Array.isArray(this.children) ? this.children : [this.children];
-        childrenArray.forEach((child) => this.#addChildToSpan(labelSpan, child));
+        labelSpan.textContent = this.text;
         button.appendChild(labelSpan);
-    }
-
-    #addChildToSpan(span, child) {
-        if (typeof child === 'string') {
-            span.textContent += child;
-        } else if (child instanceof HTMLElement) {
-            span.appendChild(child);
-        }
     }
 
     #configureButton(button) {
         if (this.disabled) {
             button.disabled = true;
             button.setAttribute('aria-disabled', 'true');
+        } else {
+            button.disabled = false;
+            button.removeAttribute('aria-disabled');
         }
-        // TODO: implement disabled state
         if (this.onClick && !this.disabled) {
             button.addEventListener('click', this.onClick);
+        } else {
+            button.removeEventListener('click', this.onClick);
         }
+    }
+
+    updateText(newText) {
+        const labelSpan = this.element.querySelector(`.${styles.label}`);
+        if (labelSpan) {
+            labelSpan.textContent = newText;
+        }
+    }
+
+    setDisabled(isDisabled) {
+        this.disabled = isDisabled;
+        this.#configureButton(this.element);
     }
 }

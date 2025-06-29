@@ -9,6 +9,8 @@ import logo from '@assets/logo/android-chrome-192x192.png';
 class LoginPage extends BasePage {
     constructor(router) {
         super(router);
+        this.loginButton = null;
+        this.isLoading = false;
     }
 
     async render() {
@@ -29,6 +31,7 @@ class LoginPage extends BasePage {
 
         const form = document.createElement('form');
         form.classList.add(styles.form);
+        form.addEventListener('submit', this.handleLogin.bind(this));
         container.append(form);
 
         const usernameInput = new Input({
@@ -64,7 +67,7 @@ class LoginPage extends BasePage {
         // TODO: introduce new component
         const rememberMeCheckbox = document.createElement('span');
         rememberMeCheckbox.classList.add(styles.rememberMe);
-        rememberMeCheckbox.textContent = '[ ] Remember me';
+        rememberMeCheckbox.textContent = '[X] Remember me';
         authActions.append(rememberMeCheckbox);
 
         // TODO: introduce new component
@@ -87,8 +90,12 @@ class LoginPage extends BasePage {
         // passwordInput.setAttribute('title', 'Password');
         // form.append(passwordInput);
 
-        const loginButton = new Button({ children: 'Login', icon: 'login', type: 'primary' });
-        loginButton.mount(form);
+        this.loginButton = new Button({
+            text: 'Login',
+            type: 'primary',
+            icon: 'login',
+        });
+        this.loginButton.mount(form);
 
         // const registerButton = new Button({ children: 'Register', type: 'secondary' });
         // registerButton.mount(container);
@@ -102,32 +109,25 @@ class LoginPage extends BasePage {
         return this.element;
     }
 
-    mount() {
-        // Add event listeners specific to this page
-        const form = this.element.querySelector(`.${styles.form}`);
-        form.addEventListener('submit', this.handleLogin.bind(this));
-    }
+    async handleLogin(event) {
+        event.preventDefault();
 
-    async handleLogin(e) {
-        e.preventDefault();
-        const formData = new FormData(e.target);
+        if (this.isLoading) return;
+        this.isLoading = true;
+
+        if (this.loginButton) {
+            this.loginButton.updateText('Loading...');
+            this.loginButton.setDisabled(true);
+        }
+
+        const formData = new FormData(event.target);
         const username = formData.get('username');
         const password = formData.get('password');
 
-        // const messageDiv = this.element.querySelector('.login-message');
-        // messageDiv.innerHTML = '<p>Logging in...</p>';
-
         try {
             const result = await authService.login(username, password);
-
             if (result.success) {
-                // messageDiv.innerHTML = '<p style="color: green;">Login successful!</p>';
-
-                if (appInstance) {
-                    await appInstance.renderNavigation();
-                }
-
-                // Navigate to overview page
+                await appInstance.renderNavigation();
                 this.router.navigate(defaultAuthenticatedRoute);
             } else {
                 // messageDiv.innerHTML = '<p style="color: red;">Login failed!</p>';
@@ -135,6 +135,12 @@ class LoginPage extends BasePage {
         } catch (error) {
             console.error('Login error:', error);
             // messageDiv.innerHTML = '<p style="color: red;">Login failed. Please try again.</p>';
+        } finally {
+            this.isLoading = false;
+            if (this.loginButton) {
+                this.loginButton.updateText('Login');
+                this.loginButton.setDisabled(false);
+            }
         }
     }
 }

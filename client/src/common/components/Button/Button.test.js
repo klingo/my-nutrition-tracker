@@ -42,24 +42,15 @@ describe('Button', () => {
         });
     });
 
-    describe('children', () => {
-        it('should render with text children', () => {
-            const button = new Button({ children: 'Click me' }).render();
+    describe('text', () => {
+        it('should render with text', () => {
+            const button = new Button({ text: 'Click me' }).render();
             expect(button.textContent).toBe('Click me');
         });
 
-        it('should render with HTMLElement as children', () => {
-            const span = document.createElement('span');
-            span.textContent = 'Click me';
-            const button = new Button({ children: span }).render();
-            expect(button.querySelector('span')).not.toBeNull();
-        });
-
-        it('should render with array of strings and HTMLElement as children', () => {
-            const span = document.createElement('span');
-            span.textContent = 'me';
-            const button = new Button({ children: ['Click ', span] }).render();
-            expect(button.innerHTML).toBe('<span class="label">Click <span>me</span></span>');
+        it('should render without text', () => {
+            const button = new Button().render();
+            expect(button.textContent).toBe('');
         });
     });
 
@@ -68,6 +59,12 @@ describe('Button', () => {
             const button = new Button({ disabled: true }).render();
             expect(button.disabled).toBe(true);
             expect(button.getAttribute('aria-disabled')).toBe('true');
+        });
+
+        it('should render without disabled state by default', () => {
+            const button = new Button().render();
+            expect(button.disabled).not.toBe(true);
+            expect(button.getAttribute('aria-disabled')).toBeNull();
         });
     });
 
@@ -85,6 +82,60 @@ describe('Button', () => {
             const onClick = () => (clicked = true);
             const button = new Button({ onClick, disabled: true }).render();
             button.click();
+            expect(clicked).toBe(false);
+        });
+    });
+
+    describe('updateText', () => {
+        it('should update button text correctly', () => {
+            const button = new Button({ text: 'Initial Text' });
+            const renderedButton = button.render();
+            expect(renderedButton.textContent).toBe('Initial Text');
+            button.updateText('Updated Text');
+            expect(renderedButton.textContent).toBe('Updated Text');
+        });
+
+        it('should remove button text when updating with an empty string', () => {
+            const button = new Button({ text: 'Initial Text' });
+            const renderedButton = button.render();
+            expect(renderedButton.textContent).toBe('Initial Text');
+            button.updateText('');
+            expect(renderedButton.textContent).toBe('');
+        });
+    });
+
+    describe('setDisabled', () => {
+        it('should set the button to disabled state and add aria-disabled attribute', () => {
+            const button = new Button();
+            const renderedButton = button.render();
+            expect(renderedButton.disabled).toBe(false);
+            expect(renderedButton.getAttribute('aria-disabled')).toBeNull();
+            button.setDisabled(true);
+            expect(renderedButton.disabled).toBe(true);
+            expect(renderedButton.getAttribute('aria-disabled')).toBe('true');
+        });
+
+        it('should set the button to enabled state and remove aria-disabled attribute', () => {
+            const button = new Button({ disabled: true });
+            const renderedButton = button.render();
+            expect(renderedButton.disabled).toBe(true);
+            expect(renderedButton.getAttribute('aria-disabled')).toBe('true');
+            button.setDisabled(false);
+            expect(renderedButton.disabled).toBe(false);
+            expect(renderedButton.getAttribute('aria-disabled')).toBeNull();
+        });
+
+        it('should prevent click event when setting the button to disabled state', () => {
+            let clicked = false;
+            const onClick = () => (clicked = true);
+            const button = new Button({ onClick });
+            const renderedButton = button.render();
+            renderedButton.click();
+            expect(clicked).toBe(true);
+
+            clicked = false;
+            button.setDisabled(true);
+            renderedButton.click();
             expect(clicked).toBe(false);
         });
     });
