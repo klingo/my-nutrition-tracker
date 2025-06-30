@@ -14,12 +14,16 @@ export default class MessageBox extends BaseComponent {
         this.closeable = closeable;
     }
 
+    #validate(value, validValues, name) {
+        if (value && !validValues.has(value)) {
+            throw new Error(`Invalid ${name} "${value}". Must be one of: ${Array.from(validValues).join(', ')}`);
+        }
+        return value;
+    }
+
     #validateType(type) {
         const validTypes = new Set(['success', 'info', 'warning', 'error']);
-        if (!validTypes.has(type)) {
-            throw new Error(`Invalid messagebox type "${type}". Must be one of: ${Array.from(validTypes).join(', ')}]`);
-        }
-        return type;
+        return this.#validate(type, validTypes, 'messagebox type');
     }
 
     render() {
@@ -55,7 +59,7 @@ export default class MessageBox extends BaseComponent {
 
     setType(newType) {
         this.element.classList.remove(styles[this.type]);
-        this.type = newType;
+        this.type = this.#validateType(newType);
         this.element.classList.add(styles[this.type]);
         return this;
     }
