@@ -54,20 +54,21 @@ export default class Input extends BaseComponent {
         this.disabled = disabled;
     }
 
+    #validate(value, validValues, name) {
+        if (value && !validValues.has(value)) {
+            throw new Error(`Invalid ${name} "${value}". Must be one of: ${Array.from(validValues).join(', ')}`);
+        }
+        return value;
+    }
+
     #validateType(type) {
         const validTypes = new Set(['text', 'password']);
-        if (!validTypes.has(type)) {
-            throw new Error(`Invalid input type "${type}". Must be one of: ${Array.from(validTypes).join(', ')}`);
-        }
-        return type;
+        return this.#validate(type, validTypes, 'input type');
     }
 
     #validateIcon(icon) {
         const validIcons = new Set(['account', 'person', 'lock']);
-        if (icon && !validIcons.has(icon)) {
-            throw new Error(`Invalid input icon "${icon}". Must be one of: ${Array.from(validIcons).join(', ')}`);
-        }
-        return icon;
+        return icon && this.#validate(icon, validIcons, 'input icon');
     }
 
     render() {
