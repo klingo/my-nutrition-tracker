@@ -91,7 +91,7 @@ describe('Button', () => {
             const button = new Button({ text: 'Initial Text' });
             const renderedButton = button.render();
             expect(renderedButton.textContent).toBe('Initial Text');
-            button.updateText('Updated Text');
+            button.setText('Updated Text');
             expect(renderedButton.textContent).toBe('Updated Text');
         });
 
@@ -99,7 +99,7 @@ describe('Button', () => {
             const button = new Button({ text: 'Initial Text' });
             const renderedButton = button.render();
             expect(renderedButton.textContent).toBe('Initial Text');
-            button.updateText('');
+            button.setText('');
             expect(renderedButton.textContent).toBe('');
         });
     });

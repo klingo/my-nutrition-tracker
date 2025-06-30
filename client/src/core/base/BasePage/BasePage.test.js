@@ -3,9 +3,9 @@ import BasePage from './';
 
 describe('BasePage', () => {
     describe('render', () => {
-        it('should throw an error when render method is called', () => {
+        it('should throw an error when render method is called', async () => {
             const basePage = new BasePage();
-            expect(basePage.render()).rejects.toThrowError('render() method must be implemented');
+            await expect(basePage.render()).rejects.toThrowError('render() method must be implemented');
         });
     });
 

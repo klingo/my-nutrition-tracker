@@ -1,4 +1,6 @@
 import { EncodeUtil } from '@/common/utils/EncodeUtil.js';
+import callApi from '@common/utils/callApi.js';
+import ApiError from '@common/errors/ApiError';
 
 class AuthService {
     constructor() {
@@ -10,7 +12,7 @@ class AuthService {
             if (!username || !password) {
                 throw new Error('Username and password are required');
             }
-            const response = await this.apiCall('/api/auth/login', 'POST', {
+            const response = await callApi('/api/auth/login', 'POST', {
                 username: EncodeUtil.encode(username),
                 password: EncodeUtil.encode(password),
                 encoded: true,
@@ -19,7 +21,20 @@ class AuthService {
             return { success: true };
         } catch (error) {
             console.error('Login error:', error);
-            return { success: false, error: error.message };
+            if (error instanceof ApiError) {
+                switch (error.status) {
+                    case 401:
+                        return { success: false, status: 401, message: 'Invalid credentials' };
+                    case 403:
+                        return { success: false, status: 403, message: 'Account blocked' };
+                    case 500:
+                        return { success: false, status: 500, message: 'Internal server error' };
+                    default:
+                        return { success: false, status: error.status, message: 'Technical error' };
+                }
+            } else {
+                return { success: false, status: 0, message: `Network error: ${error.message}` };
+            }
         }
     }
 
@@ -35,7 +50,7 @@ class AuthService {
 
     async refreshAccessToken() {
         try {
-            const response = await this.apiCall('/api/auth/refresh', 'POST', { refreshToken: this.refreshToken });
+            const response = await callApi('/api/auth/refresh', 'POST', { refreshToken: this.refreshToken });
             this.storeTokens(response.data);
             return true;
         } catch (error) {
@@ -97,19 +112,6 @@ class AuthService {
         this.refreshToken = refreshToken;
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
-    }
-
-    async apiCall(url, method, body) {
-        const response = await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-        });
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Request failed: ${response.statusText}`);
-        }
-        return { data: await response.json() };
     }
 }
 

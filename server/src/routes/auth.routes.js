@@ -56,22 +56,19 @@ router.post('/login', async (req, res) => {
             }
         }
 
+        // Validate username
         const user = await User.findOne({ username });
+        if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-        if (user && (await bcrypt.compare(password, user.password))) {
-            const { accessToken, refreshToken } = generateTokens(user);
+        // Validate password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) return res.status(401).json({ message: 'Invalid credentials' });
 
-            // Optionally store refresh token in database for revocation
-            // user.refreshToken = refreshToken;
-            // await user.save();
+        // Validate account status
+        // if (user.isBlocked) return res.status(403).json({ message: 'Account blocked' });
 
-            res.json({
-                accessToken,
-                refreshToken,
-            });
-        } else {
-            res.status(401).send('Invalid credentials');
-        }
+        const tokens = generateTokens(user);
+        res.json(tokens);
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).send('Server error');

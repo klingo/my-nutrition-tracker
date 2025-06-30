@@ -83,7 +83,7 @@ export default class Button extends BaseComponent {
         }
     }
 
-    updateText(newText) {
+    setText(newText) {
         const labelSpan = this.element.querySelector(`.${styles.label}`);
         if (labelSpan) {
             labelSpan.textContent = newText;

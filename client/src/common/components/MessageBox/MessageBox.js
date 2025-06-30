@@ -6,11 +6,12 @@ import BaseComponent from '@core/base/BaseComponent';
  * @class MessageBox
  */
 export default class MessageBox extends BaseComponent {
-    constructor({ text = '', type } = {}) {
+    constructor({ text = '', type, closeable = false } = {}) {
         super();
 
         this.text = text;
         this.type = this.#validateType(type);
+        this.closeable = closeable;
     }
 
     #validateType(type) {
@@ -46,8 +47,16 @@ export default class MessageBox extends BaseComponent {
         element.appendChild(textSpan);
     }
 
-    updateText(newText) {
+    setText(newText) {
         this.text = newText;
         this.element.querySelector('span').textContent = this.text;
+        return this;
+    }
+
+    setType(newType) {
+        this.element.classList.remove(styles[this.type]);
+        this.type = newType;
+        this.element.classList.add(styles[this.type]);
+        return this;
     }
 }

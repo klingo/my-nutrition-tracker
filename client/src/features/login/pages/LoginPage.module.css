@@ -33,6 +33,10 @@ main {
     margin-bottom: 16px;
 }
 
+.message-box-container:empty {
+    display: none;
+}
+
 .form {
     display: flex;
     flex-direction: column;

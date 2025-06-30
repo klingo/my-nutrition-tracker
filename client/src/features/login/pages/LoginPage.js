@@ -3,7 +3,7 @@ import BasePage from '@core/base/BasePage';
 import { defaultAuthenticatedRoute } from '@core/config/routes.js';
 import authService from '@common/services/AuthService.js';
 import { appInstance } from '@/main.js';
-import { Button, Input } from '@common/components';
+import { Button, Input, MessageBox } from '@common/components';
 import logo from '@assets/logo/android-chrome-192x192.png';
 
 class LoginPage extends BasePage {
@@ -11,6 +11,7 @@ class LoginPage extends BasePage {
         super(router);
         this.loginButton = null;
         this.isLoading = false;
+        this.messageBoxContainer = null;
     }
 
     async render() {
@@ -28,6 +29,10 @@ class LoginPage extends BasePage {
         const h1 = document.createElement('h1');
         h1.textContent = 'Welcome Back!';
         container.append(h1);
+
+        this.messageBoxContainer = document.createElement('div');
+        this.messageBoxContainer.classList.add(styles.messageBoxContainer);
+        container.append(this.messageBoxContainer);
 
         const form = document.createElement('form');
         form.classList.add(styles.form);
@@ -114,9 +119,10 @@ class LoginPage extends BasePage {
 
         if (this.isLoading) return;
         this.isLoading = true;
+        this.messageBoxContainer.innerHTML = '';
 
         if (this.loginButton) {
-            this.loginButton.updateText('Loading...');
+            this.loginButton.setText('Loading...');
             this.loginButton.setDisabled(true);
         }
 
@@ -130,18 +136,35 @@ class LoginPage extends BasePage {
                 await appInstance.renderNavigation();
                 this.router.navigate(defaultAuthenticatedRoute);
             } else {
-                // messageDiv.innerHTML = '<p style="color: red;">Login failed!</p>';
+                if (result.status === 401) {
+                    this.#displayErrorMessage(
+                        'Sorry, the username and password you entered did not match our records. Please double-check and try again.',
+                    );
+                } else if (result.status === 403) {
+                    this.#displayErrorMessage('Your account is blocked.');
+                } else if (result.status === 500) {
+                    this.#displayErrorMessage(
+                        'My Nutrition Tracker is temporarily unavailable. Please try again later.',
+                    );
+                } else {
+                    this.#displayErrorMessage(result.message);
+                }
             }
         } catch (error) {
-            console.error('Login error:', error);
-            // messageDiv.innerHTML = '<p style="color: red;">Login failed. Please try again.</p>';
+            console.log(error);
+            this.#displayErrorMessage('An unexpected error occurred. Please try again later.');
         } finally {
             this.isLoading = false;
             if (this.loginButton) {
-                this.loginButton.updateText('Login');
+                this.loginButton.setText('Login');
                 this.loginButton.setDisabled(false);
             }
         }
+    }
+
+    #displayErrorMessage(message) {
+        const messageBox = new MessageBox({ type: 'error', text: message });
+        messageBox.mount(this.messageBoxContainer);
     }
 }
 
