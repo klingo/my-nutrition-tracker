@@ -122,8 +122,7 @@ class LoginPage extends BasePage {
         this.messageBoxContainer.innerHTML = '';
 
         if (this.loginButton) {
-            this.loginButton.setText('Loading...');
-            this.loginButton.setDisabled(true);
+            this.loginButton.setLoading(true).setText('Loading...');
         }
 
         const formData = new FormData(event.target);
@@ -156,8 +155,7 @@ class LoginPage extends BasePage {
         } finally {
             this.isLoading = false;
             if (this.loginButton) {
-                this.loginButton.setText('Login');
-                this.loginButton.setDisabled(false);
+                this.loginButton.setLoading(false).setText('Login');
             }
         }
     }

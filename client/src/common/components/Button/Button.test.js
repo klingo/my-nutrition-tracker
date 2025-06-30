@@ -1,7 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import Button from '@/common/components/Button';
 
 describe('Button', () => {
+    let button;
+
+    beforeEach(() => {
+        button = new Button({ text: 'Test Button' });
+        button.render();
+    });
+
     describe('mount', () => {
         it('should call render if element is not already rendered', () => {
             const button = new Button();
@@ -86,7 +93,7 @@ describe('Button', () => {
         });
     });
 
-    describe('updateText', () => {
+    describe('setText', () => {
         it('should update button text correctly', () => {
             const button = new Button({ text: 'Initial Text' });
             const renderedButton = button.render();
@@ -137,6 +144,42 @@ describe('Button', () => {
             button.setDisabled(true);
             renderedButton.click();
             expect(clicked).toBe(false);
+        });
+    });
+
+    describe('setLoading', () => {
+        it('should set the button to disabled when isLoading is true', () => {
+            button.setLoading(true);
+            expect(button.disabled).toBe(true);
+            expect(button.element.getAttribute('aria-disabled')).toBe('true');
+        });
+
+        it('should add loading class when isLoading is true', () => {
+            button.setLoading(true);
+            expect(button.element.classList.contains('loading')).toBe(true);
+            const loaderElement = button.element.querySelector('.loader');
+            expect(loaderElement).not.toBeNull();
+        });
+
+        it('should remove the loader when isLoading is false', () => {
+            button.setLoading(true); // First set loading to true
+            button.setLoading(false); // Then set loading to false
+            const loaderElement = button.element.querySelector('.loader');
+            expect(loaderElement).toBeNull();
+            expect(button.element.classList.contains('loading')).toBe(false);
+        });
+
+        it('should not remove the loader if no loader is present', () => {
+            button.setLoading(false); // Set loading to false initially
+            const loaderElement = button.element.querySelector('.loader');
+            expect(loaderElement).toBeNull();
+        });
+
+        it('should set the button to enabled when isLoading is false', () => {
+            button.setLoading(true);
+            button.setLoading(false);
+            expect(button.disabled).toBe(false);
+            expect(button.element.getAttribute('aria-disabled')).toBe(null);
         });
     });
 });
