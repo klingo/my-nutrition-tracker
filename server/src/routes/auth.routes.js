@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/index.js';
 
 const router = express.Router();
+const salt = process.env.PASSWORD_SALT || 10;
 const pepper = process.env.PASSWORD_PEPPER || '';
 
 // Helper function to generate tokens
@@ -33,7 +34,7 @@ const generateTokens = (user) => {
 router.post('/register', async (req, res) => {
     try {
         const { username, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password + pepper, 10);
+        const hashedPassword = await bcrypt.hash(password + pepper, salt);
         const user = new User({ username, password: hashedPassword });
         await user.save();
         res.send('User registered');
