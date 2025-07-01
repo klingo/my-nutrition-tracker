@@ -14,6 +14,28 @@ const ProductSchema = new mongoose.Schema(
             ref: 'Brand',
             required: true,
         },
+        category: {
+            type: String,
+            required: true,
+            enum: [
+                'fruits',
+                'vegetables',
+                'grains',
+                'protein',
+                'dairy',
+                'fats',
+                'beverages',
+                'snacks',
+                'prepared_meals',
+                'other',
+            ],
+            index: true,
+        },
+        author: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
         barcode: {
             type: String,
             unique: true,

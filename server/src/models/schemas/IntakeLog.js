@@ -13,7 +13,10 @@ const IntakeLogSchema = new mongoose.Schema(
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product',
-            required: true,
+        },
+        customMealId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'CustomMeal',
         },
         date: {
             type: Date,
@@ -33,6 +36,15 @@ const IntakeLogSchema = new mongoose.Schema(
     },
     { timestamps: true },
 );
+
+// Validate that either productId or customMealId is provided, but not both
+IntakeLogSchema.pre('validate', function (next) {
+    if ((this.productId && this.customMealId) || (!this.productId && !this.customMealId)) {
+        next(new Error('Either productId or customMealId must be provided, but not both'));
+    } else {
+        next();
+    }
+});
 
 IntakeLogSchema.pre('save', async function (next) {
     this.amountConsumed = {

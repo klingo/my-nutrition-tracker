@@ -15,6 +15,13 @@ const BrandSchema = new mongoose.Schema(
                 message: 'Logo must be a valid URL',
             },
         },
+        website: {
+            type: String,
+            validate: {
+                validator: (v) => !v || /^https?:\/\/.+/.test(v),
+                message: 'Website must be a valid URL',
+            },
+        },
         isVerified: { type: Boolean, default: false },
     },
     { timestamps: true },

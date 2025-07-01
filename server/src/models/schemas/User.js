@@ -25,6 +25,17 @@ const UserSchema = new mongoose.Schema(
                 message: 'Invalid email format',
             },
         },
+        accessLevel: {
+            type: Number,
+            required: true,
+            default: 1,
+            min: 1,
+            max: 10,
+        },
+        isLocked: {
+            type: Boolean,
+            default: false,
+        },
         profile: {
             firstName: { type: String, required: true, trim: true },
             lastName: { type: String, required: true, trim: true },
