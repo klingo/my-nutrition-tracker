@@ -2,8 +2,8 @@
 
 :root {
     /* Typography */
-    --font-primary: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-    --font-secondary: 'Roboto Condensed', 'Helvetica', 'Arial', sans-serif;
+    --font-primary: 'Roboto Variable', sans-serif;
+    --font-secondary: 'Roboto Condensed Variable', sans-serif;
 
     --font-size-medium: 0.875rem;
 

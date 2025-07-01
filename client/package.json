@@ -21,6 +21,8 @@
         "ling:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
     },
     "dependencies": {
+        "@fontsource-variable/roboto": "^5.2.6",
+        "@fontsource-variable/roboto-condensed": "^5.2.6",
         "axios": "1.10.0"
     },
     "devDependencies": {
