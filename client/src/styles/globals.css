@@ -1,6 +1,7 @@
 @import 'colors.css';
 @import 'typography.css';
 @import 'layout.css';
+@import 'grid.css';
 
 body {
     display: grid;

@@ -31,11 +31,33 @@ const generateTokens = (user) => {
     return { accessToken, refreshToken };
 };
 
+function decodeData(data) {
+    return Object.keys(data).reduce((decodedData, key) => {
+        decodedData[key] = Buffer.from(data[key], 'base64').toString('utf-8');
+        return decodedData;
+    }, {});
+}
+
 router.post('/register', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        let { username, email, password } = req.body;
+
+        // Decode if encoded (simple base64 decoding)
+        if (req.body.encoded) {
+            try {
+                [username, email, password] = decodeData({ username, email, password });
+            } catch {
+                return res.status(400).json({ message: 'Invalid encoded data' });
+            }
+        }
+
+        // Validate that username, email and password are provided
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: 'Username, email, and password are required' });
+        }
+
         const hashedPassword = await bcrypt.hash(password + pepper, salt);
-        const user = new User({ username, password: hashedPassword });
+        const user = new User({ username, email, password: hashedPassword });
         await user.save();
         res.send('User registered');
     } catch (error) {
@@ -46,27 +68,27 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        let { username, email, password } = req.body;
+        let { username, password } = req.body;
 
         // Decode if encoded (simple base64 decoding)
         if (req.body.encoded) {
             try {
-                username = username ? Buffer.from(username, 'base64').toString('utf-8') : undefined;
-                email = email ? Buffer.from(email, 'base64').toString('utf-8') : undefined;
-                password = Buffer.from(password, 'base64').toString('utf-8');
+                ({ username, password } = decodeData({ username, password }));
             } catch {
                 return res.status(400).json({ message: 'Invalid encoded data' });
             }
         }
 
         // Validate that either username or email is provided
-        if (!username && !email) {
-            return res.status(400).json({ message: 'Username or email is required' });
+        if (!username || !password) {
+            return res.status(400).json({ message: 'Username and password is required' });
         }
 
+        const normalizedUsername = username.toLowerCase().trim();
+
         // Find user by username or email
-        const query = username ? { username } : { email };
-        const user = await User.findOne(query);
+        const query = { $or: [{ username: normalizedUsername }, { email: normalizedUsername }] };
+        const user = await User.findOne(query, '_id username password isBlocked');
         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
         // Validate password
@@ -74,7 +96,7 @@ router.post('/login', async (req, res) => {
         if (!isPasswordValid) return res.status(401).json({ message: 'Invalid credentials' });
 
         // Validate account status
-        // if (user.isBlocked) return res.status(403).json({ message: 'Account blocked' });
+        if (user.isBlocked) return res.status(403).json({ message: 'Account blocked' });
 
         const tokens = generateTokens(user);
         res.json(tokens);

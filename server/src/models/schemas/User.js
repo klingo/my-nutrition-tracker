@@ -32,7 +32,7 @@ const UserSchema = new mongoose.Schema(
             min: 1,
             max: 10,
         },
-        isLocked: {
+        isBlocked: {
             type: Boolean,
             default: false,
         },
