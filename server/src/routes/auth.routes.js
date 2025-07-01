@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/index.js';
 
 const router = express.Router();
+const pepper = process.env.PASSWORD_PEPPER || '';
 
 // Helper function to generate tokens
 const generateTokens = (user) => {
@@ -32,7 +33,7 @@ const generateTokens = (user) => {
 router.post('/register', async (req, res) => {
     try {
         const { username, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password + pepper, 10);
         const user = new User({ username, password: hashedPassword });
         await user.save();
         res.send('User registered');
@@ -44,24 +45,31 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        let { username, password } = req.body;
+        let { username, email, password } = req.body;
 
         // Decode if encoded (simple base64 decoding)
         if (req.body.encoded) {
             try {
-                username = Buffer.from(req.body.username, 'base64').toString('utf-8');
-                password = Buffer.from(req.body.password, 'base64').toString('utf-8');
+                username = username ? Buffer.from(username, 'base64').toString('utf-8') : undefined;
+                email = email ? Buffer.from(email, 'base64').toString('utf-8') : undefined;
+                password = Buffer.from(password, 'base64').toString('utf-8');
             } catch {
                 return res.status(400).json({ message: 'Invalid encoded data' });
             }
         }
 
-        // Validate username
-        const user = await User.findOne({ username });
+        // Validate that either username or email is provided
+        if (!username && !email) {
+            return res.status(400).json({ message: 'Username or email is required' });
+        }
+
+        // Find user by username or email
+        const query = username ? { username } : { email };
+        const user = await User.findOne(query);
         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
         // Validate password
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password + pepper, user.password);
         if (!isPasswordValid) return res.status(401).json({ message: 'Invalid credentials' });
 
         // Validate account status
