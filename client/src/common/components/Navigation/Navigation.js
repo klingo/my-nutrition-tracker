@@ -24,6 +24,9 @@ class Navigation {
             ul.append(this.createNavItem('Products', '/products', currentPath));
 
             ul.append(this.createLogoutBtn());
+            ul.append(this.createSpacer());
+
+            ul.append(this.createLogoutButton());
         } else {
             ul.append(this.createNavItem('Login', '/login', currentPath));
         }
@@ -31,11 +34,19 @@ class Navigation {
         return this.element;
     }
 
-    createNavItem(text, path, currentPath) {
+    createNavItem(text, path, currentPath, iconStyle = '') {
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.href = '#';
-        a.textContent = text;
+        if (iconStyle) {
+            a.title = text;
+
+            const icon = document.createElement('div');
+            icon.classList.add(styles.icon, iconStyle);
+            a.append(icon);
+        } else {
+            a.textContent = text;
+        }
         a.setAttribute('data-navigate', path);
 
         if (currentPath === path) li.classList.add(styles.active);
@@ -44,14 +55,18 @@ class Navigation {
         return li;
     }
 
-    createLogoutBtn() {
+    createSpacer() {
+        const element = document.createElement('div');
+        element.classList.add(styles.spacer);
+        return element;
+    }
+
+    createLogoutButton() {
         const li = document.createElement('li');
         const button = document.createElement('button');
         const icon = document.createElement('div');
 
-        li.classList.add(styles.logout);
-
-        icon.classList.add(styles.logoutIcon);
+        icon.classList.add(styles.icon, styles.logout);
 
         button.setAttribute('type', 'button');
         button.setAttribute('aria-label', 'Logout');
