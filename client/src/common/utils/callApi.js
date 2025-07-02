@@ -1,16 +1,37 @@
 import ApiError from '@common/errors/ApiError';
+import authService from '@common/services/AuthService.js';
 
 const DEFAULT_HEADERS = { 'Content-Type': 'application/json' };
 
+/**
+ * Makes an (un-)authenticated API call by including the JWT token in the headers (if present)
+ * @param {string} url - The API endpoint URL
+ * @param {string} method - The HTTP method (GET, POST, PUT, DELETE, etc.)
+ * @param {object} body - The request body (for POST, PUT, etc.)
+ * @param {object} headers - Additional headers to include
+ * @returns {Promise<object>} - The API response
+ */
 async function callApi(url, method, body, headers = {}) {
-    const mergedHeaders = { ...DEFAULT_HEADERS, ...headers };
+    // Get the JWT token from the auth service
+    const token = authService.getToken();
+    const mergedHeaders = {
+        ...DEFAULT_HEADERS,
+        ...headers,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
 
     try {
-        const response = await fetch(url, {
+        const requestOptions = {
             method,
             headers: mergedHeaders,
-            body: JSON.stringify(body),
-        });
+        };
+
+        // Include body only for methods that typically allow it and if body is not empty
+        if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && body !== null && body !== undefined) {
+            requestOptions.body = JSON.stringify(body);
+        }
+
+        const response = await fetch(url, requestOptions);
 
         if (!response.ok) {
             throw await handleError(response);

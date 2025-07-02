@@ -1,14 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 import callApi from './callApi';
 import ApiError from '@common/errors/ApiError';
+import authService from '@common/services/AuthService.js';
 
 vi.mock('fetch');
+vi.mock('@common/services/AuthService.js');
 
 describe('callApi', () => {
     const mockUrl = 'https://api.example.com/data';
     const mockMethod = 'GET';
     const mockBody = { key: 'value' };
-    const mockHeaders = { Authorization: 'Bearer placeholder-token' };
+    const mockHeaders = { CustomHeader: 'CustomValue' };
 
     describe('when the API call is successful', () => {
         it('should return the response data', async () => {
@@ -48,6 +50,185 @@ describe('callApi', () => {
 
             await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Request failed: Internal Server Error', 500, expect.anything()),
+            );
+        });
+    });
+
+    describe('when the auth service returns a token', () => {
+        it('should include the Authorization header in the request', async () => {
+            const mockToken = 'placeholder-token';
+            authService.getToken.mockReturnValue(mockToken);
+
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: vi.fn().mockResolvedValue({}),
+            });
+
+            await callApi(mockUrl, mockMethod, mockBody, mockHeaders);
+
+            expect(global.fetch).toHaveBeenCalledWith(
+                mockUrl,
+                expect.objectContaining({
+                    headers: {
+                        'Content-Type': 'application/json',
+                        CustomHeader: 'CustomValue',
+                        Authorization: `Bearer ${mockToken}`,
+                    },
+                }),
+            );
+        });
+    });
+
+    describe('when the auth service does not return a token', () => {
+        it('should not include the Authorization header in the request', async () => {
+            authService.getToken.mockReturnValue(null);
+
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: vi.fn().mockResolvedValue({}),
+            });
+
+            await callApi(mockUrl, mockMethod, mockBody, mockHeaders);
+
+            expect(global.fetch).toHaveBeenCalledWith(
+                mockUrl,
+                expect.objectContaining({
+                    headers: {
+                        'Content-Type': 'application/json',
+                        CustomHeader: 'CustomValue',
+                    },
+                }),
+            );
+        });
+    });
+
+    describe('when the API call includes a body', () => {
+        it('should include the body in requestOptions for POST requests', async () => {
+            const mockResponseData = { success: true, message: 'Data posted successfully' };
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: vi.fn().mockResolvedValue(mockResponseData),
+            });
+
+            await callApi(mockUrl, 'POST', mockBody, mockHeaders);
+
+            expect(global.fetch).toHaveBeenCalledWith(
+                mockUrl,
+                expect.objectContaining({
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        CustomHeader: 'CustomValue',
+                    },
+                    body: JSON.stringify(mockBody),
+                }),
+            );
+        });
+
+        it('should include the body in requestOptions for PUT requests', async () => {
+            const mockResponseData = { success: true, message: 'Data updated successfully' };
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: vi.fn().mockResolvedValue(mockResponseData),
+            });
+
+            await callApi(mockUrl, 'PUT', mockBody, mockHeaders);
+
+            expect(global.fetch).toHaveBeenCalledWith(
+                mockUrl,
+                expect.objectContaining({
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        CustomHeader: 'CustomValue',
+                    },
+                    body: JSON.stringify(mockBody),
+                }),
+            );
+        });
+
+        it('should include the body in requestOptions for PATCH requests', async () => {
+            const mockResponseData = { success: true, message: 'Data partially updated successfully' };
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: vi.fn().mockResolvedValue(mockResponseData),
+            });
+
+            await callApi(mockUrl, 'PATCH', mockBody, mockHeaders);
+
+            expect(global.fetch).toHaveBeenCalledWith(
+                mockUrl,
+                expect.objectContaining({
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        CustomHeader: 'CustomValue',
+                    },
+                    body: JSON.stringify(mockBody),
+                }),
+            );
+        });
+
+        it('should not include the body in requestOptions for GET requests', async () => {
+            const mockResponseData = { success: true, message: 'Data fetched successfully' };
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: vi.fn().mockResolvedValue(mockResponseData),
+            });
+
+            await callApi(mockUrl, 'GET', mockBody, mockHeaders);
+
+            expect(global.fetch).toHaveBeenCalledWith(
+                mockUrl,
+                expect.objectContaining({
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        CustomHeader: 'CustomValue',
+                    },
+                }),
+            );
+        });
+
+        it('should not include the body in requestOptions when body is null', async () => {
+            const mockResponseData = { success: true, message: 'Data fetched successfully' };
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: vi.fn().mockResolvedValue(mockResponseData),
+            });
+
+            await callApi(mockUrl, 'POST', null, mockHeaders);
+
+            expect(global.fetch).toHaveBeenCalledWith(
+                mockUrl,
+                expect.objectContaining({
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        CustomHeader: 'CustomValue',
+                    },
+                }),
+            );
+        });
+
+        it('should not include the body in requestOptions when body is undefined', async () => {
+            const mockResponseData = { success: true, message: 'Data fetched successfully' };
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                json: vi.fn().mockResolvedValue(mockResponseData),
+            });
+
+            await callApi(mockUrl, 'POST', undefined, mockHeaders);
+
+            expect(global.fetch).toHaveBeenCalledWith(
+                mockUrl,
+                expect.objectContaining({
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        CustomHeader: 'CustomValue',
+                    },
+                }),
             );
         });
     });
