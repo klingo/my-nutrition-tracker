@@ -87,13 +87,15 @@ class ProfilePage extends BasePage {
     updateProfileContent(contentElement) {
         if (!this.userData) return;
 
-        const { profile, username, email, energyCalculations } = this.userData;
+        const { profile, username, email, accessLevel, isBlocked, energyCalculations } = this.userData;
 
         contentElement.innerHTML = `
             <div class="profile-details">
                 <h2>User Information</h2>
                 <p><strong>Username:</strong> ${username}</p>
                 <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Access:</strong> ${accessLevel}</p>
+                <p><strong>Blocked:</strong> ${isBlocked}</p>
 
                 <h2>Personal Details</h2>
                 <p><strong>Name:</strong> ${profile.firstName} ${profile.lastName}</p>

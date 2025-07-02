@@ -15,13 +15,21 @@ const genderMap = {
     [GENDER.PREFER_NOT_TO_SAY]: 'Prefer not to say',
 };
 
+const accessLevelMap = {
+    [ACCESS_LEVELS.NO_ACCESS]: 'No access',
+    [ACCESS_LEVELS.TRIAL_USER]: 'Trial User',
+    [ACCESS_LEVELS.REGULAR_USER]: 'Regular User',
+    [ACCESS_LEVELS.MODERATOR]: 'Moderator',
+    [ACCESS_LEVELS.ADMIN]: 'Administrator',
+};
+
 // Function to transform user data for presentation
 const transformUser = (user) => {
     const transformedUser = {
         id: user._id,
         username: user.username,
         email: user.email,
-        accessLevel: user.accessLevel,
+        accessLevel: accessLevelMap[user.accessLevel],
         isBlocked: user.isBlocked,
         profile: {
             firstName: user.profile.firstName,
@@ -35,7 +43,7 @@ const transformUser = (user) => {
                 value: convertWeight.toKg(user.profile.weight.value, user.profile.weight.unit),
                 unit: user.profile.weight.unit,
             },
-            gender: genderMap[user.profile.gender] || 'Not specified',
+            gender: genderMap[user.profile.gender],
             activityLevel: user.profile.activityLevel,
             calculations: {
                 bmr: {
