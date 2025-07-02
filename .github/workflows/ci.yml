@@ -45,26 +45,26 @@ jobs:
 
             # Step 6: Upload frontend coverage to Codecov
             - name: Upload frontend coverage to Codecov
-              uses: codecov/codecov-action@v4
+              uses: codecov/codecov-action@v5
               with:
-                  file: ./client/coverage/lcov.info
+                  files: ./client/coverage/lcov.info
                   flags: frontend
                   name: codecov-frontend
                   fail_ci_if_error: false
                   verbose: true
+
+            # Step 7: Upload frontend test results to Codecov
             - name: Upload frontend test results to Codecov
               if: ${{ !cancelled() }}
               uses: codecov/test-results-action@v1
               with:
                   token: ${{ secrets.CODECOV_TOKEN }} # From GitHub secrets
 
-            # Step 7: Build frontend project
+            # Step 8: Build frontend project
             - name: Build frontend project
               run: npm run build -w client
-              env:
-                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }} # From GitHub secrets
 
-            # Step 8: Cache frontend build artifacts
+            # Step 9: Cache frontend build artifacts
             - name: Cache frontend build
               uses: actions/cache@v4
               with:
@@ -109,10 +109,10 @@ jobs:
 
             # Step 6: Upload backend coverage (when available)
             - name: Upload backend coverage to Codecov
-              uses: codecov/codecov-action@v4
+              uses: codecov/codecov-action@v5
               if: hashFiles('./server/coverage/lcov.info') != ''
               with:
-                  file: ./server/coverage/lcov.info
+                  files: ./server/coverage/lcov.info
                   flags: backend
                   name: codecov-backend
                   fail_ci_if_error: false
