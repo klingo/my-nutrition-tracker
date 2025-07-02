@@ -5,13 +5,13 @@ const DEFAULT_HEADERS = { 'Content-Type': 'application/json' };
 
 /**
  * Makes an (un-)authenticated API call by including the JWT token in the headers (if present)
- * @param {string} url - The API endpoint URL
  * @param {string} method - The HTTP method (GET, POST, PUT, DELETE, etc.)
+ * @param {string} url - The API endpoint URL
  * @param {object} body - The request body (for POST, PUT, etc.)
  * @param {object} headers - Additional headers to include
  * @returns {Promise<object>} - The API response
  */
-async function callApi(url, method, body, headers = {}) {
+async function callApi(method, url, body, headers = {}) {
     // Get the JWT token from the auth service
     const token = authService.getToken();
     const mergedHeaders = {

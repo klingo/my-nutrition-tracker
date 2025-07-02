@@ -20,7 +20,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            const result = await callApi(mockUrl, mockMethod, mockBody, mockHeaders);
+            const result = await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
 
             expect(result.data).toEqual(mockResponseData);
         });
@@ -35,7 +35,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue(mockErrorResponse),
             });
 
-            await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
+            await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Resource not found', 404, expect.anything()),
             );
         });
@@ -48,7 +48,7 @@ describe('callApi', () => {
                 json: vi.fn().mockRejectedValue(new Error('Failed to parse JSON')),
             });
 
-            await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
+            await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Request failed: Internal Server Error', 500, expect.anything()),
             );
         });
@@ -64,7 +64,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue({}),
             });
 
-            await callApi(mockUrl, mockMethod, mockBody, mockHeaders);
+            await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -88,7 +88,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue({}),
             });
 
-            await callApi(mockUrl, mockMethod, mockBody, mockHeaders);
+            await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -110,7 +110,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi(mockUrl, 'POST', mockBody, mockHeaders);
+            await callApi('POST', mockUrl, mockBody, mockHeaders);
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -132,7 +132,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi(mockUrl, 'PUT', mockBody, mockHeaders);
+            await callApi('PUT', mockUrl, mockBody, mockHeaders);
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -154,7 +154,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi(mockUrl, 'PATCH', mockBody, mockHeaders);
+            await callApi('PATCH', mockUrl, mockBody, mockHeaders);
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -176,7 +176,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi(mockUrl, 'GET', mockBody, mockHeaders);
+            await callApi('GET', mockUrl, mockBody, mockHeaders);
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -197,7 +197,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi(mockUrl, 'POST', null, mockHeaders);
+            await callApi('POST', mockUrl, null, mockHeaders);
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -218,7 +218,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi(mockUrl, 'POST', undefined, mockHeaders);
+            await callApi('POST', mockUrl, undefined, mockHeaders);
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -237,7 +237,7 @@ describe('callApi', () => {
         it('should throw an ApiError with the correct message and status when error.message is present', async () => {
             global.fetch = vi.fn().mockRejectedValue(new Error('Network timeout'));
 
-            await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
+            await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Network error: Network timeout', 0, null),
             );
         });
@@ -245,7 +245,7 @@ describe('callApi', () => {
         it('should throw an ApiError with a generic message when error.message is not present', async () => {
             global.fetch = vi.fn().mockRejectedValue({});
 
-            await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
+            await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Network error: Unknown network error', 0, null),
             );
         });
@@ -260,7 +260,7 @@ describe('callApi', () => {
                 json: vi.fn().mockRejectedValue(new Error('Failed to parse JSON')),
             });
 
-            await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
+            await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Request failed: Internal Server Error', 500, expect.anything()),
             );
         });
@@ -273,7 +273,7 @@ describe('callApi', () => {
                 json: vi.fn().mockResolvedValue(mockErrorResponse),
             });
 
-            await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
+            await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Resource not found', 404, expect.anything()),
             );
         });
@@ -283,7 +283,7 @@ describe('callApi', () => {
         it('should rethrow the error as an ApiError with the correct message when error.message is present', async () => {
             global.fetch = vi.fn().mockRejectedValue(new Error('Unexpected network issue'));
 
-            await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
+            await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Network error: Unexpected network issue', 0, null),
             );
         });
@@ -291,7 +291,7 @@ describe('callApi', () => {
         it('should rethrow the error as an ApiError with a generic message when error.message is not present', async () => {
             global.fetch = vi.fn().mockRejectedValue({});
 
-            await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
+            await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Network error: Unknown network error', 0, null),
             );
         });
@@ -306,7 +306,7 @@ describe('callApi', () => {
                 json: vi.fn().mockRejectedValue(new Error('Failed to parse JSON')),
             });
 
-            await expect(callApi(mockUrl, mockMethod, mockBody, mockHeaders)).rejects.toThrowError(
+            await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Request failed: Internal Server Error', 500, expect.anything()),
             );
         });

@@ -12,7 +12,7 @@ class AuthService {
             if (!username || !password) {
                 throw new Error('Username and password are required');
             }
-            const response = await callApi('/api/auth/login', 'POST', {
+            const response = await callApi('POST', '/api/auth/login', {
                 username: EncodeUtil.encode(username),
                 password: EncodeUtil.encode(password),
                 encoded: true,
@@ -50,7 +50,7 @@ class AuthService {
 
     async refreshAccessToken() {
         try {
-            const response = await callApi('/api/auth/refresh', 'POST', { refreshToken: this.refreshToken });
+            const response = await callApi('POST', '/api/auth/refresh', { refreshToken: this.refreshToken });
             this.storeTokens(response.data);
             return true;
         } catch (error) {
