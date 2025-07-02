@@ -1,13 +1,15 @@
 import express from 'express';
 import { IntakeLog } from '../models/index.js';
 import auth from '../middleware/auth.js';
+import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
 
 const router = express.Router();
 
-router.post('/', auth, async (req, res) => {
+// Log food intake (any authenticated user)
+router.post('/', auth(), async (req, res) => {
     try {
         const { productId, amount } = req.body;
-        const log = new IntakeLog({ userId: req.user.id, productId, amount });
+        const log = new IntakeLog({ userId: req.user.userId, productId, amount });
         await log.save();
         res.json(log);
     } catch (error) {
@@ -16,12 +18,13 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-router.get('/daily-totals', auth, async (req, res) => {
+// Get daily totals for the current user (any authenticated user)
+router.get('/daily-totals', auth(), async (req, res) => {
     try {
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
         const logs = await IntakeLog.find({
-            userId: req.user.id,
+            userId: req.user.userId,
             date: { $gte: startOfDay },
         }).populate('productId');
         const totals = logs.reduce(
@@ -38,6 +41,28 @@ router.get('/daily-totals', auth, async (req, res) => {
         res.json(totals);
     } catch (error) {
         console.error('Get totals error:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Get all logs (admin only)
+router.get('/', auth(ACCESS_LEVELS.ADMIN), async (req, res) => {
+    try {
+        const logs = await IntakeLog.find().populate('productId userId');
+        res.json(logs);
+    } catch (error) {
+        console.error('Get all logs error:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Get logs for a specific user (admin or moderator)
+router.get('/user/:userId', auth(ACCESS_LEVELS.MODERATOR), async (req, res) => {
+    try {
+        const logs = await IntakeLog.find({ userId: req.params.userId }).populate('productId');
+        res.json(logs);
+    } catch (error) {
+        console.error('Get user logs error:', error);
         res.status(500).send('Server error');
     }
 });

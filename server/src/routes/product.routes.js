@@ -1,10 +1,12 @@
 import express from 'express';
 import { Product } from '../models/index.js';
 import auth from '../middleware/auth.js';
+import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
 
 const router = express.Router();
 
-router.post('/', auth, async (req, res) => {
+// Create a new product (requires moderator access)
+router.post('/', auth(ACCESS_LEVELS.MODERATOR), async (req, res) => {
     try {
         const { name, fat, protein, fiber, carbs } = req.body;
         const product = new Product({ name, fat, protein, fiber, carbs });
@@ -16,13 +18,14 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-router.get('/', auth, async (req, res) => {
+// Get all products (any authenticated user)
+router.get('/', auth(), async (req, res) => {
     try {
         const products = await Product.find();
         res.json(products);
     } catch (error) {
         console.error('Get products error:', error);
-        res.status(401).send('Unauthorized');
+        res.status(500).send('Server error');
     }
 });
 

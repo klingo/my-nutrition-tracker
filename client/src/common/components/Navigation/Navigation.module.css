@@ -95,6 +95,7 @@
     -webkit-mask-image: url('@assets/icons/ui-actions/logout_24dp.svg');
 }
 
-.nav ul li button:hover div.logout-icon {
-    background-color: var(--color-primary);
+.nav div.icon.profile {
+    mask-image: url('@assets/icons/actions/account_circle_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/actions/account_circle_24dp.svg');
 }

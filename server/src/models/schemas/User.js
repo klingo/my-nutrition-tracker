@@ -29,8 +29,8 @@ const UserSchema = new mongoose.Schema(
             type: Number,
             required: true,
             default: 1,
-            min: 1,
-            max: 10,
+            min: 0,
+            max: 6,
         },
         isBlocked: {
             type: Boolean,
@@ -87,7 +87,7 @@ UserSchema.methods.calculateBMR = function () {
     // Convert height to cm if needed
     const heightInCm = convertHeight.toCm(profile.height.value, profile.height.unit);
     // Calculate age
-    const age = Math.floor(new Date() - new Date(profile.dateOfBirth) / (1000 * 60 * 60 * 24 * 365));
+    const age = Math.floor((new Date() - new Date(profile.dateOfBirth)) / (1000 * 60 * 60 * 24 * 365));
     // Mifflin-St Jeor Equation
     let bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * age;
     if (profile.gender === GENDER.FEMALE) {

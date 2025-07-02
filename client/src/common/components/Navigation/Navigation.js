@@ -23,9 +23,9 @@ class Navigation {
             ul.append(this.createNavItem('Log Intake', '/log-intake', currentPath));
             ul.append(this.createNavItem('Products', '/products', currentPath));
 
-            ul.append(this.createLogoutBtn());
             ul.append(this.createSpacer());
 
+            ul.append(this.createNavItem('Profile', '/profile', currentPath, styles.profile));
             ul.append(this.createLogoutButton());
         } else {
             ul.append(this.createNavItem('Login', '/login', currentPath));
