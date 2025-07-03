@@ -57,6 +57,10 @@ const UserSchema = new mongoose.Schema(
                 enum: Object.values(ACTIVITY_LEVEL),
             },
             calculations: {
+                bmi: {
+                    value: { type: Number },
+                    calculatedAt: { type: Date },
+                },
                 bmr: {
                     value: { type: Number },
                     calculatedAt: { type: Date },
@@ -65,6 +69,7 @@ const UserSchema = new mongoose.Schema(
                     value: { type: Number },
                     calculatedAt: { type: Date },
                 },
+                lastHeightUsed: { type: Number },
                 lastWeightUsed: { type: Number },
                 lastActivityLevelUsed: { type: String },
             },
@@ -72,6 +77,24 @@ const UserSchema = new mongoose.Schema(
     },
     { timestamps: true },
 );
+
+// Instance method to calculate BMI
+UserSchema.methods.calculateBMI = function () {
+    const profile = this.profile;
+
+    // Check if we have all required data
+    if (!profile.height?.value || !profile.weight?.value) {
+        return null;
+    }
+
+    // Convert weight to kg if needed
+    const weightInKg = convertWeight.toKg(profile.weight.value, profile.weight.unit);
+    // Convert height to m if needed
+    const heightInCm = convertHeight.toCm(profile.height.value, profile.height.unit);
+
+    const bmi = weightInKg / Math.pow(heightInCm / 100, 2);
+    return Math.round(bmi * 10) / 10;
+};
 
 // Instance method to calculate BMR using Mifflin-St Jeor Equation
 UserSchema.methods.calculateBMR = function () {
@@ -113,12 +136,17 @@ UserSchema.methods.calculateTDEE = function () {
 };
 
 // Method to update cached calculations
-UserSchema.methods.updateEnergyCalculations = async function () {
+UserSchema.methods.updateCalculations = async function () {
+    const bmi = this.calculateBMI();
     const bmr = this.calculateBMR();
     const tdee = this.calculateTDEE();
     const now = new Date();
 
     this.profile.calculations = {
+        bmi: {
+            value: bmi,
+            calculatedAt: now,
+        },
         bmr: {
             value: bmr,
             calculatedAt: now,
@@ -127,27 +155,32 @@ UserSchema.methods.updateEnergyCalculations = async function () {
             value: tdee,
             calculatedAt: now,
         },
+        lastHeightUsed: this.profile.height.value,
         lastWeightUsed: this.profile.weight.value,
         lastActivityLevelUsed: this.profile.activityLevel,
     };
 
     await this.save();
-    return { bmr, tdee };
+    return { bmi, bmr, tdee };
 };
 
 // Static method to get energy calculations
-UserSchema.methods.getEnergyCalculations = async function () {
+UserSchema.methods.getCalculations = async function () {
     // Check if we need to recalculate
     const needsUpdate =
+        !this.profile.calculations?.bmi?.value ||
         !this.profile.calculations?.bmr?.value ||
+        !this.profile.calculations?.tdee?.value ||
+        this.profile.calculations.lastHeightUsed !== this.profile.height.value ||
         this.profile.calculations.lastWeightUsed !== this.profile.weight.value ||
         this.profile.calculations.lastActivityLevelUsed !== this.profile.activityLevel;
 
     if (needsUpdate) {
-        return await this.updateEnergyCalculations();
+        return await this.updateCalculations();
     }
 
     return {
+        bmi: this.profile.calculations.bmi.value,
         bmr: this.profile.calculations.bmr.value,
         tdee: this.profile.calculations.tdee.value,
     };

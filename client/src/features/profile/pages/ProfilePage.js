@@ -67,7 +67,7 @@ class ProfilePage extends BasePage {
             } else if (userData) {
                 this.updateProfileContent(profileContent);
                 profileContent.querySelector('.refresh').addEventListener('click', async () => {
-                    const response = await callApi('POST', '/api/users/update-energy-calculations');
+                    const response = await callApi('POST', '/api/users/update-calculations');
                     console.log(response);
                 });
             }
@@ -87,7 +87,7 @@ class ProfilePage extends BasePage {
     updateProfileContent(contentElement) {
         if (!this.userData) return;
 
-        const { profile, username, email, accessLevel, isBlocked, energyCalculations } = this.userData;
+        const { profile, username, email, accessLevel, isBlocked, calculations } = this.userData;
 
         contentElement.innerHTML = `
             <div class="profile-details">
@@ -107,9 +107,10 @@ class ProfilePage extends BasePage {
                 <p><strong>Weight:</strong> ${profile.weight?.value ? `${profile.weight.value} ${profile.weight.unit}` : 'Not set'}</p>
                 <p><strong>Activity Level:</strong> ${profile.activityLevel || 'Not set'}</p>
 
-                <h2>Energy Calculations</h2>
-                <p><strong>Basal Metabolic Rate (BMR):</strong> ${energyCalculations?.bmr ? `${energyCalculations.bmr} calories/day` : 'Not available'}</p>
-                <p><strong>Total Daily Energy Expenditure (TDEE):</strong> ${energyCalculations?.tdee ? `${energyCalculations.tdee} calories/day` : 'Not available'}</p>
+                <h2>Calculations</h2>
+                <p><strong>Body Mass Index (BMI):</strong> ${calculations?.bmi ? `${calculations.bmi}` : 'Not available'}</p>
+                <p><strong>Basal Metabolic Rate (BMR):</strong> ${calculations?.bmr ? `${calculations.bmr} calories/day` : 'Not available'}</p>
+                <p><strong>Total Daily Energy Expenditure (TDEE):</strong> ${calculations?.tdee ? `${calculations.tdee} calories/day` : 'Not available'}</p>
                 <p><strong>Update:</strong><button class="refresh">Refresh</button></p>
             </div>
         `;

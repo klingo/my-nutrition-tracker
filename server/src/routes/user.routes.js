@@ -5,7 +5,7 @@ import {
     getActiveUserCount,
     getAllUsers,
     getUserById,
-    updateEnergyCalculations,
+    updateCalculations,
     updateUserById,
 } from '../controllers/userController.js';
 import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
@@ -21,8 +21,8 @@ router.patch('/me', auth(ACCESS_LEVELS.TRIAL_USER), updateUserById);
 // Get total number of non-blocked users
 router.get('/count', auth(ACCESS_LEVELS.MODERATOR), getActiveUserCount);
 
-// Update energy calculations
-router.post('/update-energy-calculations', auth(ACCESS_LEVELS.REGULAR_USER), updateEnergyCalculations);
+// Update calculations
+router.post('/update-calculations', auth(ACCESS_LEVELS.REGULAR_USER), updateCalculations);
 
 // Get all users (admin only)
 router.get('/', auth(ACCESS_LEVELS.ADMIN), getAllUsers);

@@ -1,9 +1,9 @@
 import User from '../models/schemas/User.js';
 import { convertWeight } from '../utils/weightConversions.js';
 import { convertHeight } from '../utils/heightConversions.js';
-import { GENDER } from '../models/constants/enums.js';
-import bcrypt from 'bcrypt';
+import { GENDER, ACTIVITY_LEVEL } from '../models/constants/enums.js';
 import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
+import bcrypt from 'bcrypt';
 
 const salt = process.env.PASSWORD_SALT || 10;
 const pepper = process.env.PASSWORD_PEPPER || '';
@@ -21,6 +21,14 @@ const accessLevelMap = {
     [ACCESS_LEVELS.REGULAR_USER]: 'Regular User',
     [ACCESS_LEVELS.MODERATOR]: 'Moderator',
     [ACCESS_LEVELS.ADMIN]: 'Administrator',
+};
+
+const activityLevelMap = {
+    [ACTIVITY_LEVEL.SEDENTARY]: 'Sedentary',
+    [ACTIVITY_LEVEL.LIGHTLY_ACTIVE]: 'Lightly Active',
+    [ACTIVITY_LEVEL.MODERATELY_ACTIVE]: 'Moderately Active',
+    [ACTIVITY_LEVEL.VERY_ACTIVE]: 'Very Active',
+    [ACTIVITY_LEVEL.EXTRA_ACTIVE]: 'Extra Active',
 };
 
 // Function to transform user data for presentation
@@ -44,8 +52,14 @@ const transformUser = (user) => {
                 unit: user.profile.weight.unit,
             },
             gender: genderMap[user.profile.gender],
-            activityLevel: user.profile.activityLevel,
+            activityLevel: activityLevelMap[user.profile.activityLevel],
             calculations: {
+                bmi: {
+                    value: user.profile.calculations.bmi.value,
+                    calculatedAt: user.profile.calculations.bmi.calculatedAt
+                        ? user.profile.calculations.bmi.calculatedAt.toISOString().split('T')[0]
+                        : null,
+                },
                 bmr: {
                     value: user.profile.calculations.bmr.value,
                     calculatedAt: user.profile.calculations.bmr.calculatedAt
@@ -74,13 +88,13 @@ const getUserById = async (req, res) => {
         // const user = await User.findById(req.params.id).select('-password');
         if (!user) return res.status(404).send({ message: 'User not found' });
 
-        // Get energy calculations
-        const energyCalculations = await user.getEnergyCalculations();
+        // Get calculations
+        const calculations = await user.getCalculations();
 
         // Transform data for presentation
         const transformedUser = transformUser(user);
 
-        res.json({ ...transformedUser, energyCalculations });
+        res.json({ ...transformedUser, calculations });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Server error' });
@@ -178,8 +192,8 @@ const getAllUsers = async (req, res) => {
     }
 };
 
-// Controller function to update energy calculations for a user by ID
-const updateEnergyCalculations = async (req, res) => {
+// Controller function to update calculations for a user by ID
+const updateCalculations = async (req, res) => {
     try {
         console.log(req);
         const user = await User.findById(req.user.userId);
@@ -187,10 +201,10 @@ const updateEnergyCalculations = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const calculations = await user.updateEnergyCalculations();
+        const calculations = await user.updateCalculations();
         res.json(calculations);
     } catch (error) {
-        console.error('Update energy calculations error:', error);
+        console.error('Update calculations error:', error);
         res.status(500).send('Server error');
     }
 };
@@ -221,6 +235,6 @@ export {
     getActiveUserCount,
     getBlockedUsers,
     getAllUsers,
-    updateEnergyCalculations,
+    updateCalculations,
     deleteUserById,
 };
