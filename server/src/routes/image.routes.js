@@ -6,10 +6,8 @@ import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
 
 const router = express.Router();
 
-// Configure Multer storage options (memory storage)
-const storage = multer.memoryStorage();
 const upload = multer({
-    storage: storage,
+    storage: multer.memoryStorage(),
     limits: { fileSize: 1024 * 1024 }, // 1MB limit
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {
