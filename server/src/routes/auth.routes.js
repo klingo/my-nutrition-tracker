@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User, RefreshToken } from '../models/index.js';
 import auth from '../middleware/auth.js';
+import { authLimiter, mutationLimiter, queryLimiter } from '../middleware/rateLimiters.js';
 
 const router = express.Router();
 const salt = process.env.PASSWORD_SALT || 10;
@@ -76,7 +77,7 @@ function decodeData(data) {
     }, {});
 }
 
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, async (req, res) => {
     try {
         let { username, email, password } = req.body;
 
@@ -104,7 +105,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     try {
         let { username, password } = req.body;
 
@@ -150,7 +151,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Endpoint to refresh access token with token rotation
-router.post('/refresh', async (req, res) => {
+router.post('/refresh', mutationLimiter, async (req, res) => {
     try {
         const currentRefreshToken = req.cookies.refreshToken;
 
@@ -198,7 +199,7 @@ router.post('/refresh', async (req, res) => {
 });
 
 // Logout endpoint - revokes refresh token and clears cookies
-router.post('/logout', async (req, res) => {
+router.post('/logout', mutationLimiter, async (req, res) => {
     try {
         // Get the refresh token from cookies
         const refreshToken = req.cookies.refreshToken;
@@ -236,7 +237,7 @@ router.post('/logout', async (req, res) => {
 });
 
 // Status endpoint to check authentication status
-router.get('/status', auth(), async (req, res) => {
+router.get('/status', queryLimiter, auth(), async (req, res) => {
     try {
         // If we get here, the user is authenticated (auth middleware verified the token)
         // Fetch minimal user data

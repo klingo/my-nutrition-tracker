@@ -3,6 +3,7 @@ import multer from 'multer';
 import auth from '../middleware/auth.js';
 import { uploadImage, getImageById, approveImage, deleteImage } from '../controllers/imageController.js';
 import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
+import { mutationLimiter, queryLimiter } from '../middleware/rateLimiters.js';
 
 const router = express.Router();
 
@@ -19,15 +20,15 @@ const upload = multer({
 });
 
 // Upload an image
-router.post('/upload', auth(ACCESS_LEVELS.REGULAR_USER), upload.single('image'), uploadImage);
+router.post('/upload', mutationLimiter, auth(ACCESS_LEVELS.REGULAR_USER), upload.single('image'), uploadImage);
 
 // Retrieve/get an image by ID
-router.get('/:id', auth(ACCESS_LEVELS.TRIAL_USER), getImageById);
+router.get('/:id', queryLimiter, auth(ACCESS_LEVELS.TRIAL_USER), getImageById);
 
 // Approve an image (moderator or admin)
-router.patch('/:id/approve', auth(ACCESS_LEVELS.MODERATOR), approveImage);
+router.patch('/:id/approve', mutationLimiter, auth(ACCESS_LEVELS.MODERATOR), approveImage);
 
 // Delete an image (admin only)
-router.delete('/:id', auth(ACCESS_LEVELS.ADMIN), deleteImage);
+router.delete('/:id', mutationLimiter, auth(ACCESS_LEVELS.ADMIN), deleteImage);
 
 export default router;

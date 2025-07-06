@@ -2,11 +2,12 @@ import express from 'express';
 import { IntakeLog } from '../models/index.js';
 import auth from '../middleware/auth.js';
 import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
+import { mutationLimiter, queryLimiter } from '../middleware/rateLimiters.js';
 
 const router = express.Router();
 
 // Log food intake (any authenticated user)
-router.post('/', auth(), async (req, res) => {
+router.post('/', mutationLimiter, auth(), async (req, res) => {
     try {
         const { productId, amount } = req.body;
         const log = new IntakeLog({ userId: req.user.userId, productId, amount });
@@ -19,7 +20,7 @@ router.post('/', auth(), async (req, res) => {
 });
 
 // Get daily totals for the current user (any authenticated user)
-router.get('/daily-totals', auth(), async (req, res) => {
+router.get('/daily-totals', queryLimiter, auth(), async (req, res) => {
     try {
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
@@ -46,7 +47,7 @@ router.get('/daily-totals', auth(), async (req, res) => {
 });
 
 // Get all logs (admin only)
-router.get('/', auth(ACCESS_LEVELS.ADMIN), async (req, res) => {
+router.get('/', queryLimiter, auth(ACCESS_LEVELS.ADMIN), async (req, res) => {
     try {
         const logs = await IntakeLog.find().populate('productId userId');
         res.json(logs);
@@ -57,7 +58,7 @@ router.get('/', auth(ACCESS_LEVELS.ADMIN), async (req, res) => {
 });
 
 // Get logs for a specific user (admin or moderator)
-router.get('/user/:userId', auth(ACCESS_LEVELS.MODERATOR), async (req, res) => {
+router.get('/user/:userId', queryLimiter, auth(ACCESS_LEVELS.MODERATOR), async (req, res) => {
     try {
         const logs = await IntakeLog.find({ userId: req.params.userId }).populate('productId');
         res.json(logs);
