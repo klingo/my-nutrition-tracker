@@ -34,7 +34,6 @@ const RefreshTokenSchema = new mongoose.Schema(
 
 // Add index for faster queries
 RefreshTokenSchema.index({ userId: 1 });
-RefreshTokenSchema.index({ token: 1 });
 RefreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // Instance method to check if token is active

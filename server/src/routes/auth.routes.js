@@ -66,7 +66,24 @@ const setAuthCookies = (res, tokens) => {
         secure: true, // Always use HTTPS
         sameSite: 'strict', // Strict CSRF protection
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days, same as token expiration
-        path: '/api/auth/refresh', // Restrict to refresh endpoint only
+        path: '/api/auth', // Available to all auth endpoints
+    });
+};
+
+// Helper function to clear authentication cookies
+const clearAuthCookies = (res) => {
+    // Clear both cookies with the same options used when setting them
+    res.clearCookie('accessToken', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        path: '/',
+    });
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        path: '/api/auth',
     });
 };
 
@@ -210,28 +227,13 @@ router.post('/logout', mutationLimiter, async (req, res) => {
         }
 
         // Clear both cookies with the same options used when setting them
-        res.clearCookie('accessToken', {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            domain: process.env.COOKIE_DOMAIN || undefined,
-            path: '/',
-        });
+        clearAuthCookies(res);
 
-        res.clearCookie('refreshToken', {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            domain: process.env.COOKIE_DOMAIN || undefined,
-            path: '/api/auth/refresh',
-        });
-
-        res.json({ message: 'Logged out successfully' });
+        res.status(200).json({ message: 'Logged out successfully' });
     } catch (error) {
         console.error('Logout error:', error);
         // Still clear cookies even if there was an error revoking the token
-        res.clearCookie('accessToken');
-        res.clearCookie('refreshToken');
+        clearAuthCookies(res);
         res.status(200).json({ message: 'Logged out successfully' });
     }
 });
