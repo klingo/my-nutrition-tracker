@@ -1,3 +1,107 @@
 .page {
-    padding: 0 24px;
+    width: 100%;
+    padding-right: var(--grid-margin);
+    padding-left: var(--grid-margin);
+    margin-right: auto;
+    margin-left: auto;
+    box-sizing: border-box;
+}
+
+.page.centered {
+    display: flex;
+    justify-content: center;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: calc(-1 * var(--grid-gutter) / 2);
+    margin-left: calc(-1 * var(--grid-gutter) / 2);
+    margin-bottom: var(--grid-gutter);
+    box-sizing: border-box;
+}
+
+.col {
+    position: relative;
+    width: 100%;
+    padding-right: calc(var(--grid-gutter) / 2);
+    padding-left: calc(var(--grid-gutter) / 2);
+    box-sizing: border-box;
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+}
+
+.col-1 {
+    flex: 0 0 8.333333%;
+    max-width: 8.333333%;
+}
+.col-2 {
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+}
+.col-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+.col-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+.col-5 {
+    flex: 0 0 41.666667%;
+    max-width: 41.666667%;
+}
+.col-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+.col-7 {
+    flex: 0 0 58.333333%;
+    max-width: 58.333333%;
+}
+.col-8 {
+    flex: 0 0 66.666667%;
+    max-width: 66.666667%;
+}
+.col-9 {
+    flex: 0 0 75%;
+    max-width: 75%;
+}
+.col-10 {
+    flex: 0 0 83.333333%;
+    max-width: 83.333333%;
+}
+.col-11 {
+    flex: 0 0 91.666667%;
+    max-width: 91.666667%;
+}
+.col-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/* Utility classes for spacing */
+.g-0 {
+    --grid-gutter: 0;
+}
+
+.g-1 {
+    --grid-gutter: 4px;
+}
+
+.g-2 {
+    --grid-gutter: 8px;
+}
+
+.g-3 {
+    --grid-gutter: 16px;
+}
+
+.g-4 {
+    --grid-gutter: 24px;
+}
+
+.g-5 {
+    --grid-gutter: 32px;
 }

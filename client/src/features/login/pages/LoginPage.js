@@ -15,10 +15,16 @@ class LoginPage extends BasePage {
     }
 
     async render() {
-        this.element = this.createPageElement();
+        console.log('LoginPage render() called');
 
+        this.element = this.createPageElement();
+        const rowElement = this.addRow({ justifyContent: 'center' });
+        const colElement = this.addCol({ rowElement });
+
+        // TODO: replace with contentBlock?
         const container = document.createElement('div');
         container.classList.add(styles.overlay);
+        colElement.append(container);
 
         const logoImg = document.createElement('img');
         logoImg.setAttribute('src', logo);
@@ -110,7 +116,6 @@ class LoginPage extends BasePage {
         signupElement.textContent = "Don't have an account? Sign up.";
         container.append(signupElement);
 
-        this.element.append(container);
         return this.element;
     }
 
