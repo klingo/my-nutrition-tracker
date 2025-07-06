@@ -9,8 +9,9 @@ import { User } from '../models/index.js';
 const auth = (minAccessLevel = 0) => {
     return async (req, res, next) => {
         try {
-            // Extract token from Authorization header
-            const token = req.headers.authorization?.split(' ')[1];
+            // Extract token from cookies only
+            const token = req.cookies?.accessToken;
+
             if (!token) return res.status(401).send('Unauthorized');
 
             // Verify token

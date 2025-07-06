@@ -38,7 +38,7 @@ const transformUser = (user) => {
         username: user.username,
         email: user.email,
         accessLevel: accessLevelMap[user.accessLevel],
-        isBlocked: user.isBlocked,
+        status: user.isBlocked ? 'Blocked' : 'Active',
         profile: {
             firstName: user.profile.firstName,
             lastName: user.profile.lastName,

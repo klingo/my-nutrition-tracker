@@ -3,27 +3,30 @@ import authService from '@common/services/AuthService.js';
 
 const DEFAULT_HEADERS = { 'Content-Type': 'application/json' };
 
+// Flag to prevent infinite refresh loops
+let isRefreshing = false;
+
 /**
- * Makes an (un-)authenticated API call by including the JWT token in the headers (if present)
+ * Makes an API call with support for HttpOnly cookies and automatic token refresh
  * @param {string} method - The HTTP method (GET, POST, PUT, DELETE, etc.)
  * @param {string} url - The API endpoint URL
  * @param {object} body - The request body (for POST, PUT, etc.)
- * @param {object} headers - Additional headers to include
+ * @param {object} options - Additional options (headers, withCredentials, skipAuthRefresh)
  * @returns {Promise<object>} - The API response
  */
-async function callApi(method, url, body, headers = {}) {
-    // Get the JWT token from the auth service
-    const token = authService.getToken();
+async function callApi(method, url, body, options = {}) {
+    const { headers = {}, withCredentials = false, skipAuthRefresh = false } = options;
+
     const mergedHeaders = {
         ...DEFAULT_HEADERS,
         ...headers,
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
     try {
         const requestOptions = {
             method,
             headers: mergedHeaders,
+            credentials: withCredentials ? 'include' : 'same-origin', // Include cookies when withCredentials is true
         };
 
         // Include body only for methods that typically allow it and if body is not empty
@@ -33,10 +36,44 @@ async function callApi(method, url, body, headers = {}) {
 
         const response = await fetch(url, requestOptions);
 
+        // Handle 401 Unauthorized - attempt to refresh token and retry the request
+        if (response.status === 401 && !skipAuthRefresh && !isRefreshing) {
+            console.log('Received 401, attempting to refresh token...');
+
+            // Prevent multiple simultaneous refresh attempts
+            isRefreshing = true;
+
+            try {
+                // Attempt to refresh the token
+                const refreshed = await authService.refreshAccessToken();
+                isRefreshing = false;
+
+                if (refreshed) {
+                    console.log('Token refreshed successfully, retrying original request');
+                    // Retry the original request with the new token
+                    return await callApi(method, url, body, options);
+                } else {
+                    console.log('Token refresh failed');
+                    throw await handleError(response);
+                }
+            } catch (refreshError) {
+                isRefreshing = false;
+                console.error('Token refresh error:', refreshError);
+                throw await handleError(response);
+            }
+        }
+
         if (!response.ok) {
             throw await handleError(response);
         }
-        return { data: await response.json() };
+
+        // Handle empty responses (like 204 No Content)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return { data: await response.json() };
+        } else {
+            return { data: {} };
+        }
     } catch (error) {
         console.error('API Call Error:', error);
         if (error instanceof ApiError) {

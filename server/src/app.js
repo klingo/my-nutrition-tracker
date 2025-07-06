@@ -5,12 +5,21 @@ import fs from 'fs';
 import path from 'path';
 import routes from './routes/index.js';
 import 'dotenv/config';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL || 'https://localhost:3000',
+        credentials: true, // Allow cookies to be sent with requests
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type'],
+    }),
+);
 app.use(express.json());
+app.use(cookieParser());
 
 // API routes
 app.use('/api', routes);

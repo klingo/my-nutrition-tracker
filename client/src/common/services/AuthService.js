@@ -4,21 +4,56 @@ import ApiError from '@common/errors/ApiError';
 
 class AuthService {
     constructor() {
-        this.loadTokens();
+        this.userInfo = null;
+        this.authenticated = false;
+        this.checkAuthStatus();
+    }
+
+    /**
+     * Checks the current authentication status by making a lightweight API call
+     * This is used on initialization and doesn't need to be called directly
+     */
+    async checkAuthStatus() {
+        try {
+            // Make a lightweight API call to check authentication status
+            const response = await callApi('GET', '/api/auth/status', null, {
+                withCredentials: true,
+                skipAuthRefresh: true,
+            });
+            this.authenticated = response.data.authenticated;
+            this.userInfo = response.data.user || null;
+        } catch (error) {
+            console.error('Not authenticated or error checking auth status:', error);
+            this.authenticated = false;
+            this.userInfo = null;
+        }
     }
 
     async login(username, password) {
+        console.log(`login(${username}, password: ${password})`);
         try {
             if (!username || !password) {
                 throw new Error('Username and password are required');
             }
-            const response = await callApi('POST', '/api/auth/login', {
-                username: EncodeUtil.encode(username),
-                password: EncodeUtil.encode(password),
-                encoded: true,
-            });
-            console.log(`storeTokens from login: ${JSON.stringify(response.data)}`);
-            this.storeTokens(response.data);
+
+            // Make login request - the server will set HttpOnly cookies
+            await callApi(
+                'POST',
+                '/api/auth/login',
+                {
+                    username: EncodeUtil.encode(username),
+                    password: EncodeUtil.encode(password),
+                    encoded: true,
+                },
+                {
+                    withCredentials: true,
+                    skipAuthRefresh: true, // Skip token refresh on 401 during login
+                },
+            );
+
+            // Update authentication status
+            await this.checkAuthStatus();
+
             return { success: true };
         } catch (error) {
             console.error('Login error:', error);
@@ -40,22 +75,35 @@ class AuthService {
     }
 
     async isAuthenticated() {
-        if (!this.refreshToken || this.isRefreshTokenExpired()) {
-            console.log('isAuthenticated: refreshToken is undefined or expired');
-            return false;
-        }
-        if (this.accessToken && !this.isTokenExpired(this.accessToken)) {
+        console.log('isAuthenticated()');
+
+        // If we already checked and are authenticated, return true
+        if (this.authenticated && this.userInfo) {
             return true;
         }
-        return await this.refreshAccessToken();
+
+        // Otherwise, check authentication status from server
+        await this.checkAuthStatus();
+        return this.authenticated;
     }
 
     async refreshAccessToken() {
+        console.log('refreshAccessToken()');
         try {
-            const response = await callApi('POST', '/api/auth/refresh', { refreshToken: this.refreshToken });
-            console.log(`storeTokens from refreshAccessToken: ${JSON.stringify(response.data)}`);
-            this.storeTokens(response.data);
-            return true;
+            // Call the refresh endpoint - the server will set new HttpOnly cookies
+            await callApi(
+                'POST',
+                '/api/auth/refresh',
+                {},
+                {
+                    withCredentials: true,
+                    skipAuthRefresh: true, // Prevent infinite loop
+                },
+            );
+
+            // Update authentication status
+            await this.checkAuthStatus();
+            return this.authenticated;
         } catch (error) {
             console.error('Token refresh error:', error);
             this.logout();
@@ -63,64 +111,35 @@ class AuthService {
         }
     }
 
-    isTokenExpired(token = this.accessToken) {
-        if (!token) return true;
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const isExpired = payload.exp < Date.now() / 1000;
-            if (isExpired) console.log('Token expired at:', new Date(payload.exp * 1000));
-            return isExpired;
-        } catch (error) {
-            console.error('Token validation error:', error);
-            return true;
-        }
-    }
-
-    isRefreshTokenExpired() {
-        return this.isTokenExpired(this.refreshToken);
-    }
-
-    getToken() {
-        return this.accessToken;
-    }
-
     getUserInfo() {
-        if (!this.accessToken) return null;
+        console.log('getUserInfo()');
+        return this.userInfo;
+    }
+
+    async logout() {
+        console.log('Logging out...');
+
         try {
-            const payload = JSON.parse(atob(this.accessToken.split('.')[1]));
-            return {
-                userId: payload.userId,
-                username: payload.username,
-            };
+            // Call the server logout endpoint to clear HttpOnly cookies
+            await callApi(
+                'POST',
+                '/api/auth/logout',
+                {},
+                {
+                    withCredentials: true,
+                    skipAuthRefresh: true,
+                },
+            );
         } catch (error) {
-            console.error('Token parsing error:', error);
-            return null;
+            console.error('Logout error:', error);
+            // Continue with local logout even if server logout fails
         }
-    }
 
-    logout() {
-        this.accessToken = null;
-        this.refreshToken = null;
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        console.log('Logged out: accessToken and refreshToken removed from localStorage');
-    }
+        // Reset local state
+        this.authenticated = false;
+        this.userInfo = null;
 
-    loadTokens() {
-        this.accessToken = localStorage.getItem('accessToken');
-        this.refreshToken = localStorage.getItem('refreshToken');
-        console.log('Loaded tokens from localStorage:', {
-            accessToken: this.accessToken,
-            refreshToken: this.refreshToken,
-        });
-    }
-
-    storeTokens({ accessToken, refreshToken }) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        console.log('Stored tokens in localStorage:', { accessToken, refreshToken });
+        console.log('Logged out successfully');
     }
 }
 

@@ -73,7 +73,7 @@ class Navigation {
         button.setAttribute('title', 'Logout');
         button.append(icon);
         button.addEventListener('click', async () => {
-            authService.logout();
+            await authService.logout();
             if (appInstance) {
                 await appInstance.renderNavigation();
             }

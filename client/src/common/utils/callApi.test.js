@@ -1,9 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import callApi from './callApi';
 import ApiError from '@common/errors/ApiError';
 import authService from '@common/services/AuthService.js';
 
-vi.mock('fetch');
 vi.mock('@common/services/AuthService.js');
 
 describe('callApi', () => {
@@ -12,11 +11,33 @@ describe('callApi', () => {
     const mockBody = { key: 'value' };
     const mockHeaders = { CustomHeader: 'CustomValue' };
 
+    beforeEach(() => {
+        // Reset mocks before each test
+        vi.resetAllMocks();
+
+        // Mock fetch globally
+        global.fetch = vi.fn();
+
+        // Reset the isRefreshing flag by re-importing the module
+        vi.resetModules();
+
+        // Default mock implementation for authService.refreshAccessToken
+        authService.refreshAccessToken = vi.fn().mockResolvedValue(false);
+    });
+
+    afterEach(() => {
+        // Clean up after each test
+        vi.restoreAllMocks();
+    });
+
     describe('when the API call is successful', () => {
         it('should return the response data', async () => {
             const mockResponseData = { success: true, message: 'Data fetched successfully' };
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
@@ -54,17 +75,20 @@ describe('callApi', () => {
         });
     });
 
-    describe('when the auth service returns a token', () => {
-        it('should include the Authorization header in the request', async () => {
-            const mockToken = 'placeholder-token';
-            authService.getToken.mockReturnValue(mockToken);
-
+    describe('when withCredentials option is set to true', () => {
+        it('should include credentials in the request', async () => {
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
                 json: vi.fn().mockResolvedValue({}),
             });
 
-            await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
+            await callApi(mockMethod, mockUrl, mockBody, {
+                headers: mockHeaders,
+                withCredentials: true,
+            });
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -72,23 +96,24 @@ describe('callApi', () => {
                     headers: {
                         'Content-Type': 'application/json',
                         CustomHeader: 'CustomValue',
-                        Authorization: `Bearer ${mockToken}`,
                     },
+                    credentials: 'include',
                 }),
             );
         });
     });
 
-    describe('when the auth service does not return a token', () => {
-        it('should not include the Authorization header in the request', async () => {
-            authService.getToken.mockReturnValue(null);
-
+    describe('when withCredentials option is not set', () => {
+        it('should use same-origin credentials by default', async () => {
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
                 json: vi.fn().mockResolvedValue({}),
             });
 
-            await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
+            await callApi(mockMethod, mockUrl, mockBody, { headers: mockHeaders });
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -97,6 +122,7 @@ describe('callApi', () => {
                         'Content-Type': 'application/json',
                         CustomHeader: 'CustomValue',
                     },
+                    credentials: 'same-origin',
                 }),
             );
         });
@@ -107,10 +133,13 @@ describe('callApi', () => {
             const mockResponseData = { success: true, message: 'Data posted successfully' };
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi('POST', mockUrl, mockBody, mockHeaders);
+            await callApi('POST', mockUrl, mockBody, { headers: mockHeaders });
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -129,10 +158,13 @@ describe('callApi', () => {
             const mockResponseData = { success: true, message: 'Data updated successfully' };
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi('PUT', mockUrl, mockBody, mockHeaders);
+            await callApi('PUT', mockUrl, mockBody, { headers: mockHeaders });
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -151,10 +183,13 @@ describe('callApi', () => {
             const mockResponseData = { success: true, message: 'Data partially updated successfully' };
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi('PATCH', mockUrl, mockBody, mockHeaders);
+            await callApi('PATCH', mockUrl, mockBody, { headers: mockHeaders });
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -173,10 +208,13 @@ describe('callApi', () => {
             const mockResponseData = { success: true, message: 'Data fetched successfully' };
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi('GET', mockUrl, mockBody, mockHeaders);
+            await callApi('GET', mockUrl, mockBody, { headers: mockHeaders });
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -194,10 +232,13 @@ describe('callApi', () => {
             const mockResponseData = { success: true, message: 'Data fetched successfully' };
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi('POST', mockUrl, null, mockHeaders);
+            await callApi('POST', mockUrl, null, { headers: mockHeaders });
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -215,10 +256,13 @@ describe('callApi', () => {
             const mockResponseData = { success: true, message: 'Data fetched successfully' };
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
                 json: vi.fn().mockResolvedValue(mockResponseData),
             });
 
-            await callApi('POST', mockUrl, undefined, mockHeaders);
+            await callApi('POST', mockUrl, undefined, { headers: mockHeaders });
 
             expect(global.fetch).toHaveBeenCalledWith(
                 mockUrl,
@@ -309,6 +353,204 @@ describe('callApi', () => {
             await expect(callApi(mockMethod, mockUrl, mockBody, mockHeaders)).rejects.toThrowError(
                 new ApiError('Request failed: Internal Server Error', 500, expect.anything()),
             );
+        });
+    });
+
+    describe('when handling responses with different content types', () => {
+        it('should return an empty object for non-JSON responses', async () => {
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('text/plain'),
+                },
+            });
+
+            const result = await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
+            expect(result.data).toEqual({});
+        });
+
+        it('should return an empty object for responses with no content-type header', async () => {
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue(null),
+                },
+            });
+
+            const result = await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
+            expect(result.data).toEqual({});
+        });
+
+        it('should parse and return JSON data for responses with application/json content-type', async () => {
+            const mockResponseData = { success: true, message: 'Data fetched successfully' };
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
+                json: vi.fn().mockResolvedValue(mockResponseData),
+            });
+
+            const result = await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
+            expect(result.data).toEqual(mockResponseData);
+        });
+    });
+
+    describe('when handling token refresh', () => {
+        it('should attempt to refresh the token when receiving a 401 response', async () => {
+            // First call returns 401, second call (after token refresh) returns success
+            global.fetch = vi
+                .fn()
+                .mockResolvedValueOnce({
+                    ok: false,
+                    status: 401,
+                    json: vi.fn().mockResolvedValue({ message: 'Unauthorized' }),
+                })
+                .mockResolvedValueOnce({
+                    ok: true,
+                    headers: {
+                        get: vi.fn().mockReturnValue('application/json'),
+                    },
+                    json: vi.fn().mockResolvedValue({ success: true }),
+                });
+
+            // Mock successful token refresh
+            authService.refreshAccessToken.mockResolvedValue(true);
+
+            const result = await callApi(mockMethod, mockUrl, mockBody, {
+                headers: mockHeaders,
+                withCredentials: true,
+            });
+
+            // Verify token refresh was attempted
+            expect(authService.refreshAccessToken).toHaveBeenCalledTimes(1);
+
+            // Verify fetch was called twice (original + retry)
+            expect(global.fetch).toHaveBeenCalledTimes(2);
+
+            // Verify the result is from the second call
+            expect(result.data).toEqual({ success: true });
+        });
+
+        it('should not attempt to refresh the token when skipAuthRefresh is true', async () => {
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: false,
+                status: 401,
+                json: vi.fn().mockResolvedValue({ message: 'Unauthorized' }),
+            });
+
+            // Try to call API with skipAuthRefresh set to true
+            await expect(
+                callApi(mockMethod, mockUrl, mockBody, {
+                    headers: mockHeaders,
+                    withCredentials: true,
+                    skipAuthRefresh: true,
+                }),
+            ).rejects.toThrowError(new ApiError('Unauthorized', 401, expect.anything()));
+
+            // Verify token refresh was not attempted
+            expect(authService.refreshAccessToken).not.toHaveBeenCalled();
+
+            // Verify fetch was called only once
+            expect(global.fetch).toHaveBeenCalledTimes(1);
+        });
+
+        it('should throw an error when token refresh fails', async () => {
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: false,
+                status: 401,
+                json: vi.fn().mockResolvedValue({ message: 'Unauthorized' }),
+            });
+
+            // Mock failed token refresh
+            authService.refreshAccessToken.mockResolvedValue(false);
+
+            await expect(
+                callApi(mockMethod, mockUrl, mockBody, {
+                    headers: mockHeaders,
+                    withCredentials: true,
+                }),
+            ).rejects.toThrowError(new ApiError('Unauthorized', 401, expect.anything()));
+
+            // Verify token refresh was attempted
+            expect(authService.refreshAccessToken).toHaveBeenCalledTimes(1);
+
+            // Verify fetch was called only once (no retry)
+            expect(global.fetch).toHaveBeenCalledTimes(1);
+        });
+
+        it('should throw an error when token refresh throws an exception', async () => {
+            global.fetch = vi.fn().mockResolvedValue({
+                ok: false,
+                status: 401,
+                json: vi.fn().mockResolvedValue({ message: 'Unauthorized' }),
+            });
+
+            // Mock token refresh throwing an error
+            authService.refreshAccessToken.mockRejectedValue(new Error('Refresh failed'));
+
+            await expect(
+                callApi(mockMethod, mockUrl, mockBody, {
+                    headers: mockHeaders,
+                    withCredentials: true,
+                }),
+            ).rejects.toThrowError(new ApiError('Unauthorized', 401, expect.anything()));
+
+            // Verify token refresh was attempted
+            expect(authService.refreshAccessToken).toHaveBeenCalledTimes(1);
+
+            // Verify fetch was called only once (no retry)
+            expect(global.fetch).toHaveBeenCalledTimes(1);
+        });
+
+        it('should prevent infinite refresh loops with isRefreshing flag', async () => {
+            // Create three responses: two 401s and one success for the retry
+            const unauthorizedResponse = {
+                ok: false,
+                status: 401,
+                json: vi.fn().mockResolvedValue({ message: 'Unauthorized' }),
+            };
+
+            const successResponse = {
+                ok: true,
+                headers: {
+                    get: vi.fn().mockReturnValue('application/json'),
+                },
+                json: vi.fn().mockResolvedValue({ success: true }),
+            };
+
+            // First two calls return 401, third call (after token refresh) returns success
+            global.fetch = vi
+                .fn()
+                .mockResolvedValueOnce(unauthorizedResponse) // First request fails
+                .mockResolvedValueOnce(unauthorizedResponse) // Second request also fails
+                .mockResolvedValueOnce(successResponse); // Retry succeeds
+
+            // Mock successful token refresh
+            authService.refreshAccessToken.mockResolvedValue(true);
+
+            // Make two concurrent API calls that will both get 401s
+            const firstCall = callApi(mockMethod, mockUrl, mockBody, {
+                headers: mockHeaders,
+                withCredentials: true,
+            });
+
+            const secondCall = callApi(mockMethod, mockUrl, mockBody, {
+                headers: mockHeaders,
+                withCredentials: true,
+            });
+
+            // Wait for both calls to complete
+            await Promise.all([firstCall, secondCall]).catch(() => {});
+
+            // Verify refreshAccessToken was called exactly once
+            expect(authService.refreshAccessToken).toHaveBeenCalledTimes(1);
+
+            // Verify fetch was called exactly 3 times:
+            // 1. First original request (401)
+            // 2. Second original request (401)
+            // 3. One retry after refresh (success)
+            expect(global.fetch).toHaveBeenCalledTimes(3);
         });
     });
 });
