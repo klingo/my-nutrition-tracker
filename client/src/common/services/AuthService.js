@@ -17,6 +17,7 @@ class AuthService {
                 password: EncodeUtil.encode(password),
                 encoded: true,
             });
+            console.log(`storeTokens from login: ${JSON.stringify(response.data)}`);
             this.storeTokens(response.data);
             return { success: true };
         } catch (error) {
@@ -40,6 +41,7 @@ class AuthService {
 
     async isAuthenticated() {
         if (!this.refreshToken || this.isRefreshTokenExpired()) {
+            console.log('isAuthenticated: refreshToken is undefined or expired');
             return false;
         }
         if (this.accessToken && !this.isTokenExpired(this.accessToken)) {
@@ -51,6 +53,7 @@ class AuthService {
     async refreshAccessToken() {
         try {
             const response = await callApi('POST', '/api/auth/refresh', { refreshToken: this.refreshToken });
+            console.log(`storeTokens from refreshAccessToken: ${JSON.stringify(response.data)}`);
             this.storeTokens(response.data);
             return true;
         } catch (error) {
@@ -100,11 +103,16 @@ class AuthService {
         this.refreshToken = null;
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        console.log('Logged out: accessToken and refreshToken removed from localStorage');
     }
 
     loadTokens() {
         this.accessToken = localStorage.getItem('accessToken');
         this.refreshToken = localStorage.getItem('refreshToken');
+        console.log('Loaded tokens from localStorage:', {
+            accessToken: this.accessToken,
+            refreshToken: this.refreshToken,
+        });
     }
 
     storeTokens({ accessToken, refreshToken }) {
@@ -112,6 +120,7 @@ class AuthService {
         this.refreshToken = refreshToken;
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
+        console.log('Stored tokens in localStorage:', { accessToken, refreshToken });
     }
 }
 
