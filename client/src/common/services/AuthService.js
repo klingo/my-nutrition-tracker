@@ -6,14 +6,14 @@ class AuthService {
     constructor() {
         this.userInfo = null;
         this.authenticated = false;
-        this.checkAuthStatus();
+        this.authCheckPromise = null;
     }
 
     /**
-     * Checks the current authentication status by making a lightweight API call
-     * This is used on initialization and doesn't need to be called directly
+     * Asynchronously checks the authentication status of the user.
+     * @return {Promise<void>} This method updates internal state properties `authenticated` and `userInfo`.
      */
-    async checkAuthStatus() {
+    async #checkAuthStatus() {
         try {
             // Make a lightweight API call to check authentication status
             const response = await callApi('GET', '/api/auth/status', null, {
@@ -29,6 +29,12 @@ class AuthService {
         }
     }
 
+    /**
+     * Attempts to log in a user with the provided credentials.
+     * @param {string} username - The username of the user attempting to log in.
+     * @param {string} password - The password of the user attempting to log in.
+     * @return {Promise<Object>} A promise that resolves to an object indicating whether the login was successful or not. If successful, the object will contain a `success` property set to true. If unsuccessful, the object will contain `success` set to false, along with `status` and `message` properties detailing the error.
+     */
     async login(username, password) {
         console.log(`login(${username}, password: ${password})`);
         try {
@@ -53,7 +59,7 @@ class AuthService {
             );
 
             // Update authentication status
-            await this.checkAuthStatus();
+            await this.#checkAuthStatus();
 
             return { success: true };
         } catch (error) {
@@ -75,19 +81,42 @@ class AuthService {
         }
     }
 
+    /**
+     * Checks if the user is authenticated.
+     * @return {Promise<null|boolean>} True if the user is authenticated, otherwise false.
+     */
     async isAuthenticated() {
-        console.log('isAuthenticated()');
-
         // If we already checked and are authenticated, return true
         if (this.authenticated && this.userInfo) {
             return true;
         }
 
-        // Otherwise, check authentication status from server
-        await this.checkAuthStatus();
-        return this.authenticated;
+        // If there's an ongoing authentication check, wait for it to complete
+        if (this.authCheckPromise) {
+            await this.authCheckPromise;
+            // Re-check the authentication status after promise resolution
+            if (this.authenticated && this.userInfo) {
+                return true;
+            }
+        }
+
+        // Otherwise, initiate a new check and store the promise
+        this.authCheckPromise = this.#checkAuthStatus();
+        try {
+            await this.authCheckPromise;
+            this.authCheckPromise = null; // Clear the promise after resolution
+            return this.authenticated && this.userInfo;
+        } catch (error) {
+            this.authCheckPromise = null; // Clear the promise on error
+            throw error;
+        }
     }
 
+    /**
+     * Refreshes the access token by calling the server's refresh endpoint.
+     * Updates the authentication status and returns true if successful, otherwise logs out and returns false.
+     * @return {Promise<boolean>} - True if the access token was successfully refreshed, false otherwise.
+     */
     async refreshAccessToken() {
         console.log('refreshAccessToken()');
         try {
@@ -103,7 +132,7 @@ class AuthService {
             );
 
             // Update authentication status
-            await this.checkAuthStatus();
+            await this.#checkAuthStatus();
             return this.authenticated;
         } catch (error) {
             console.error('Token refresh error:', error);
@@ -112,11 +141,19 @@ class AuthService {
         }
     }
 
+    /**
+     * Retrieves the user information stored in the object.
+     * @return {Object|null} The user information.
+     */
     getUserInfo() {
         console.log('getUserInfo()');
         return this.userInfo;
     }
 
+    /**
+     * Logs the user out by calling the server's logout endpoint and clearing local authentication state.
+     * @return {Promise<void>} Resolves when the logout process is complete, including local state reset.
+     */
     async logout() {
         console.log('Logging out...');
 
