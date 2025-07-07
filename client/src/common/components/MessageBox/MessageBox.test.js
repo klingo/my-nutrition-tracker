@@ -5,20 +5,20 @@ describe('MessageBox', () => {
     let messageBox;
 
     beforeEach(() => {
-        messageBox = new MessageBox({ text: 'Test Message', type: 'info', closeable: true });
+        messageBox = new MessageBox({ message: 'Test Message', type: 'info', closeable: true });
         messageBox.render();
     });
 
     describe('constructor', () => {
         it('should initialize with default values', () => {
             const mb = new MessageBox();
-            expect(mb.text).toBe('');
+            expect(mb.message).toBe('');
             expect(mb.type).toBe(undefined);
             expect(mb.closeable).toBe(false);
         });
 
         it('should initialize with provided text, type, and closeable', () => {
-            expect(messageBox.text).toBe('Test Message');
+            expect(messageBox.message).toBe('Test Message');
             expect(messageBox.type).toBe('info');
             expect(messageBox.closeable).toBe(true);
         });
@@ -49,8 +49,8 @@ describe('MessageBox', () => {
 
     describe('setText', () => {
         it('should update the text and reflect in the element', () => {
-            messageBox.setText('Updated Text');
-            expect(messageBox.text).toBe('Updated Text');
+            messageBox.setMessage('Updated Text');
+            expect(messageBox.message).toBe('Updated Text');
             const textSpan = messageBox.element.querySelector('span');
             expect(textSpan.textContent).toBe('Updated Text');
         });

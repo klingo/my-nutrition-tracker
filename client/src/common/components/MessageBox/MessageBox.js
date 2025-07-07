@@ -6,10 +6,10 @@ import BaseComponent from '@core/base/BaseComponent';
  * @class MessageBox
  */
 export default class MessageBox extends BaseComponent {
-    constructor({ text = '', type, closeable = false } = {}) {
+    constructor({ message = '', type, closeable = false } = {}) {
         super();
 
-        this.text = text;
+        this.message = message;
         this.type = this.#validateType(type);
         this.closeable = closeable;
     }
@@ -29,7 +29,7 @@ export default class MessageBox extends BaseComponent {
     render() {
         this.element = this.#createMessageBox();
         this.#addIcon(this.element);
-        this.#addText(this.element);
+        this.#addMessage(this.element);
         return this.element;
     }
 
@@ -45,15 +45,15 @@ export default class MessageBox extends BaseComponent {
         element.appendChild(iconElement);
     }
 
-    #addText(element) {
-        const textSpan = document.createElement('span');
-        textSpan.textContent = this.text;
-        element.appendChild(textSpan);
+    #addMessage(element) {
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = this.message;
+        element.appendChild(messageSpan);
     }
 
-    setText(newText) {
-        this.text = newText;
-        this.element.querySelector('span').textContent = this.text;
+    setMessage(newMessage) {
+        this.message = newMessage;
+        this.element.querySelector('span').textContent = this.message;
         return this;
     }
 

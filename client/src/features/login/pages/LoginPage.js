@@ -168,7 +168,7 @@ class LoginPage extends BasePage {
     }
 
     #displayErrorMessage(message) {
-        const messageBox = new MessageBox({ type: 'error', text: message });
+        const messageBox = new MessageBox({ type: 'error', message });
         messageBox.mount(this.messageBoxContainer);
     }
 }
