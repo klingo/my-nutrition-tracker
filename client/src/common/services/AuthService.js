@@ -41,6 +41,7 @@ class AuthService {
                 'POST',
                 '/api/auth/login',
                 {
+                    // Apply minimal obfuscation
                     username: EncodeUtil.encode(username),
                     password: EncodeUtil.encode(password),
                     encoded: true,

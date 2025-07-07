@@ -1,5 +1,6 @@
 export class EncodeUtil {
     /**
+     * Base64 encoding of provided text
      * @param {string} text
      * @return {string}
      */
@@ -12,6 +13,7 @@ export class EncodeUtil {
     }
 
     /**
+     * Base64 decoding of provided encoded text
      * @param {string} encodedText
      * @return {string}
      */
