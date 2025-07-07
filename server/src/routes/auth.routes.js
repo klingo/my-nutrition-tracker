@@ -1,91 +1,13 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { User, RefreshToken } from '../models/index.js';
 import auth from '../middleware/auth.js';
 import { authLimiter, mutationLimiter, queryLimiter } from '../middleware/rateLimiters.js';
+import { generateTokens, refreshTokens, setAuthCookies, clearAuthCookies } from '../services/tokenService.js';
 
 const router = express.Router();
 const salt = process.env.PASSWORD_SALT || 10;
 const pepper = process.env.PASSWORD_PEPPER || '';
-
-// Helper function to generate tokens and save refresh token to database
-const generateTokens = async (user, oldToken = null) => {
-    const accessToken = jwt.sign(
-        {
-            userId: user._id,
-            username: user.username,
-            type: 'access',
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: '15m' }, // Short-lived; 15 minutes to 1 hour
-    );
-
-    const refreshToken = jwt.sign(
-        {
-            userId: user._id,
-            type: 'refresh',
-        },
-        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
-        { expiresIn: '30d' }, // Long-lived; 7 days to 30 days
-    );
-
-    // Calculate expiration date (30 days from now)
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 30);
-
-    // Save refresh token to database
-    const refreshTokenDoc = new RefreshToken({
-        token: refreshToken,
-        userId: user._id,
-        expiresAt,
-    });
-    await refreshTokenDoc.save();
-
-    // If there was an old token, revoke it and link to the new one
-    if (oldToken) {
-        await RefreshToken.revokeToken(oldToken, refreshToken);
-    }
-
-    return { accessToken, refreshToken };
-};
-
-// Helper function to set authentication cookies
-const setAuthCookies = (res, tokens) => {
-    // Set HttpOnly cookies for both accessToken and refreshToken with enhanced security
-    res.cookie('accessToken', tokens.accessToken, {
-        httpOnly: true, // Prevents JavaScript access
-        secure: true, // Always use HTTPS
-        sameSite: 'strict', // Strict CSRF protection
-        maxAge: 15 * 60 * 1000, // 15 minutes, same as token expiration
-        path: '/', // Available across the entire site
-    });
-
-    res.cookie('refreshToken', tokens.refreshToken, {
-        httpOnly: true, // Prevents JavaScript access
-        secure: true, // Always use HTTPS
-        sameSite: 'strict', // Strict CSRF protection
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days, same as token expiration
-        path: '/api/auth', // Available to all auth endpoints
-    });
-};
-
-// Helper function to clear authentication cookies
-const clearAuthCookies = (res) => {
-    // Clear both cookies with the same options used when setting them
-    res.clearCookie('accessToken', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        path: '/',
-    });
-    res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        path: '/api/auth',
-    });
-};
 
 function decodeData(data) {
     return Object.keys(data).reduce((decodedData, key) => {
@@ -155,7 +77,7 @@ router.post('/login', authLimiter, async (req, res) => {
         if (user.isBlocked) return res.status(403).json({ message: 'Account blocked' });
 
         // Generate tokens and save refresh token to database
-        const tokens = await generateTokens(user);
+        const tokens = await generateTokens(user, null, true);
 
         // Set authentication cookies
         setAuthCookies(res, tokens);
@@ -176,37 +98,14 @@ router.post('/refresh', mutationLimiter, async (req, res) => {
             return res.status(401).send({ message: 'Refresh token is required' });
         }
 
-        // Verify refresh token JWT
-        let decoded;
-        try {
-            decoded = jwt.verify(currentRefreshToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET);
-        } catch (error) {
-            console.error('Invalid refresh token:', error.message);
+        // Refresh tokens with rotation (generate new access and refresh tokens)
+        const refreshResult = await refreshTokens(currentRefreshToken, true);
+        if (!refreshResult) {
             return res.status(403).json({ message: 'Invalid or expired refresh token' });
         }
 
-        // Check if token exists in database and is not revoked
-        const tokenDoc = await RefreshToken.findOne({ token: currentRefreshToken });
-        if (!tokenDoc || !tokenDoc.isActive()) {
-            return res.status(403).json({ message: 'Refresh token has been revoked or expired' });
-        }
-
-        // Find the user by ID
-        const user = await User.findById(decoded.userId, '_id username isBlocked');
-        if (!user) {
-            return res.status(401).json({ message: 'User not found' });
-        }
-
-        // Validate account status
-        if (user.isBlocked) {
-            return res.status(403).json({ message: 'Account blocked' });
-        }
-
-        // Generate new tokens with token rotation (this will revoke the old token)
-        const tokens = await generateTokens(user, currentRefreshToken);
-
         // Set authentication cookies
-        setAuthCookies(res, tokens);
+        setAuthCookies(res, refreshResult);
 
         res.json({ message: 'Tokens refreshed successfully' });
     } catch (error) {
@@ -226,7 +125,7 @@ router.post('/logout', mutationLimiter, async (req, res) => {
             await RefreshToken.revokeToken(refreshToken);
         }
 
-        // Clear both cookies with the same options used when setting them
+        // Clear authentication cookies
         clearAuthCookies(res);
 
         res.status(200).json({ message: 'Logged out successfully' });
@@ -239,28 +138,51 @@ router.post('/logout', mutationLimiter, async (req, res) => {
 });
 
 // Status endpoint to check authentication status
-router.get('/status', queryLimiter, auth(), async (req, res) => {
+router.get('/status', queryLimiter, async (req, res) => {
     try {
-        // If we get here, the user is authenticated (auth middleware verified the token)
-        // Fetch minimal user data
-        const user = await User.findById(req.user.userId).select('username');
+        // Extract tokens from cookies
+        const accessToken = req.cookies?.accessToken;
+        const refreshToken = req.cookies?.refreshToken;
 
-        if (!user) {
-            return res.status(404).json({
+        // If no tokens at all, user is not authenticated
+        if (!accessToken && !refreshToken) {
+            return res.json({
                 authenticated: false,
-                message: 'User not found',
+                message: 'No authentication tokens',
             });
         }
 
-        return res.json({
-            authenticated: true,
-            user: {
-                // userId: user._id,
-                username: user.username,
-            },
+        // Use the auth middleware as a function to handle token verification and refresh
+        return auth()(req, res, async () => {
+            try {
+                // If we get here, the user is authenticated (auth middleware verified or refreshed the token)
+                // Fetch minimal user data
+                const user = await User.findById(req.user.userId).select('username');
+
+                if (!user) {
+                    return res.status(404).json({
+                        authenticated: false,
+                        message: 'User not found',
+                    });
+                }
+
+                return res.json({
+                    authenticated: true,
+                    user: {
+                        // userId: user._id,
+                        username: user.username,
+                    },
+                });
+            } catch (innerError) {
+                console.error('Auth status inner error:', innerError);
+                return res.status(500).json({
+                    authenticated: false,
+                    message: 'Server error',
+                });
+            }
         });
     } catch (error) {
-        console.error('Auth status error:', error);
+        console.error('Auth status outer error:', error);
         return res.status(500).json({
             authenticated: false,
             message: 'Server error',
