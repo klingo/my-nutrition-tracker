@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import { User, RefreshToken } from '../models/index.js';
 import auth from '../middleware/auth.js';
-import { authLimiter, mutationLimiter, queryLimiter } from '../middleware/rateLimiters.js';
+import { authLimiter, mutationLimiter, statusLimiter } from '../middleware/rateLimiters.js';
 import { generateTokens, refreshTokens, setAuthCookies, clearAuthCookies } from '../services/tokenService.js';
 
 const router = express.Router();
@@ -138,7 +138,7 @@ router.post('/logout', mutationLimiter, async (req, res) => {
 });
 
 // Status endpoint to check authentication status
-router.get('/status', queryLimiter, async (req, res) => {
+router.get('/status', statusLimiter, async (req, res) => {
     try {
         // Extract tokens from cookies
         const accessToken = req.cookies?.accessToken;

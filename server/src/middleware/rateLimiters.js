@@ -13,6 +13,18 @@ export const authLimiter = rateLimit({
 });
 
 /**
+ * Rate limiter for status endpoint
+ * Allows 30 requests per minute
+ */
+export const statusLimiter = rateLimit({
+    windowMs: 60 * 1000, // 15 minutes
+    max: 30, // 30 attempts per window
+    message: { message: 'Too many requests, please try again later' },
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+/**
  * Rate limiter for mutation endpoints (POST, PUT, DELETE)
  * Allows 15 requests per minute
  */
