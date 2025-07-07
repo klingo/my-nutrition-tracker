@@ -146,6 +146,8 @@ class LoginPage extends BasePage {
                     );
                 } else if (result.status === 403) {
                     this.#displayErrorMessage('Your account is blocked.');
+                } else if (result.status === 429) {
+                    this.#displayErrorMessage('Too many login attempts. Please try again later.');
                 } else if (result.status === 500) {
                     this.#displayErrorMessage(
                         'My Nutrition Tracker is temporarily unavailable. Please try again later.',
