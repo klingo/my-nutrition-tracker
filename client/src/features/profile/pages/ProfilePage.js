@@ -1,5 +1,7 @@
+import styles from './ProfilePage.module.css';
 import BasePage from '@core/base/BasePage';
 import callApi from '@common/utils/callApi.js';
+import { ContentBlock, Loader, MessageBox } from '@common/components';
 
 class ProfilePage extends BasePage {
     constructor(router) {
@@ -19,8 +21,9 @@ class ProfilePage extends BasePage {
 
             return this.userData;
         } catch (error) {
-            console.error('Error fetching user data:', error);
-            this.error = error.message || 'Failed to load user data';
+            console.error('Error fetching user data:', JSON.stringify(error));
+            // this.error = error.message || 'Failed to load user data';
+            this.error = error;
             return null;
         } finally {
             this.loading = false;
@@ -30,56 +33,151 @@ class ProfilePage extends BasePage {
     async render() {
         console.log('ProfilePage render() called');
 
-        this.element = this.createPageElement();
+        this.element = this.createPageElement({ pageHeading: 'Profile' });
 
-        // Show loading state initially
-        this.element.innerHTML = `
-            <div class="profile-container">
-                <h1>Profile</h1>
-                <div id="profile-content">
-                    <p>Loading profile data...</p>
-                </div>
-            </div>
-        `;
+        const loaderElement = new Loader('large');
+        loaderElement.mount(this.element);
 
         try {
             // Fetch user data
+            console.log('AAAAA');
             const userData = await this.fetchUserData();
+            console.log('BBBBB');
 
-            // Update the content once data is loaded
-            const profileContent = this.element.querySelector('#profile-content');
+            // Remove loading state
+            loaderElement.unmount();
 
-            if (this.error) {
-                profileContent.innerHTML = `
-                    <div class="error-message">
-                        <p>${this.error}</p>
-                        <button id="retry-button">Retry</button>
-                    </div>
-                `;
+            if (userData) {
+                console.log('CCCC');
+                const { profile, username, email, accessLevel, status, calculations } = this.userData;
 
-                // Add retry button event listener
-                const retryButton = profileContent.querySelector('#retry-button');
-                retryButton.addEventListener('click', async () => {
-                    profileContent.innerHTML = '<p>Loading profile data...</p>';
-                    await this.fetchUserData();
-                    this.updateProfileContent(profileContent);
+                // Render content
+                const rowElement = this.addRow();
+                const accountCol = this.addCol({ rowElement, colSpan: 6 });
+                const accountContentBLock = new ContentBlock();
+                accountContentBLock.mount(accountCol);
+
+                const accountFields = [
+                    { label: 'Username', value: username },
+                    { label: 'EMail', value: email },
+                    { label: 'Account type', value: accessLevel },
+                    { label: 'Status', value: status },
+                ];
+                accountFields.forEach(({ label, value }) => {
+                    const fieldContainer = this.createElement('div', styles.fieldContainer);
+                    const labelElement = this.createElement('span', styles.label);
+                    const valueElement = this.createElement('span', styles.value);
+
+                    labelElement.textContent = `${label}:`;
+                    valueElement.textContent = value;
+
+                    fieldContainer.append(labelElement, valueElement);
+                    accountContentBLock.append(fieldContainer);
                 });
-            } else if (userData) {
-                this.updateProfileContent(profileContent);
-                profileContent.querySelector('.refresh').addEventListener('click', async () => {
-                    const response = await callApi('POST', '/api/users/update-calculations');
-                    console.log(response);
+
+                const profileCol = this.addCol({ rowElement, colSpan: 6 });
+                const profileContentBlock = new ContentBlock();
+                profileContentBlock.mount(profileCol);
+
+                const profileFields = [
+                    { label: 'First name', value: profile.firstName },
+                    { label: 'Last name', value: profile.lastName },
+                    { label: 'Date of Birth', value: profile.dateOfBirth },
+                    { label: 'Gender', value: profile.gender },
+                    { label: 'Height', value: profile.height },
+                    { label: 'Weight', value: profile.weight },
+                    { label: 'Activity level', value: profile.activityLevel },
+                ];
+                profileFields.forEach(({ label, value }) => {
+                    const fieldContainer = this.createElement('div', styles.fieldContainer);
+                    const labelElement = this.createElement('span', styles.label);
+                    const valueElement = this.createElement('span', styles.value);
+
+                    labelElement.textContent = `${label}:`;
+                    valueElement.textContent = value;
+
+                    fieldContainer.append(labelElement, valueElement);
+                    profileContentBlock.append(fieldContainer);
                 });
+
+                const secondRow = this.addRow();
+                const calculationsCol = this.addCol({ rowElement: secondRow });
+                const calculationsContentBlock = new ContentBlock();
+                calculationsContentBlock.mount(calculationsCol);
+
+                const calculationFields = [
+                    { label: 'Body Mass Index (BMI)', value: calculations.bmi },
+                    { label: 'Basal Metabolic Rate (BMR)', value: calculations.bmr },
+                    { label: 'Total Daily Energy Expenditure (TDEE)', value: calculations.tdee },
+                ];
+                calculationFields.forEach(({ label, value }) => {
+                    const fieldContainer = this.createElement('div', styles.fieldContainer);
+                    const labelElement = this.createElement('span', styles.label);
+                    const valueElement = this.createElement('span', styles.value);
+
+                    labelElement.textContent = `${label}:`;
+                    valueElement.textContent = value;
+
+                    fieldContainer.append(labelElement, valueElement);
+                    calculationsContentBlock.append(fieldContainer);
+                });
+            } else {
+                // Handle the error case
+                const messageBox = new MessageBox({
+                    type: 'error',
+                    message: this.error.message || 'Failed to load user data',
+                });
+                messageBox.mount(this.element);
             }
         } catch (error) {
-            console.error('Error in profile render:', error);
-            const profileContent = this.element.querySelector('#profile-content');
-            profileContent.innerHTML = `
-                <div class="error-message">
-                    <p>An unexpected error occurred: ${error.message}</p>
-                </div>
-            `;
+            console.error('Unexpected error in render:', JSON.stringify(error));
+            const messageBox = new MessageBox({
+                type: 'error',
+                message: error.message || 'An unexpected error occurred',
+            });
+            messageBox.mount(this.element);
         }
+
+        // TODO: Show loading state initially
+
+        // try {
+        //     // Fetch user data
+        //     const userData = await this.fetchUserData();
+        //
+        //     // Update the content once data is loaded
+        //     const profileContent = this.element.querySelector('#profile-content');
+        //
+        //     if (this.error) {
+        //         profileContent.innerHTML = `
+        //             <div class="error-message">
+        //                 <p>${this.error}</p>
+        //                 <button id="retry-button">Retry</button>
+        //             </div>
+        //         `;
+        //
+        //         // Add retry button event listener
+        //         const retryButton = profileContent.querySelector('#retry-button');
+        //         retryButton.addEventListener('click', async () => {
+        //             profileContent.innerHTML = '<p>Loading profile data...</p>';
+        //             await this.fetchUserData();
+        //             this.updateProfileContent(profileContent);
+        //         });
+        //     } else if (userData) {
+        //         this.updateProfileContent(profileContent);
+        //         profileContent.querySelector('.refresh').addEventListener('click', async () => {
+        //             const response = await callApi('POST', '/api/users/update-calculations');
+        //             console.log(response);
+        //         });
+        //     }
+        // } catch (error) {
+        //     console.error('Error in profile render:', error);
+        //     const profileContent = this.element.querySelector('#profile-content');
+        //     profileContent.innerHTML = `
+        //         <div class="error-message">
+        //             <p>An unexpected error occurred: ${error.message}</p>
+        //         </div>
+        //     `;
+        // }
 
         return this.element;
     }
