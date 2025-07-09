@@ -39,6 +39,21 @@ class Router {
             return;
         }
 
+        // Check if user is authenticated and trying to access /login
+        if (path === '/login') {
+            const isAuthenticated = await authService.isAuthenticated();
+            if (isAuthenticated) {
+                window.history.replaceState({ path: defaultAuthenticatedRoute }, '', defaultAuthenticatedRoute);
+                this.currentRoute = defaultAuthenticatedRoute;
+
+                if (this.navigation) this.navigation.updateActiveState(defaultAuthenticatedRoute);
+
+                const route = this.routes[defaultAuthenticatedRoute];
+                if (route) await this.renderPage(route.pageComponent);
+                return;
+            }
+        }
+
         const route = this.routes[path];
         if (route) {
             if (route.requiresAuth) {
