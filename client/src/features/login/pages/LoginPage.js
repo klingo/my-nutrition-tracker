@@ -18,13 +18,11 @@ class LoginPage extends BasePage {
         console.log('LoginPage render() called');
 
         this.element = this.createPageElement();
-        const rowElement = this.addRow({ justifyContent: 'center' });
-        const colElement = this.addCol({ rowElement });
 
         // TODO: replace with contentBlock?
         const container = document.createElement('div');
         container.classList.add(styles.overlay);
-        colElement.append(container);
+        this.element.append(container);
 
         const logoImg = document.createElement('img');
         logoImg.setAttribute('src', logo);
