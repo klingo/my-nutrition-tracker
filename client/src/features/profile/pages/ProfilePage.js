@@ -85,8 +85,8 @@ class ProfilePage extends BasePage {
                     { label: 'Last name', value: profile.lastName },
                     { label: 'Date of Birth', value: profile.dateOfBirth },
                     { label: 'Gender', value: profile.gender },
-                    { label: 'Height', value: profile.height },
-                    { label: 'Weight', value: profile.weight },
+                    { label: 'Height', value: `${profile.height.value} ${profile.height.unit}` },
+                    { label: 'Weight', value: `${profile.weight.value} ${profile.weight.unit}` },
                     { label: 'Activity level', value: profile.activityLevel },
                 ];
                 profileFields.forEach(({ label, value }) => {
