@@ -24,7 +24,8 @@
         "@fontsource-variable/roboto": "^5.2.6",
         "@fontsource-variable/roboto-condensed": "^5.2.6",
         "axios": "^1.10.0",
-        "cookie-parser": "^1.4.7"
+        "cookie-parser": "^1.4.7",
+        "masonry-layout": "^4.2.2"
     },
     "devDependencies": {
         "@codecov/vite-plugin": "^1.9.1",

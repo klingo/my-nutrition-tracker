@@ -1,0 +1,106 @@
+/* Masonry container */
+.masonry-container {
+    width: 100%;
+}
+
+.masonry-item {
+    width: 8.333333%;
+}
+
+/* Column span classes */
+.col1 {
+    flex: 0 0 calc(8.333333% - var(--grid-gutter, 16px));
+    width: calc(8.333333% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col2 {
+    flex: 0 0 calc(16.666667% - var(--grid-gutter, 16px));
+    width: calc(16.666667% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col3 {
+    flex: 0 0 calc(25% - var(--grid-gutter, 16px));
+    width: calc(25% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col4 {
+    flex: 0 0 calc(33.333333% - var(--grid-gutter, 16px));
+    width: calc(33.333333% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col5 {
+    flex: 0 0 calc(41.666667% - var(--grid-gutter, 16px));
+    width: calc(41.666667% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col6 {
+    flex: 0 0 calc(50% - var(--grid-gutter, 16px));
+    width: calc(50% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col7 {
+    flex: 0 0 calc(58.333333% - var(--grid-gutter, 16px));
+    width: calc(58.333333% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col8 {
+    flex: 0 0 calc(66.666667% - var(--grid-gutter, 16px));
+    width: calc(66.666667% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col9 {
+    flex: 0 0 calc(75% - var(--grid-gutter, 16px));
+    width: calc(75% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col10 {
+    flex: 0 0 calc(83.333333% - var(--grid-gutter, 16px));
+    width: calc(83.333333% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col11 {
+    flex: 0 0 calc(91.666667% - var(--grid-gutter, 16px));
+    width: calc(91.666667% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+.col12 {
+    flex: 0 0 calc(100% - var(--grid-gutter, 16px));
+    width: calc(100% - var(--grid-gutter, 16px));
+    margin: 0 calc(var(--grid-gutter, 16px) / 2) var(--grid-gutter, 16px);
+}
+
+/* Gutter utility classes */
+.g-0 {
+    --grid-gutter: 0;
+}
+
+.g-1 {
+    --grid-gutter: 4px;
+}
+
+.g-2 {
+    --grid-gutter: 8px;
+}
+
+.g-3 {
+    --grid-gutter: 16px;
+}
+
+.g-4 {
+    --grid-gutter: 24px;
+}
+
+.g-5 {
+    --grid-gutter: 32px;
+}
