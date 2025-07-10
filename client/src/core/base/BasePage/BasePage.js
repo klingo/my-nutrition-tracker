@@ -40,38 +40,6 @@ class BasePage {
         return this.element;
     }
 
-    /**
-     * Helper method to add a new row to the page.
-     * @param {Object} [options={}] - Optional parameters for the row configuration.
-     * @param {string} [options.justifyContent] - The justify-content CSS styling (optional).
-     * @return {HTMLDivElement}
-     */
-    addRow({ justifyContent = '' } = {}) {
-        const rowElement = document.createElement('div');
-        rowElement.classList.add(styles.row);
-        if (justifyContent) rowElement.style.justifyContent = justifyContent;
-        this.element.append(rowElement);
-        return rowElement;
-    }
-
-    /**
-     * Helper method to add a new column to the row.
-     * @param {Object} [options] - Optional parameters for the column configuration.
-     * @param {HTMLDivElement} options.rowElement - The row element to which the column will be added
-     * @param {number} [options.colSpan] - The span of the column (optional)
-     * @param {number} [options.order] - The order of the column in the flex container (optional)
-     * @return {HTMLDivElement}
-     */
-    addCol({ rowElement, colSpan, order }) {
-        if (!(rowElement instanceof HTMLDivElement)) throw new Error('"rowElement" must be a valid HTMLDivElement');
-        const colElement = document.createElement('div');
-        colElement.classList.add(styles.col);
-        if (colSpan) colElement.classList.add(styles[`col${colSpan}`]);
-        if (order) colElement.style.order = order.toString();
-        rowElement.append(colElement);
-        return colElement;
-    }
-
     // Helper method to create DOM elements with optional classes and styles
     createElement(tag, className = '', styles = {}) {
         const element = document.createElement(tag);
