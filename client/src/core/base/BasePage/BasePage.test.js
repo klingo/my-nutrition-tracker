@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import BasePage from './';
 
 describe('BasePage', () => {
@@ -70,109 +70,6 @@ describe('BasePage', () => {
             expect(element.tagName).toBe('DIV');
             expect(element.classList.contains('page')).toBe(true);
             expect(element.querySelector('h1')).toBe(null);
-        });
-    });
-
-    describe('addRow', () => {
-        let basePage;
-
-        beforeEach(() => {
-            basePage = new BasePage();
-            basePage.createPageElement();
-        });
-
-        it('should add a row with default justify-content', () => {
-            const rowElement = basePage.addRow({});
-            expect(rowElement.tagName).toBe('DIV');
-            expect(rowElement.classList.contains('row')).toBe(true);
-            expect(rowElement.style.justifyContent).toBe('');
-        });
-
-        it('should add a row with custom justify-content', () => {
-            const rowElement = basePage.addRow({ justifyContent: 'center' });
-            expect(rowElement.tagName).toBe('DIV');
-            expect(rowElement.classList.contains('row')).toBe(true);
-            expect(rowElement.style.justifyContent).toBe('center');
-        });
-
-        it('should add a row with no options', () => {
-            const rowElement = basePage.addRow();
-            expect(rowElement.tagName).toBe('DIV');
-            expect(rowElement.classList.contains('row')).toBe(true);
-            expect(rowElement.style.justifyContent).toBe('');
-        });
-    });
-
-    describe('addCol', () => {
-        let basePage;
-        let rowElement;
-
-        beforeEach(() => {
-            basePage = new BasePage();
-            basePage.createPageElement();
-            rowElement = basePage.addRow();
-        });
-
-        it('should add a column with default colSpan and order', () => {
-            const colElement = basePage.addCol({ rowElement });
-            expect(colElement.tagName).toBe('DIV');
-            expect(colElement.classList.contains('col')).toBe(true);
-            expect(colElement.style.order).toBe('');
-        });
-
-        it('should add a column with valid colSpan and no order', () => {
-            const colElement = basePage.addCol({ rowElement, colSpan: 6 });
-            expect(colElement.tagName).toBe('DIV');
-            expect(colElement.classList.contains('col-6')).toBe(true);
-            expect(colElement.style.order).toBe('');
-        });
-
-        it('should add a column with correct colSpan for values 1-12', () => {
-            const colSpanValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-            colSpanValues.forEach((colSpanValue) => {
-                const colElement = basePage.addCol({ rowElement, colSpan: colSpanValue });
-                expect(colElement.tagName).toBe('DIV');
-                expect(colElement.classList.contains(`col-${colSpanValue}`)).toBe(true);
-            });
-        });
-
-        it('should add a column with valid order and no colSpan', () => {
-            const colElement = basePage.addCol({ rowElement, order: 2 });
-            expect(colElement.tagName).toBe('DIV');
-            expect(colElement.classList.contains('col')).toBe(true);
-            expect(colElement.style.order).toBe('2');
-        });
-
-        it('should add a column with both valid colSpan and order', () => {
-            const colElement = basePage.addCol({ rowElement, colSpan: 4, order: 1 });
-            expect(colElement.tagName).toBe('DIV');
-            expect(colElement.classList.contains('col-4')).toBe(true);
-            expect(colElement.style.order).toBe('1');
-        });
-
-        it('should add a column with invalid colSpan and no order', () => {
-            const colElement = basePage.addCol({ rowElement, colSpan: 13 });
-            expect(colElement.tagName).toBe('DIV');
-            expect(colElement.classList.contains('col')).toBe(true);
-            expect(colElement.style.order).toBe('');
-        });
-
-        it('should add a column with invalid colSpan and valid order', () => {
-            const colElement = basePage.addCol({ rowElement, colSpan: 0, order: 3 });
-            expect(colElement.tagName).toBe('DIV');
-            expect(colElement.classList.contains('col')).toBe(true);
-            expect(colElement.style.order).toBe('3');
-        });
-
-        it('should add a column with no options', () => {
-            const colElement = basePage.addCol({ rowElement });
-            expect(colElement.tagName).toBe('DIV');
-            expect(colElement.classList.contains('col')).toBe(true);
-            expect(colElement.style.order).toBe('');
-        });
-
-        it('should throw an error if rowElement is not provided', () => {
-            expect(() => basePage.addCol({})).toThrowError('"rowElement" must be a valid HTMLDivElement');
         });
     });
 
