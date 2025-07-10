@@ -1,7 +1,7 @@
 import styles from './ProfilePage.module.css';
 import BasePage from '@core/base/BasePage';
 import callApi from '@common/utils/callApi.js';
-import { ContentBlock, Loader, MessageBox } from '@common/components';
+import { ContentBlock, Loader, MasonryContainer, MessageBox } from '@common/components';
 
 class ProfilePage extends BasePage {
     constructor(router) {
@@ -40,22 +40,22 @@ class ProfilePage extends BasePage {
 
         try {
             // Fetch user data
-            console.log('AAAAA');
             const userData = await this.fetchUserData();
-            console.log('BBBBB');
 
             // Remove loading state
             loaderElement.unmount();
 
             if (userData) {
-                console.log('CCCC');
                 const { profile, username, email, accessLevel, status, calculations } = this.userData;
 
-                // Render content
-                const rowElement = this.addRow();
-                const accountCol = this.addCol({ rowElement, colSpan: 6 });
-                const accountContentBLock = new ContentBlock();
-                accountContentBLock.mount(accountCol);
+                // Create a masonry container
+                const masonryContainer = new MasonryContainer();
+                masonryContainer.mount(this.element);
+
+                // Add account content block
+                const accountContentBlock = new ContentBlock();
+                accountContentBlock.textContent = '1';
+                masonryContainer.add(accountContentBlock, { colSpan: 6 });
 
                 const accountFields = [
                     { label: 'Username', value: username },
@@ -72,12 +72,13 @@ class ProfilePage extends BasePage {
                     valueElement.textContent = value;
 
                     fieldContainer.append(labelElement, valueElement);
-                    accountContentBLock.append(fieldContainer);
+                    accountContentBlock.append(fieldContainer);
                 });
 
-                const profileCol = this.addCol({ rowElement, colSpan: 6 });
+                // Add profile content block
                 const profileContentBlock = new ContentBlock();
-                profileContentBlock.mount(profileCol);
+                profileContentBlock.textContent = '2';
+                masonryContainer.add(profileContentBlock, { colSpan: 6 });
 
                 const profileFields = [
                     { label: 'First name', value: profile.firstName },
@@ -100,10 +101,10 @@ class ProfilePage extends BasePage {
                     profileContentBlock.append(fieldContainer);
                 });
 
-                const secondRow = this.addRow();
-                const calculationsCol = this.addCol({ rowElement: secondRow });
+                // Add calculations content block
                 const calculationsContentBlock = new ContentBlock();
-                calculationsContentBlock.mount(calculationsCol);
+                calculationsContentBlock.textContent = '3';
+                masonryContainer.add(calculationsContentBlock, { colSpan: 6 });
 
                 const calculationFields = [
                     { label: 'Body Mass Index (BMI)', value: calculations.bmi },
@@ -130,7 +131,7 @@ class ProfilePage extends BasePage {
                 messageBox.mount(this.element);
             }
         } catch (error) {
-            console.error('Unexpected error in render:', JSON.stringify(error));
+            console.error('Unexpected error in render:', error);
             const messageBox = new MessageBox({
                 type: 'error',
                 message: error.message || 'An unexpected error occurred',
