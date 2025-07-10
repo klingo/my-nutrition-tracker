@@ -1,4 +1,5 @@
 .content-block {
     background-color: var(--color-surface);
     padding: 16px;
+    box-sizing: border-box;
 }
