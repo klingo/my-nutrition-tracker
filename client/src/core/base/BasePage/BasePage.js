@@ -1,9 +1,10 @@
 import styles from './BasePage.module.css';
 
 class BasePage {
-    constructor(router = null) {
+    constructor(router = null, signal = null) {
         this.router = router;
         this.element = null;
+        this.abortSignal = signal;
     }
 
     // Override this method in child classes

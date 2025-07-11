@@ -2,8 +2,8 @@ import BasePage from '@core/base/BasePage';
 import authService from '@common/services/AuthService.js';
 
 class OverviewPage extends BasePage {
-    constructor(router) {
-        super(router);
+    constructor(router, signal) {
+        super(router, signal);
     }
 
     async render() {

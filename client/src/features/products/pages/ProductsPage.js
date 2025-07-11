@@ -3,8 +3,11 @@ import callApi from '@common/utils/callApi';
 import { Button } from '@common/components';
 
 class ProductsPage extends BasePage {
-    constructor(router) {
-        super(router);
+    constructor(router, signal) {
+        super(router, signal);
+        this.productsData = null;
+        this.loading = false;
+        this.error = null;
     }
 
     async fetchProductsData() {
@@ -12,13 +15,17 @@ class ProductsPage extends BasePage {
             this.loading = true;
             this.error = null;
 
-            const response = await callApi('GET', '/api/products/');
+            const response = await callApi('GET', '/api/products/', null, { signal: this.abortSignal });
             this.productsData = response.data;
 
             return this.productsData;
         } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Request was aborted due to navigation');
+                return null;
+            }
             console.error('Error fetching products data:', error);
-            this.error = error.message || 'Failed to load products data';
+            this.error = error;
             return null;
         } finally {
             this.loading = false;

@@ -1,5 +1,6 @@
 import { routes, defaultAuthenticatedRoute, defaultUnauthenticatedRoute } from '../config/routes.js';
 import authService from '@/common/services/AuthService.js';
+import { Loader } from '@common/components';
 
 class Router {
     constructor(navigation = null, mainContainer) {
@@ -109,7 +110,11 @@ class Router {
             }
 
             this.mainContainer.innerHTML = '';
-            const page = new PageComponent(this);
+
+            const loaderElement = new Loader({ size: 'large' });
+            loaderElement.mount(this.mainContainer);
+
+            const page = new PageComponent(this, signal);
             this.pageInstance = page;
 
             // Check if the operation was aborted before rendering
@@ -120,7 +125,7 @@ class Router {
             // Check if the operation was aborted after rendering
             if (signal.aborted) return;
 
-            this.mainContainer.appendChild(content);
+            this.mainContainer.replaceChildren(content);
 
             if (page.mount && !signal.aborted) page.mount();
         } catch (error) {

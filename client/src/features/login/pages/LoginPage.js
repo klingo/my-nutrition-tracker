@@ -7,8 +7,8 @@ import { Button, Input, MessageBox } from '@common/components';
 import logo from '@assets/logo/android-chrome-192x192.png';
 
 class LoginPage extends BasePage {
-    constructor(router) {
-        super(router);
+    constructor(router, signal) {
+        super(router, signal);
         this.loginButton = null;
         this.isLoading = false;
         this.messageBoxContainer = null;

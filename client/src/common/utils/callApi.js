@@ -15,7 +15,7 @@ let isRefreshing = false;
  * @returns {Promise<object>} - The API response
  */
 async function callApi(method, url, body, options = {}) {
-    const { headers = {}, withCredentials = false, skipAuthRefresh = false } = options;
+    const { headers = {}, withCredentials = false, skipAuthRefresh = false, signal } = options;
 
     const mergedHeaders = {
         ...DEFAULT_HEADERS,
@@ -27,6 +27,7 @@ async function callApi(method, url, body, options = {}) {
             method,
             headers: mergedHeaders,
             credentials: withCredentials ? 'include' : 'same-origin', // Include cookies when withCredentials is true
+            signal,
         };
 
         // Include body only for methods that typically allow it and if body is not empty

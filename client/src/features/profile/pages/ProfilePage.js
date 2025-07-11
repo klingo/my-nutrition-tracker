@@ -1,11 +1,11 @@
 import styles from './ProfilePage.module.css';
 import BasePage from '@core/base/BasePage';
 import callApi from '@common/utils/callApi.js';
-import { ContentBlock, Loader, MasonryContainer, MessageBox } from '@common/components';
+import { ContentBlock, MasonryContainer, MessageBox } from '@common/components';
 
 class ProfilePage extends BasePage {
-    constructor(router) {
-        super(router);
+    constructor(router, signal) {
+        super(router, signal);
         this.userData = null;
         this.loading = false;
         this.error = null;
@@ -16,13 +16,16 @@ class ProfilePage extends BasePage {
             this.loading = true;
             this.error = null;
 
-            const response = await callApi('GET', '/api/users/me');
+            const response = await callApi('GET', '/api/users/me', null, { signal: this.abortSignal });
             this.userData = response.data;
 
             return this.userData;
         } catch (error) {
-            console.error('Error fetching user data:', JSON.stringify(error));
-            // this.error = error.message || 'Failed to load user data';
+            if (error.name === 'AbortError') {
+                console.log('Request was aborted due to navigation');
+                return null;
+            }
+            console.error('Error fetching user data:', error);
             this.error = error;
             return null;
         } finally {
@@ -35,15 +38,9 @@ class ProfilePage extends BasePage {
 
         this.element = this.createPageElement({ pageHeading: 'Profile' });
 
-        const loaderElement = new Loader('large');
-        loaderElement.mount(this.element);
-
         try {
             // Fetch user data
             const userData = await this.fetchUserData();
-
-            // Remove loading state
-            loaderElement.unmount();
 
             if (userData) {
                 const { profile, username, email, accessLevel, status, calculations } = this.userData;
