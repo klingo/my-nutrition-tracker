@@ -75,6 +75,7 @@ export default class MasonryContainer extends BaseComponent {
         childElement.classList.add(styles.masonryItem);
 
         if (colSpan) {
+            if (colSpan < 1 || colSpan > 12) throw new Error('colSpan value must be between 1-12');
             childElement.classList.add(styles[`col${colSpan}`]);
         }
 
