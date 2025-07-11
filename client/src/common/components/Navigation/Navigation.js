@@ -1,13 +1,26 @@
 import styles from './Navigation.module.css';
+import BaseComponent from '@core/base/BaseComponent';
 import authService from '@common/services/AuthService.js';
 import { defaultUnauthenticatedRoute } from '@core/config/routes.js';
 import { appInstance } from '@/main.js';
 
-class Navigation {
+/**
+ * The Navigation class extends BaseComponent and is responsible for rendering and managing the navigation menu.
+ * It dynamically updates based on the user's authentication status, displaying appropriate links and functionality such as login,
+ * logout, profile access, and various sections of the application. The class handles both rendering the initial state and updating
+ * the active state of the navigation items as the user navigates through different parts of the app.
+ */
+class Navigation extends BaseComponent {
     constructor() {
+        super();
+
         this.element = document.getElementById('nav');
     }
 
+    /**
+     * Renders the navigation menu based on the authentication status.
+     * @return {HTMLElement} - The rendered navigation element.
+     */
     async render() {
         const isAuthenticated = await authService.isAuthenticated();
         const currentPath = window.location.pathname || '/';
@@ -34,6 +47,14 @@ class Navigation {
         return this.element;
     }
 
+    /**
+     * Creates a navigation item for a menu.
+     * @param {string} text - The display text of the navigation item.
+     * @param {string} path - The path associated with the navigation item, used for navigation purposes.
+     * @param {string} currentPath - The current active path to determine if this item should be marked as active.
+     * @param {string} [iconStyle=''] - Optional CSS class for styling an icon within the navigation item.
+     * @return {HTMLLIElement} A list item element representing the navigation item.
+     */
     createNavItem(text, path, currentPath, iconStyle = '') {
         const li = document.createElement('li');
         const a = document.createElement('a');
@@ -55,12 +76,22 @@ class Navigation {
         return li;
     }
 
+    /**
+     * Creates a spacer element with the class 'spacer'.
+     * @return {HTMLDivElement} A new div element styled as a spacer.
+     */
     createSpacer() {
         const element = document.createElement('div');
         element.classList.add(styles.spacer);
         return element;
     }
 
+    /**
+     * Creates a logout button element wrapped in an <li> tag.
+     * The button includes an icon and triggers the logout process when clicked.
+     * After logging out, it re-renders the navigation and navigates to the default unauthenticated route.
+     * @return {HTMLLIElement} A list item element containing the configured logout button.
+     */
     createLogoutButton() {
         const li = document.createElement('li');
         const button = document.createElement('button');
@@ -86,6 +117,10 @@ class Navigation {
         return li;
     }
 
+    /**
+     * Updates the active state of navigation items based on the current path.
+     * @param {string} currentPath - The current URL path used to determine which navigation item should be marked as active.
+     */
     updateActiveState(currentPath) {
         this.element.querySelectorAll(`.${styles.active}`).forEach((item) => {
             item.classList.remove(styles.active);
