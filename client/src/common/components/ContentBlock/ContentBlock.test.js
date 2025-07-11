@@ -15,6 +15,19 @@ describe('ContentBlock', () => {
             expect(contentBlock.element.classList.contains('content-block')).toBe(true);
         });
 
+        it('should create a div element with the correct single className', () => {
+            contentBlock = new ContentBlock({ className: 'custom-class' });
+            contentBlock.render();
+            expect(contentBlock.element.classList.contains('custom-class')).toBe(true);
+        });
+
+        it('should create a div element with the correct multiple classNames', () => {
+            contentBlock = new ContentBlock({ className: 'custom-class another-class' });
+            contentBlock.render();
+            expect(contentBlock.element.classList.contains('custom-class')).toBe(true);
+            expect(contentBlock.element.classList.contains('another-class')).toBe(true);
+        });
+
         it('should not render if already rendered', () => {
             const element = contentBlock.element;
             contentBlock.render();
@@ -39,6 +52,18 @@ describe('ContentBlock', () => {
     });
 
     describe('append', () => {
+        it('should call render function if not already done', () => {
+            let renderCalled = false;
+            contentBlock = new ContentBlock();
+            contentBlock.render = () => {
+                renderCalled = true;
+                contentBlock.element = document.createElement('div');
+            };
+            const childElement = document.createElement('span');
+            contentBlock.append(childElement);
+            expect(renderCalled).toBe(true);
+        });
+
         it('should append a child element to the content block', () => {
             const childElement = document.createElement('span');
             contentBlock.append(childElement);
