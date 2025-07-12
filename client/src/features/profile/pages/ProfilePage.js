@@ -51,7 +51,9 @@ class ProfilePage extends BasePage {
 
                 // Add account content block
                 const accountContentBlock = new ContentBlock();
-                accountContentBlock.textContent = '1';
+                const accountHeading = document.createElement('h2');
+                accountHeading.textContent = 'Account';
+                accountContentBlock.append(accountHeading);
                 masonryContainer.add(accountContentBlock, { colSpan: 6 });
 
                 const accountFields = [
@@ -74,7 +76,9 @@ class ProfilePage extends BasePage {
 
                 // Add profile content block
                 const profileContentBlock = new ContentBlock();
-                profileContentBlock.textContent = '2';
+                const profileHeading = document.createElement('h2');
+                profileHeading.textContent = 'Profile';
+                profileContentBlock.append(profileHeading);
                 masonryContainer.add(profileContentBlock, { colSpan: 6 });
 
                 const profileFields = [
@@ -101,7 +105,9 @@ class ProfilePage extends BasePage {
 
                 // Add calculations content block
                 const calculationsContentBlock = new ContentBlock();
-                calculationsContentBlock.textContent = '3';
+                const calculationsHeading = document.createElement('h2');
+                calculationsHeading.textContent = 'Calculations';
+                calculationsContentBlock.append(calculationsHeading);
                 masonryContainer.add(calculationsContentBlock, { colSpan: 6 });
 
                 const calculationFields = [
