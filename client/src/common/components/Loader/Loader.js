@@ -6,10 +6,11 @@ import BaseComponent from '@core/base/BaseComponent';
  * @class Loader
  */
 export default class Loader extends BaseComponent {
-    constructor({ size = 'normal' } = {}) {
+    constructor({ size = 'normal', centered = false } = {}) {
         super();
 
         this.size = this.#validateSize(size);
+        this.centered = centered;
     }
 
     #validateSize(size) {
@@ -23,6 +24,7 @@ export default class Loader extends BaseComponent {
     render() {
         const div = document.createElement('div');
         div.classList.add(styles.loader, styles[this.size]);
+        if (this.centered) div.classList.add(styles.centered);
         this.element = div;
         return this.element;
     }

@@ -111,7 +111,7 @@ class Router {
 
             this.mainContainer.innerHTML = '';
 
-            const loaderElement = new Loader({ size: 'large' });
+            const loaderElement = new Loader({ size: 'large', centered: true });
             loaderElement.mount(this.mainContainer);
 
             const page = new PageComponent(this, signal);

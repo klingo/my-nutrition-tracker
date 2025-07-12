@@ -3,8 +3,19 @@
     border-color: var(--color-accent-grey-800);
     border-top-color: var(--color-accent-green-700);
     border-radius: 50%;
-
     animation: spin 1.5s linear infinite;
+    /* Default to normal size if no size class is provided */
+    width: 24px;
+    height: 24px;
+    border-width: 4px;
+}
+
+.loader.centered {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
 }
 
 .loader.small {
