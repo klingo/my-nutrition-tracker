@@ -79,6 +79,17 @@ RefreshTokenSchema.statics.revokeFamily = async function (userId, familyId) {
     );
 };
 
+RefreshTokenSchema.statics.revokeAllForUser = async function (userId) {
+    return this.updateMany(
+        { userId, isRevoked: false },
+        {
+            isRevoked: true,
+            revokedAt: new Date(),
+            $set: { replacedByToken: 'LOGGED_OUT_EVERYWHERE' },
+        },
+    );
+};
+
 // Check for token reuse (possible attack)
 RefreshTokenSchema.statics.detectSuspiciousActivity = async function (userId, familyId) {
     // Count active tokens in this family

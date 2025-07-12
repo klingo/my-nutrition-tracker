@@ -128,12 +128,26 @@ router.post('/logout', mutationLimiter, async (req, res) => {
         // Clear authentication cookies
         clearAuthCookies(res);
 
-        res.status(200).json({ message: 'Logged out successfully' });
+        res.status(200).json({ success: true, message: 'Logged out successfully' });
     } catch (error) {
         console.error('Logout error:', error);
-        // Still clear cookies even if there was an error revoking the token
+        res.status(500).json({ success: false, message: 'Error logging out' });
+    }
+});
+
+// Logout endpoint - revokes refresh token and clears cookies
+router.post('/logout-everywhere', mutationLimiter, async (req, res) => {
+    try {
+        // Revoke all refresh tokens for this user
+        await RefreshToken.revokeAllForUser(req.user.userId);
+
+        // Clear authentication cookies
         clearAuthCookies(res);
-        res.status(200).json({ message: 'Logged out successfully' });
+
+        res.status(200).json({ success: true, message: 'Logged out successfully from all devices' });
+    } catch (error) {
+        console.error('Logout everywhere error:', error);
+        res.status(500).json({ success: false, message: 'Error logging out from all devices' });
     }
 });
 
