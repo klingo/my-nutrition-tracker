@@ -14,7 +14,7 @@ import { mutationLimiter, queryLimiter } from '../middleware/rateLimiters.js';
 const router = express.Router();
 
 // Get user details (excluding password) with energy calculations
-router.get('/me', queryLimiter, auth(), getUserById);
+router.get('/me', queryLimiter, auth(ACCESS_LEVELS.TRIAL_USER), getUserById);
 
 // Update user details (with restrictions)
 router.patch('/me', mutationLimiter, auth(ACCESS_LEVELS.TRIAL_USER), updateUserById);
