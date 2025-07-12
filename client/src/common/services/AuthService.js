@@ -105,7 +105,7 @@ class AuthService {
         try {
             await this.authCheckPromise;
             this.authCheckPromise = null; // Clear the promise after resolution
-            return this.authenticated && this.userInfo;
+            return !!(this.authenticated && this.userInfo);
         } catch (error) {
             this.authCheckPromise = null; // Clear the promise on error
             throw error;
