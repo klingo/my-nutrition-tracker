@@ -80,8 +80,9 @@ class ProfilePage extends BasePage {
                 const profileFields = [
                     { label: 'First name', value: profile.firstName },
                     { label: 'Last name', value: profile.lastName },
-                    { label: 'Date of Birth', value: profile.dateOfBirth },
                     { label: 'Gender', value: profile.gender },
+                    { label: 'Age', value: `${profile.age} years` },
+                    { label: 'Date of Birth', value: profile.dateOfBirth },
                     { label: 'Height', value: `${profile.height.value} ${profile.height.unit}` },
                     { label: 'Weight', value: `${profile.weight.value} ${profile.weight.unit}` },
                     { label: 'Activity level', value: profile.activityLevel },

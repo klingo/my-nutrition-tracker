@@ -43,6 +43,7 @@ const transformUser = (user) => {
             firstName: user.profile.firstName,
             lastName: user.profile.lastName,
             dateOfBirth: user.profile.dateOfBirth.toISOString().split('T')[0],
+            age: Math.floor((new Date() - new Date(user.profile.dateOfBirth)) / (1000 * 60 * 60 * 24 * 365)),
             height: {
                 value: convertHeight.toCm(user.profile.height.value, user.profile.height.unit),
                 unit: user.profile.height.unit,
