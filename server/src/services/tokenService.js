@@ -25,11 +25,35 @@ export const generateTokens = async (user, oldToken = null, rotateRefreshToken =
         return { accessToken, refreshToken: null };
     }
 
+    // Generate refresh token with family ID
+    let familyId;
+
+    // If this is a refresh operation, get the family ID from the old token
+    if (oldToken) {
+        const oldTokenDoc = await RefreshToken.findOne({ token: oldToken });
+        if (oldTokenDoc) {
+            familyId = oldTokenDoc.familyId;
+
+            // Check for suspicious activity
+            const isSuspicious = await RefreshToken.detectSuspiciousActivity(user._id, familyId);
+
+            if (isSuspicious) {
+                // Revoke all tokens in this family
+                await RefreshToken.revokeFamily(user._id, familyId);
+                throw new Error('Suspicious activity detected');
+            }
+        }
+    } else {
+        // For new logins, generate a new family ID
+        familyId = RefreshToken.generateFamilyId();
+    }
+
     // Generate refresh token
     const refreshToken = jwt.sign(
         {
             userId: user._id,
             type: 'refresh',
+            familyId,
         },
         process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
         { expiresIn: '30d' }, // Long-lived; 7 days to 30 days
@@ -43,6 +67,7 @@ export const generateTokens = async (user, oldToken = null, rotateRefreshToken =
     const refreshTokenDoc = new RefreshToken({
         token: refreshToken,
         userId: user._id,
+        familyId,
         expiresAt,
     });
     await refreshTokenDoc.save();
