@@ -13,6 +13,18 @@ export const authLimiter = rateLimit({
 });
 
 /**
+ * Rate limiter for refresh endpoint
+ * Allows 5 requests per 15 minutes
+ */
+export const refreshLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 attempts per window
+    message: 'Too many refresh attempts, please try again later',
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+/**
  * Rate limiter for status endpoint
  * Allows 30 requests per minute
  */
