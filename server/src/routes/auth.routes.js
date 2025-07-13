@@ -14,10 +14,10 @@ import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
 const router = express.Router();
 
 // Register a new user
-router.post('/register', authLimiter, auth(), registerUser);
+router.post('/register', authLimiter, registerUser);
 
 // Login a user
-router.post('/login', authLimiter, auth(), loginUser);
+router.post('/login', authLimiter, loginUser);
 
 // Refresh tokens
 router.post('/refresh', refreshLimiter, auth(ACCESS_LEVELS.TRIAL_USER), refreshUserTokens);
