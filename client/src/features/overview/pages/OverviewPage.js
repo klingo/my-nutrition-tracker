@@ -1,31 +1,34 @@
 import BasePage from '@core/base/BasePage';
 import authService from '@common/services/AuthService.js';
+import { ContentBlock } from '@common/components/index.js';
 
 class OverviewPage extends BasePage {
     constructor(router, signal) {
         super(router, signal);
+        this.pageTitle = 'Overview';
     }
 
-    async render() {
-        console.log('OverviewPage render() called');
+    async renderContent() {
+        console.log('OverviewPage renderContent() called');
+        const { loading, error } = this.getState();
+
+        if (loading) return this.renderLoading();
+        if (error) return this.renderError(error);
 
         const userInfo = authService.getUserInfo();
         const username = userInfo ? userInfo.username : 'User';
 
-        this.element = this.createPageElement();
+        // Welcome Section
+        const welcomeContentBlock = new ContentBlock();
+        welcomeContentBlock.append(this.createSectionHeading(`Welcome back, ${username}!`));
+        welcomeContentBlock.append(this.createElement('p', { textContent: 'Your nutrition tracker dashboard.' }));
+        welcomeContentBlock.mount(this.element);
+    }
 
-        this.element.innerHTML = `
-            <div class="overview-container">
-                <h1>Overview</h1>
-                <p>Welcome back, ${username}!</p>
-                <p>Your nutrition tracker dashboard.</p>
-                <nav>
-                    <a href="#" data-navigate="/log-intake">Log Intake</a>
-                </nav>
-            </div>
-        `;
-
-        return this.element;
+    createSectionHeading(text) {
+        const heading = document.createElement('h2');
+        heading.textContent = text;
+        return heading;
     }
 }
 

@@ -83,7 +83,7 @@ const transformUser = (user) => {
 };
 
 // Controller function to get a user by ID
-const getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
     try {
         const user = await User.findById(req.user.userId).select('-password');
         // const user = await User.findById(req.params.id).select('-password');
@@ -95,15 +95,22 @@ const getUserById = async (req, res) => {
         // Transform data for presentation
         const transformedUser = transformUser(user);
 
-        res.json({ ...transformedUser, calculations });
+        res.json({
+            _embedded: {
+                user: {
+                    ...transformedUser,
+                    calculations,
+                },
+            },
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
 // Controller function to update a user by ID
-const updateUserById = async (req, res) => {
+export const updateUserById = async (req, res) => {
     try {
         const { password, profile, ...otherFields } = req.body;
 
@@ -159,83 +166,100 @@ const updateUserById = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.json(user);
+        res.json({
+            _embedded: {
+                user: transformUser(user),
+            },
+        });
     } catch (error) {
         console.error('Update user error:', error);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
 // Controller function to get an active user count
-const getActiveUserCount = async (req, res) => {
+export const getActiveUserCount = async (req, res) => {
     try {
         const count = await User.countDocuments({ isBlocked: false });
-        res.json({ count });
+        res.json({
+            _embedded: {
+                count: {
+                    activeUsers: count,
+                },
+            },
+        });
     } catch (error) {
         console.error('Get user count error:', error);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
 // Controller function to get all blocked users
-const getBlockedUsers = async () => {
+export const getBlockedUsers = async () => {
     // TODO: not yet implemented
 };
 
 // Controller function to get all users
-const getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
     try {
         const users = await User.find().select('-password');
-        res.json(users);
+        res.json({
+            _embedded: {
+                users: users.map((user) => transformUser(user)),
+            },
+        });
     } catch (error) {
         console.error('Get all users error:', error);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
 // Controller function to update calculations for a user by ID
-const updateCalculations = async (req, res) => {
+export const updateCalculations = async (req, res) => {
     try {
-        console.log(req);
         const user = await User.findById(req.user.userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
         const calculations = await user.updateCalculations();
-        res.json(calculations);
+
+        res.json({
+            _embedded: {
+                calculations,
+            },
+        });
     } catch (error) {
         console.error('Update calculations error:', error);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
 // Controller function to delete a user by ID
-const deleteUserById = async (req, res) => {
+export const deleteUserById = async (req, res) => {
     try {
         const { id } = req.params;
         const user = await User.findById(id);
+
         if (!user) return res.status(404).send({ message: 'User not found' });
 
-        if (user.accessLevel >= ACCESS_LEVELS.ADMIN)
+        if (user.accessLevel >= ACCESS_LEVELS.ADMIN) {
             return res.status(403).send({ message: 'Admin cannot be deleted' });
+        }
 
         await User.findByIdAndDelete(id);
 
-        res.json({ message: 'User deleted successfully' });
+        res.json({
+            message: 'User deleted successfully',
+            _embedded: {
+                user: {
+                    id: user.id,
+                    username: user.username,
+                },
+            },
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error' });
     }
-};
-
-export {
-    transformUser,
-    getUserById,
-    updateUserById,
-    getActiveUserCount,
-    getBlockedUsers,
-    getAllUsers,
-    updateCalculations,
-    deleteUserById,
 };

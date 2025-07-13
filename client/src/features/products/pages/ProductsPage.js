@@ -1,48 +1,62 @@
 import BasePage from '@core/base/BasePage';
 import callApi from '@common/utils/callApi';
-import { Button } from '@common/components';
+import { Button, ContentBlock } from '@common/components';
 
 class ProductsPage extends BasePage {
     constructor(router, signal) {
         super(router, signal);
-        this.productsData = null;
-        this.loading = false;
-        this.error = null;
+
+        this.pageTitle = 'Products';
+        this.setState({
+            products: [],
+            pagination: {
+                currentPage: 1,
+                itemsPerPage: 10,
+                totalItems: 0,
+                totalPages: 1,
+            },
+        });
     }
 
-    async fetchProductsData() {
+    async componentDidMount() {
+        await super.componentDidMount();
+        const { currentPage, itemsPerPage } = this.getState().pagination;
+        await this.fetchProductsData(currentPage, itemsPerPage);
+    }
+
+    async fetchProductsData(page = 1, limit = 10) {
         try {
-            this.loading = true;
-            this.error = null;
+            this.setState({ loading: true, error: null });
+            const response = await callApi('GET', `/api/products?page=${page}&limit=${limit}`, null, {
+                signal: this.abortSignal,
+            });
 
-            const response = await callApi('GET', '/api/products/', null, { signal: this.abortSignal });
-            this.productsData = response.data;
-
-            return this.productsData;
+            this.setState({ products: response._embedded.products, pagination: response.pagination, loading: false });
         } catch (error) {
-            if (error.name === 'AbortError') {
-                console.log('Request was aborted due to navigation');
-                return null;
+            if (error.name !== 'AbortError') {
+                console.error('Error fetching products data:', error);
+                this.setState({ error, loading: false });
             }
-            console.error('Error fetching products data:', error);
-            this.error = error;
-            return null;
-        } finally {
-            this.loading = false;
         }
     }
 
-    async render() {
-        console.log('ProductsPage render() called');
+    async renderContent() {
+        console.log('ProductsPage renderContent() called');
+        const { products, pagination } = this.getState();
 
-        this.element = this.createPageElement();
+        const productsContentBlock = new ContentBlock();
+        if (!products || products.length === 0) {
+            productsContentBlock.append(document.createTextNode('No products found.'));
+        } else {
+            products.forEach((product) => {
+                // TODO: implement product rendering
+                const productCard = document.createElement('div');
+                productCard.textContent = product.name;
+                productsContentBlock.append(productCard);
+            });
+        }
 
-        this.element.innerHTML = `
-            <div class="overview-container">
-                <h1>Products</h1>
-                <p>Your nutrition tracker product dashboard.</p>
-            </div>
-        `;
+        productsContentBlock.mount(this.element);
 
         const addProductButton = new Button({
             text: 'Add Product',
@@ -54,14 +68,8 @@ class ProductsPage extends BasePage {
         });
         addProductButton.mount(this.element);
 
-        try {
-            const productsData = await this.fetchProductsData();
-            console.log(productsData);
-        } catch (error) {
-            console.error('Error in products render:', error);
-        }
-
-        return this.element;
+        // TODO: implement pagination
+        console.log(pagination);
     }
 }
 

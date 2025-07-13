@@ -71,9 +71,9 @@ async function callApi(method, url, body, options = {}) {
         // Handle empty responses (like 204 No Content)
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
-            return { data: await response.json() };
+            return await response.json();
         } else {
-            return { data: {} };
+            return {};
         }
     } catch (error) {
         console.error('API Call Error:', error);

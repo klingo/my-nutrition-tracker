@@ -32,6 +32,7 @@ nav {
 main {
     grid-area: main;
     background-color: var(--color-background);
+    padding-top: 24px;
 }
 
 footer {

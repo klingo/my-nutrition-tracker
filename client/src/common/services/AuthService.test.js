@@ -70,9 +70,11 @@ describe('AuthService', () => {
             callApi.mockResolvedValueOnce({ data: { success: true } });
             // Then mock the auth status check that happens after login
             callApi.mockResolvedValueOnce({
-                data: {
-                    authenticated: true,
-                    user: mockUserInfo,
+                _embedded: {
+                    auth: {
+                        isAuthenticated: true,
+                        user: mockUserInfo,
+                    },
                 },
             });
 
@@ -339,7 +341,7 @@ describe('AuthService', () => {
 
         it('should check auth status when not authenticated', async () => {
             // Arrange
-            callApi.mockResolvedValue({ data: { authenticated: true, user: mockUserInfo } });
+            callApi.mockResolvedValue({ _embedded: { auth: { isAuthenticated: true, user: mockUserInfo } } });
 
             // Act
             const result = await authService.isAuthenticated();
@@ -360,7 +362,10 @@ describe('AuthService', () => {
             callApi.mockImplementation(
                 () =>
                     new Promise((resolve) =>
-                        setTimeout(() => resolve({ data: { authenticated: true, user: mockUserInfo } }), 100),
+                        setTimeout(
+                            () => resolve({ _embedded: { auth: { isAuthenticated: true, user: mockUserInfo } } }),
+                            100,
+                        ),
                     ),
             );
 
@@ -383,7 +388,7 @@ describe('AuthService', () => {
             callApi.mockResolvedValue({});
             // Mock the isAuthenticated call that refreshAccessToken will make
             callApi.mockResolvedValueOnce({}); // For the refresh call
-            callApi.mockResolvedValueOnce({ data: { authenticated: true, user: mockUserInfo } }); // For the status check
+            callApi.mockResolvedValueOnce({ _embedded: { auth: { isAuthenticated: true, user: mockUserInfo } } }); // For the status check
 
             // Act
             const result = await authService.refreshAccessToken();
@@ -449,7 +454,7 @@ describe('AuthService', () => {
     describe('authentication flow', () => {
         it('should update auth status when checkAuth is successful', async () => {
             // Arrange
-            callApi.mockResolvedValue({ data: { authenticated: true, user: mockUserInfo } });
+            callApi.mockResolvedValue({ _embedded: { auth: { isAuthenticated: true, user: mockUserInfo } } });
 
             // Act - isAuthenticated will call the private #checkAuthStatus method
             const result = await authService.isAuthenticated();

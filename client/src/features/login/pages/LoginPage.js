@@ -9,20 +9,17 @@ import logo from '@assets/logo/android-chrome-192x192.png';
 class LoginPage extends BasePage {
     constructor(router, signal) {
         super(router, signal);
+
         this.loginButton = null;
-        this.isLoading = false;
         this.messageBoxContainer = null;
+        this.handleLogin = this.handleLogin.bind(this);
     }
 
-    async render() {
-        console.log('LoginPage render() called');
+    async renderContent() {
+        console.log('LoginPage renderContent() called');
 
-        this.element = this.createPageElement();
-
-        // TODO: replace with contentBlock?
         const container = document.createElement('div');
         container.classList.add(styles.overlay);
-        this.element.append(container);
 
         const logoImg = document.createElement('img');
         logoImg.setAttribute('src', logo);
@@ -40,10 +37,9 @@ class LoginPage extends BasePage {
 
         const form = document.createElement('form');
         form.classList.add(styles.form);
-        form.addEventListener('submit', this.handleLogin.bind(this));
         container.append(form);
 
-        const usernameInput = new Input({
+        this.usernameInput = new Input({
             name: 'username',
             id: 'username',
             label: 'Username',
@@ -54,9 +50,9 @@ class LoginPage extends BasePage {
             autofocus: true,
             icon: 'person',
         });
-        usernameInput.mount(form);
+        this.usernameInput.mount(form);
 
-        const passwordInput = new Input({
+        this.passwordInput = new Input({
             type: 'password',
             name: 'password',
             id: 'password',
@@ -67,105 +63,111 @@ class LoginPage extends BasePage {
             autocomplete: 'current-password',
             icon: 'lock',
         });
-        passwordInput.mount(form);
+        this.passwordInput.mount(form);
 
+        // Auth Actions
         const authActions = document.createElement('div');
         authActions.classList.add(styles.authActions);
         form.append(authActions);
 
+        // Remember Me
         // TODO: introduce new component
         const rememberMeCheckbox = document.createElement('span');
         rememberMeCheckbox.classList.add(styles.rememberMe);
         rememberMeCheckbox.textContent = '[X] Remember me';
         authActions.append(rememberMeCheckbox);
 
+        // Forgot Password
         // TODO: introduce new component
         const forgotPasswordLink = document.createElement('a');
         forgotPasswordLink.classList.add(styles.forgotPassword);
         forgotPasswordLink.textContent = 'Forgot password?';
         authActions.append(forgotPasswordLink);
 
-        // const passwordInput = document.createElement('input');
-        // passwordInput.setAttribute('type', 'password');
-        // passwordInput.setAttribute('name', 'password');
-        // passwordInput.setAttribute('placeholder', 'Password');
-        // passwordInput.setAttribute('required', '');
-        // passwordInput.setAttribute('autocomplete', 'current-password');
-        // passwordInput.setAttribute('id', 'password');
-        // passwordInput.setAttribute('aria-describedby', 'password-help');
-        // passwordInput.setAttribute('aria-invalid', 'false');
-        // passwordInput.setAttribute('aria-required', 'true');
-        // passwordInput.setAttribute('aria-label', 'Password');
-        // passwordInput.setAttribute('title', 'Password');
-        // form.append(passwordInput);
-
+        // Login Button
         this.loginButton = new Button({
             text: 'Login',
             type: 'primary',
             icon: 'login',
+            onClick: (e) => {
+                e.preventDefault();
+                this.handleLogin(e);
+            },
         });
         this.loginButton.mount(form);
 
         // const registerButton = new Button({ children: 'Register', type: 'secondary' });
         // registerButton.mount(container);
 
+        // Sign Up Text
         const signupElement = document.createElement('span');
         signupElement.classList.add(styles.signup);
         signupElement.textContent = "Don't have an account? Sign up.";
         container.append(signupElement);
 
-        return this.element;
+        this.element.append(container);
     }
 
     async handleLogin(event) {
         event.preventDefault();
 
-        if (this.isLoading) return;
-        this.isLoading = true;
+        const username = this.usernameInput.getValue();
+        const password = this.passwordInput.getValue();
+
+        this.loginButton.setLoading(true).setText('Loading...');
         this.messageBoxContainer.innerHTML = '';
 
-        if (this.loginButton) {
-            this.loginButton.setLoading(true).setText('Loading...');
-        }
-
-        const formData = new FormData(event.target);
-        const username = formData.get('username');
-        const password = formData.get('password');
-
         try {
+            console.log('Calling authService.login with:', username, '***'); // Don't log password
             const result = await authService.login(username, password);
+            console.log('Login result:', result);
+
             if (result.success) {
+                console.log('Login successful, updating auth state...');
+
                 await appInstance.renderNavigation();
+
+                console.log('Auth state updated, redirecting...');
                 this.router.navigate(defaultAuthenticatedRoute);
             } else {
-                if (result.status === 401) {
-                    this.#displayErrorMessage(
-                        'Sorry, the username and password you entered did not match our records. Please double-check and try again.',
-                    );
-                } else if (result.status === 403) {
-                    this.#displayErrorMessage('Your account is blocked.');
-                } else if (result.status === 429) {
-                    this.#displayErrorMessage('Too many login attempts. Please try again later.');
-                } else if (result.status === 500) {
-                    this.#displayErrorMessage(
-                        'My Nutrition Tracker is temporarily unavailable. Please try again later.',
-                    );
-                } else {
-                    this.#displayErrorMessage(result.message);
-                }
+                this.#handleLoginError(result);
             }
         } catch (error) {
-            console.log(error);
+            console.error('Login error:', error);
             this.#displayErrorMessage('An unexpected error occurred. Please try again later.');
         } finally {
-            this.isLoading = false;
-            if (this.loginButton) {
-                this.loginButton.setLoading(false).setText('Login');
-            }
+            this.loginButton.setLoading(false).setText('Login');
         }
     }
 
+    #handleLoginError(result) {
+        console.log('Handling login error:', result);
+        const { status, message } = result;
+
+        let errorMessage = message || 'Login failed. Please try again.';
+
+        if (status === 401) {
+            errorMessage =
+                'Sorry, the username and password you entered did not match our records. Please double-check and try again.';
+        } else if (status === 403) {
+            errorMessage = 'Your account is blocked.';
+        } else if (status === 429) {
+            errorMessage = 'Too many login attempts. Please try again later.';
+        } else if (status === 500) {
+            errorMessage = 'My Nutrition Tracker is temporarily unavailable. Please try again later.';
+        }
+
+        console.log('Displaying error message:', errorMessage);
+        this.#displayErrorMessage(errorMessage);
+    }
+
     #displayErrorMessage(message) {
+        console.log('Displaying message box with message:', message);
+
+        // Clear any existing messages first
+        this.messageBoxContainer.innerHTML = '';
+
+        // Create and mount the new message box
         const messageBox = new MessageBox({ type: 'error', message });
         messageBox.mount(this.messageBoxContainer);
     }

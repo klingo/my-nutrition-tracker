@@ -34,10 +34,18 @@ export const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password + pepper, salt);
         const user = new User({ username, email, password: hashedPassword });
         await user.save();
-        res.send('User registered');
+
+        res.status(201).json({
+            _embedded: {
+                user: {
+                    username: user.username,
+                    email: user.email,
+                },
+            },
+        });
     } catch (error) {
         console.error('Register error:', error);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
@@ -56,7 +64,7 @@ export const loginUser = async (req, res) => {
 
         // Validate that username and password are provided
         if (!username || !password) {
-            return res.status(400).json({ message: 'Username and password is required' });
+            return res.status(400).json({ message: 'Username and password are required' });
         }
 
         const normalizedUsername = username.toLowerCase().trim();
@@ -79,17 +87,23 @@ export const loginUser = async (req, res) => {
         // Set authentication cookies
         setAuthCookies(res, tokens);
 
-        res.status(200).json({ message: 'Login successful' });
+        res.json({
+            _embedded: {
+                user: {
+                    username: user.username,
+                    accessLevel: user.accessLevel,
+                },
+            },
+        });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
 export const refreshUserTokens = async (req, res) => {
     try {
         const currentRefreshToken = req.cookies.refreshToken;
-
         if (!currentRefreshToken) {
             return res.status(401).send({ message: 'Refresh token is required' });
         }
@@ -106,7 +120,7 @@ export const refreshUserTokens = async (req, res) => {
         res.json({ message: 'Tokens refreshed successfully' });
     } catch (error) {
         console.error('Refresh error:', error);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
@@ -123,10 +137,17 @@ export const logoutUser = async (req, res) => {
         // Clear authentication cookies
         clearAuthCookies(res);
 
-        res.status(200).json({ success: true, message: 'Logged out successfully' });
+        res.json({
+            message: 'Logged out successfully',
+            _embedded: {
+                auth: {
+                    isAuthenticated: false,
+                },
+            },
+        });
     } catch (error) {
         console.error('Logout error:', error);
-        res.status(500).json({ success: false, message: 'Error logging out' });
+        res.status(500).json({ message: 'Error logging out' });
     }
 };
 
@@ -138,10 +159,17 @@ export const logoutUserEverywhere = async (req, res) => {
         // Clear authentication cookies
         clearAuthCookies(res);
 
-        res.status(200).json({ success: true, message: 'Logged out successfully from all devices' });
+        res.json({
+            message: 'Logged out successfully from all devices',
+            _embedded: {
+                auth: {
+                    isAuthenticated: false,
+                },
+            },
+        });
     } catch (error) {
         console.error('Logout everywhere error:', error);
-        res.status(500).json({ success: false, message: 'Error logging out from all devices' });
+        res.status(500).json({ message: 'Error logging out from all devices' });
     }
 };
 
@@ -156,6 +184,11 @@ export const checkAuthStatus = async (req, res) => {
             return res.json({
                 authenticated: false,
                 message: 'No authentication tokens',
+                _embedded: {
+                    auth: {
+                        isAuthenticated: false,
+                    },
+                },
             });
         }
 
@@ -170,14 +203,25 @@ export const checkAuthStatus = async (req, res) => {
                     return res.status(404).json({
                         authenticated: false,
                         message: 'User not found',
+                        _embedded: {
+                            auth: {
+                                isAuthenticated: false,
+                            },
+                        },
                     });
                 }
 
                 return res.json({
-                    authenticated: true,
-                    user: {
-                        // userId: user._id,
-                        username: user.username,
+                    message: 'User is authenticated',
+                    _embedded: {
+                        auth: {
+                            isAuthenticated: true,
+                            user: {
+                                username: user.username,
+                                email: user.email,
+                                accessLevel: user.accessLevel,
+                            },
+                        },
                     },
                 });
             } catch (innerError) {
@@ -185,6 +229,11 @@ export const checkAuthStatus = async (req, res) => {
                 return res.status(500).json({
                     authenticated: false,
                     message: 'Server error',
+                    _embedded: {
+                        auth: {
+                            isAuthenticated: false,
+                        },
+                    },
                 });
             }
         });
@@ -193,6 +242,11 @@ export const checkAuthStatus = async (req, res) => {
         return res.status(500).json({
             authenticated: false,
             message: 'Server error',
+            _embedded: {
+                auth: {
+                    isAuthenticated: false,
+                },
+            },
         });
     }
 };

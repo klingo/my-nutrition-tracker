@@ -97,7 +97,12 @@ class Router {
 
     async renderPage(PageComponent) {
         // Abort any previous page loading operation
-        if (this.abortController) this.abortController.abort();
+        if (this.abortController) {
+            if (this.pageInstance && this.pageInstance.unmount) {
+                this.pageInstance.unmount();
+            }
+            this.abortController.abort();
+        }
 
         // Create a new abort controller for this operation
         this.abortController = new AbortController();
@@ -107,27 +112,37 @@ class Router {
             // Clean up the previous page if it exists
             if (this.pageInstance && this.pageInstance.unmount) {
                 this.pageInstance.unmount();
+                this.pageInstance = null;
             }
 
+            // Clear the main container
             this.mainContainer.innerHTML = '';
 
+            // Show loader
             const loaderElement = new Loader({ size: 'large', centered: true });
             loaderElement.mount(this.mainContainer);
 
+            // Create the new page instance
             const page = new PageComponent(this, signal);
             this.pageInstance = page;
 
             // Check if the operation was aborted before rendering
             if (signal.aborted) return;
 
+            // Render the page content
             const content = await page.render();
 
             // Check if the operation was aborted after rendering
             if (signal.aborted) return;
 
-            this.mainContainer.replaceChildren(content);
+            // Clear the container and append the new content
+            this.mainContainer.innerHTML = '';
+            this.mainContainer.appendChild(content);
 
-            if (page.mount && !signal.aborted) page.mount();
+            // Mount the page (this will call componentDidMount)
+            if (page.mount && !signal.aborted) {
+                await page.mount(this.mainContainer);
+            }
         } catch (error) {
             // Only show error if the operation wasn't aborted
             if (error.name !== 'AbortError' && !signal.aborted) {

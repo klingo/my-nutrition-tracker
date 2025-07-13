@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import Input from '@common/components/Input';
 
 describe('Input', () => {
@@ -176,6 +176,82 @@ describe('Input', () => {
         it('should not render leading icon if not provided', () => {
             const input = new Input().render();
             expect(input.querySelector('.icon')).toBeNull();
+        });
+    });
+
+    describe('disabled', () => {
+        it('should set disabled attribute when disabled is true', () => {
+            const input = new Input({ disabled: true }).render();
+            const inputElement = input.querySelector('input');
+            expect(inputElement.disabled).toBe(true);
+            expect(inputElement.getAttribute('aria-disabled')).toBe('true');
+        });
+
+        it('should not set disabled attribute when disabled is false', () => {
+            const input = new Input({ disabled: false }).render();
+            const inputElement = input.querySelector('input');
+            expect(inputElement.disabled).toBe(false);
+            expect(inputElement.getAttribute('aria-disabled')).toBeNull();
+        });
+
+        it('should not set disabled attribute when disabled is not provided', () => {
+            const input = new Input({}).render();
+            const inputElement = input.querySelector('input');
+            expect(inputElement.disabled).toBe(false);
+            expect(inputElement.getAttribute('aria-disabled')).toBeNull();
+        });
+    });
+
+    describe('minLength', () => {
+        it('should set minLength attribute when provided', () => {
+            const input = new Input({ minLength: 5 }).render();
+            const inputElement = input.querySelector('input');
+            expect(inputElement.getAttribute('minlength')).toBe('5');
+        });
+
+        it('should set default minLength when not provided', () => {
+            const input = new Input().render();
+            const inputElement = input.querySelector('input');
+            expect(inputElement.getAttribute('minlength')).toBe('0');
+        });
+    });
+
+    describe('onChange', () => {
+        it('should call onChange handler when input value changes', () => {
+            const mockOnChange = vi.fn();
+            const input = new Input({ onChange: mockOnChange });
+            const rendered = input.render();
+            const inputElement = rendered.querySelector('input');
+
+            inputElement.value = 'test';
+            inputElement.dispatchEvent(new Event('change'));
+
+            expect(mockOnChange).toHaveBeenCalledTimes(1);
+            expect(input.value).toBe('test');
+        });
+    });
+
+    describe('value methods', () => {
+        it('should set and get value using setValue and getValue', () => {
+            const input = new Input();
+            input.render();
+
+            input.setValue('test value');
+            expect(input.getValue()).toBe('test value');
+
+            // Verify the DOM is updated
+            const inputElement = input.element.querySelector('input');
+            expect(inputElement.value).toBe('test value');
+        });
+
+        it('should get value from DOM if element exists', () => {
+            const input = new Input();
+            input.render();
+
+            const inputElement = input.element.querySelector('input');
+            inputElement.value = 'dom value';
+
+            expect(input.getValue()).toBe('dom value');
         });
     });
 

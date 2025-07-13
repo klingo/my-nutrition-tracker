@@ -1,222 +1,101 @@
 import styles from './ProfilePage.module.css';
 import BasePage from '@core/base/BasePage';
 import callApi from '@common/utils/callApi.js';
-import { ContentBlock, MasonryContainer, MessageBox } from '@common/components';
+import { ContentBlock, MasonryContainer } from '@common/components';
 
 class ProfilePage extends BasePage {
     constructor(router, signal) {
         super(router, signal);
-        this.userData = null;
-        this.loading = false;
-        this.error = null;
+        this.pageTitle = 'Profile';
+
+        this.setState({
+            userData: null,
+        });
+    }
+
+    async componentDidMount() {
+        await super.componentDidMount();
+        await this.fetchUserData();
     }
 
     async fetchUserData() {
         try {
-            this.loading = true;
-            this.error = null;
-
+            this.setState({ loading: true, error: null });
             const response = await callApi('GET', '/api/users/me', null, { signal: this.abortSignal });
-            this.userData = response.data;
-
-            return this.userData;
+            this.setState({ userData: response._embedded.user, loading: false });
         } catch (error) {
-            if (error.name === 'AbortError') {
-                console.log('Request was aborted due to navigation');
-                return null;
+            if (error.name !== 'AbortError') {
+                console.error('Error fetching user data:', error);
+                this.setState({ error, loading: false });
             }
-            console.error('Error fetching user data:', error);
-            this.error = error;
-            return null;
-        } finally {
-            this.loading = false;
         }
     }
 
-    async render() {
-        console.log('ProfilePage render() called');
+    async renderContent() {
+        console.log('ProfilePage renderContent() called');
+        const { userData, loading, error } = this.getState();
 
-        this.element = this.createPageElement({ pageHeading: 'Profile' });
+        if (loading) return this.renderLoading();
 
-        try {
-            // Fetch user data
-            const userData = await this.fetchUserData();
+        if (error) return this.renderError(error);
 
-            if (userData) {
-                const { profile, username, email, accessLevel, status, calculations } = this.userData;
+        if (!userData) return this.renderError(new Error('No user data available'));
 
-                // Create a masonry container
-                const masonryContainer = new MasonryContainer();
-                masonryContainer.mount(this.element);
+        const { profile, username, email, accessLevel, status, calculations } = userData;
+        const masonryContainer = new MasonryContainer();
 
-                // Add account content block
-                const accountContentBlock = new ContentBlock();
-                const accountHeading = document.createElement('h2');
-                accountHeading.textContent = 'Account';
-                accountContentBlock.append(accountHeading);
-                masonryContainer.add(accountContentBlock, { colSpan: 6 });
+        // Account Section
+        const accountContentBlock = new ContentBlock();
+        accountContentBlock.append(this.createSectionHeading('Account'));
+        this.renderField(accountContentBlock, 'Username', username);
+        this.renderField(accountContentBlock, 'EMail', email);
+        this.renderField(accountContentBlock, 'Account type', accessLevel);
+        this.renderField(accountContentBlock, 'Status', status);
+        masonryContainer.add(accountContentBlock, { colSpan: 6 });
 
-                const accountFields = [
-                    { label: 'Username', value: username },
-                    { label: 'EMail', value: email },
-                    { label: 'Account type', value: accessLevel },
-                    { label: 'Status', value: status },
-                ];
-                accountFields.forEach(({ label, value }) => {
-                    const fieldContainer = this.createElement('div', styles.fieldContainer);
-                    const labelElement = this.createElement('span', styles.label);
-                    const valueElement = this.createElement('span', styles.value);
+        // Profile Section
+        const profileContentBlock = new ContentBlock();
+        profileContentBlock.append(this.createSectionHeading('Profile'));
+        this.renderField(profileContentBlock, 'First Name', profile.firstName);
+        this.renderField(profileContentBlock, 'Last Name', profile.lastName);
+        this.renderField(profileContentBlock, 'Gender', profile.gender);
+        this.renderField(profileContentBlock, 'Age', `${profile.age} years`);
+        this.renderField(profileContentBlock, 'Date of Birth', profile.dateOfBirth);
+        this.renderField(profileContentBlock, 'Height', `${profile.height.value} ${profile.height.unit}`);
+        this.renderField(profileContentBlock, 'Weight', `${profile.weight.value} ${profile.weight.unit}`);
+        this.renderField(profileContentBlock, 'Activity Level', profile.activityLevel);
+        masonryContainer.add(profileContentBlock, { colSpan: 6 });
 
-                    labelElement.textContent = `${label}:`;
-                    valueElement.textContent = value;
+        // Calculations Section
+        const calculationsContentBlock = new ContentBlock();
+        calculationsContentBlock.append(this.createSectionHeading('Calculations'));
+        this.renderField(calculationsContentBlock, 'Body Mass Index (BMI)', calculations.bmi);
+        this.renderField(calculationsContentBlock, 'Basal Metabolic Rate (BMR)', calculations.bmr);
+        this.renderField(calculationsContentBlock, 'Total Daily Energy Expenditure (TDEE)', calculations.tdee);
+        masonryContainer.add(calculationsContentBlock, { colSpan: 6 });
 
-                    fieldContainer.append(labelElement, valueElement);
-                    accountContentBlock.append(fieldContainer);
-                });
-
-                // Add profile content block
-                const profileContentBlock = new ContentBlock();
-                const profileHeading = document.createElement('h2');
-                profileHeading.textContent = 'Profile';
-                profileContentBlock.append(profileHeading);
-                masonryContainer.add(profileContentBlock, { colSpan: 6 });
-
-                const profileFields = [
-                    { label: 'First name', value: profile.firstName },
-                    { label: 'Last name', value: profile.lastName },
-                    { label: 'Gender', value: profile.gender },
-                    { label: 'Age', value: `${profile.age} years` },
-                    { label: 'Date of Birth', value: profile.dateOfBirth },
-                    { label: 'Height', value: `${profile.height.value} ${profile.height.unit}` },
-                    { label: 'Weight', value: `${profile.weight.value} ${profile.weight.unit}` },
-                    { label: 'Activity level', value: profile.activityLevel },
-                ];
-                profileFields.forEach(({ label, value }) => {
-                    const fieldContainer = this.createElement('div', styles.fieldContainer);
-                    const labelElement = this.createElement('span', styles.label);
-                    const valueElement = this.createElement('span', styles.value);
-
-                    labelElement.textContent = `${label}:`;
-                    valueElement.textContent = value;
-
-                    fieldContainer.append(labelElement, valueElement);
-                    profileContentBlock.append(fieldContainer);
-                });
-
-                // Add calculations content block
-                const calculationsContentBlock = new ContentBlock();
-                const calculationsHeading = document.createElement('h2');
-                calculationsHeading.textContent = 'Calculations';
-                calculationsContentBlock.append(calculationsHeading);
-                masonryContainer.add(calculationsContentBlock, { colSpan: 6 });
-
-                const calculationFields = [
-                    { label: 'Body Mass Index (BMI)', value: calculations.bmi },
-                    { label: 'Basal Metabolic Rate (BMR)', value: calculations.bmr },
-                    { label: 'Total Daily Energy Expenditure (TDEE)', value: calculations.tdee },
-                ];
-                calculationFields.forEach(({ label, value }) => {
-                    const fieldContainer = this.createElement('div', styles.fieldContainer);
-                    const labelElement = this.createElement('span', styles.label);
-                    const valueElement = this.createElement('span', styles.value);
-
-                    labelElement.textContent = `${label}:`;
-                    valueElement.textContent = value;
-
-                    fieldContainer.append(labelElement, valueElement);
-                    calculationsContentBlock.append(fieldContainer);
-                });
-            } else {
-                // Handle the error case
-                const messageBox = new MessageBox({
-                    type: 'error',
-                    message: this.error.message || 'Failed to load user data',
-                });
-                messageBox.mount(this.element);
-            }
-        } catch (error) {
-            console.error('Unexpected error in render:', error);
-            const messageBox = new MessageBox({
-                type: 'error',
-                message: error.message || 'An unexpected error occurred',
-            });
-            messageBox.mount(this.element);
-        }
-
-        // TODO: Show loading state initially
-
-        // try {
-        //     // Fetch user data
-        //     const userData = await this.fetchUserData();
-        //
-        //     // Update the content once data is loaded
-        //     const profileContent = this.element.querySelector('#profile-content');
-        //
-        //     if (this.error) {
-        //         profileContent.innerHTML = `
-        //             <div class="error-message">
-        //                 <p>${this.error}</p>
-        //                 <button id="retry-button">Retry</button>
-        //             </div>
-        //         `;
-        //
-        //         // Add retry button event listener
-        //         const retryButton = profileContent.querySelector('#retry-button');
-        //         retryButton.addEventListener('click', async () => {
-        //             profileContent.innerHTML = '<p>Loading profile data...</p>';
-        //             await this.fetchUserData();
-        //             this.updateProfileContent(profileContent);
-        //         });
-        //     } else if (userData) {
-        //         this.updateProfileContent(profileContent);
-        //         profileContent.querySelector('.refresh').addEventListener('click', async () => {
-        //             const response = await callApi('POST', '/api/users/update-calculations');
-        //             console.log(response);
-        //         });
-        //     }
-        // } catch (error) {
-        //     console.error('Error in profile render:', error);
-        //     const profileContent = this.element.querySelector('#profile-content');
-        //     profileContent.innerHTML = `
-        //         <div class="error-message">
-        //             <p>An unexpected error occurred: ${error.message}</p>
-        //         </div>
-        //     `;
-        // }
-
-        return this.element;
+        masonryContainer.mount(this.element);
     }
 
-    updateProfileContent(contentElement) {
-        if (!this.userData) return;
+    createSectionHeading(text) {
+        const heading = document.createElement('h2');
+        heading.textContent = text;
+        return heading;
+    }
 
-        const { profile, username, email, accessLevel, isBlocked, calculations } = this.userData;
+    renderField(container, label, value) {
+        if (!value) return;
 
-        contentElement.innerHTML = `
-            <div class="profile-details">
-                <h2>User Information</h2>
-                <p><strong>Username:</strong> ${username}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Access:</strong> ${accessLevel}</p>
-                <p><strong>Blocked:</strong> ${isBlocked}</p>
+        const fieldContainer = this.createElement('div', { className: styles.fieldContainer });
 
-                <h2>Personal Details</h2>
-                <p><strong>Name:</strong> ${profile.firstName} ${profile.lastName}</p>
-                <p><strong>Date of Birth:</strong> ${profile.dateOfBirth ? new Date(profile.dateOfBirth).toLocaleDateString() : 'Not set'}</p>
-                <p><strong>Gender:</strong> ${profile.gender || 'Not set'}</p>
+        const labelElement = this.createElement('span', { className: styles.label });
+        labelElement.textContent = `${label}:`;
 
-                <h2>Physical Details</h2>
-                <p><strong>Height:</strong> ${profile.height?.value ? `${profile.height.value} ${profile.height.unit}` : 'Not set'}</p>
-                <p><strong>Weight:</strong> ${profile.weight?.value ? `${profile.weight.value} ${profile.weight.unit}` : 'Not set'}</p>
-                <p><strong>Activity Level:</strong> ${profile.activityLevel || 'Not set'}</p>
+        const valueElement = this.createElement('span', { className: styles.value });
+        valueElement.textContent = value || 'N/A';
 
-                <h2>Calculations</h2>
-                <p><strong>Body Mass Index (BMI):</strong> ${calculations?.bmi ? `${calculations.bmi}` : 'Not available'}</p>
-                <p><strong>Basal Metabolic Rate (BMR):</strong> ${calculations?.bmr ? `${calculations.bmr} calories/day` : 'Not available'}</p>
-                <p><strong>Total Daily Energy Expenditure (TDEE):</strong> ${calculations?.tdee ? `${calculations.tdee} calories/day` : 'Not available'}</p>
-                <p><strong>Update:</strong><button class="refresh">Refresh</button></p>
-            </div>
-        `;
+        fieldContainer.append(labelElement, valueElement);
+        container.append(fieldContainer);
     }
 }
 

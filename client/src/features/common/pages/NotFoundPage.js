@@ -1,24 +1,21 @@
 import BasePage from '@core/base/BasePage';
+import { ContentBlock } from '@common/components';
 
 class NotFoundPage extends BasePage {
     constructor(router, signal) {
         super(router, signal);
+        this.pageTitle = '404 - Page Not Found';
     }
 
-    async render() {
-        console.log('NotFoundPage render() called');
+    async renderContent() {
+        console.log('NotFoundPage renderContent() called');
 
-        this.element = this.createPageElement();
-
-        this.element.innerHTML = `
-            <div class="not-found-container">
-                <h1>404 - Page Not Found</h1>
-                <p>The page you're looking for doesn't exist.</p>
-                <a href="#" data-navigate="/">Go to Overview</a>
-            </div>
-        `;
-
-        return this.element;
+        // Error Section
+        const errorContentBlock = new ContentBlock();
+        errorContentBlock.append(
+            this.createElement('p', { textContent: "The page you're looking for doesn't exist." }),
+        );
+        errorContentBlock.mount(this.element);
     }
 }
 

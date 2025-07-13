@@ -18,7 +18,7 @@ export const uploadImage = async (req, res) => {
             filename: req.file.originalname,
             contentType: req.file.mimetype,
             data: imageData,
-            uploaderId: req.user._id, // Assuming the user is available in req.user after auth middleware
+            uploaderId: req.user._id,
         });
 
         // Save the image to MongoDB
@@ -27,10 +27,19 @@ export const uploadImage = async (req, res) => {
         // Remove the temporary file from disk
         fs.unlinkSync(filePath);
 
-        res.status(201).json({ message: 'Image uploaded successfully.', image });
+        res.status(201).json({
+            _embedded: {
+                image: {
+                    id: image._id,
+                    filename: image.filename,
+                    contentType: image.contentType,
+                    uploaderId: image.uploaderId,
+                },
+            },
+        });
     } catch (error) {
         console.error('Error uploading image:', error);
-        res.status(500).json({ message: 'Server error.' });
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
@@ -38,11 +47,10 @@ export const uploadImage = async (req, res) => {
 export const getImageById = async (req, res) => {
     try {
         const image = await Image.findById(req.params.id);
-
         if (!image) {
             return res.status(404).json({ message: 'Image not found.' });
         }
-
+        // TODO: only return image if it is approved; depending on user access level
         res.set('Content-Type', image.contentType);
         res.send(image.data);
     } catch (error) {
@@ -55,7 +63,6 @@ export const getImageById = async (req, res) => {
 export const approveImage = async (req, res) => {
     try {
         const image = await Image.findById(req.params.id);
-
         if (!image) {
             return res.status(404).json({ message: 'Image not found.' });
         }
@@ -67,7 +74,15 @@ export const approveImage = async (req, res) => {
 
         await image.save();
 
-        res.status(200).json({ message: 'Image approved successfully.', image });
+        res.status(200).json({
+            _embedded: {
+                image: {
+                    id: image._id,
+                    isVerified: image.status.isVerified,
+                    verifiedAt: image.status.verifiedAt,
+                },
+            },
+        });
     } catch (error) {
         console.error('Error approving image:', error);
         res.status(500).json({ message: 'Server error.' });
@@ -78,12 +93,10 @@ export const approveImage = async (req, res) => {
 export const deleteImage = async (req, res) => {
     try {
         const image = await Image.findByIdAndDelete(req.params.id);
-
         if (!image) {
             return res.status(404).json({ message: 'Image not found.' });
         }
-
-        res.status(200).json({ message: 'Image deleted successfully.' });
+        res.json({ message: 'Image deleted successfully.' });
     } catch (error) {
         console.error('Error deleting image:', error);
         res.status(500).json({ message: 'Server error.' });

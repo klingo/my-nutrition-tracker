@@ -20,8 +20,8 @@ class AuthService {
                 withCredentials: true,
                 skipAuthRefresh: true,
             });
-            this.authenticated = response.data.authenticated;
-            this.userInfo = response.data.user || null;
+            this.authenticated = response._embedded.auth.isAuthenticated;
+            this.userInfo = response._embedded.auth.user;
         } catch (error) {
             console.error('Not authenticated or error checking auth status:', error);
             this.authenticated = false;

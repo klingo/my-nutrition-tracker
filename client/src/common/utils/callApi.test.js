@@ -43,7 +43,7 @@ describe('callApi', () => {
 
             const result = await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
 
-            expect(result.data).toEqual(mockResponseData);
+            expect(result).toEqual(mockResponseData);
         });
     });
 
@@ -366,7 +366,7 @@ describe('callApi', () => {
             });
 
             const result = await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
-            expect(result.data).toEqual({});
+            expect(result).toEqual({});
         });
 
         it('should return an empty object for responses with no content-type header', async () => {
@@ -378,7 +378,7 @@ describe('callApi', () => {
             });
 
             const result = await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
-            expect(result.data).toEqual({});
+            expect(result).toEqual({});
         });
 
         it('should parse and return JSON data for responses with application/json content-type', async () => {
@@ -392,7 +392,7 @@ describe('callApi', () => {
             });
 
             const result = await callApi(mockMethod, mockUrl, mockBody, mockHeaders);
-            expect(result.data).toEqual(mockResponseData);
+            expect(result).toEqual(mockResponseData);
         });
     });
 
@@ -429,7 +429,7 @@ describe('callApi', () => {
             expect(global.fetch).toHaveBeenCalledTimes(2);
 
             // Verify the result is from the second call
-            expect(result.data).toEqual({ success: true });
+            expect(result).toEqual({ success: true });
         });
 
         it('should not attempt to refresh the token when skipAuthRefresh is true', async () => {
