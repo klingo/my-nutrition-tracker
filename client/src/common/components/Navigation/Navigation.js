@@ -61,7 +61,6 @@ class Navigation extends BaseComponent {
         a.href = '#';
         if (iconStyle) {
             a.title = text;
-
             const icon = document.createElement('div');
             icon.classList.add(styles.icon, iconStyle);
             a.append(icon);
@@ -70,7 +69,9 @@ class Navigation extends BaseComponent {
         }
         a.setAttribute('data-navigate', path);
 
-        if (currentPath === path) li.classList.add(styles.active);
+        if (currentPath === path || (path !== '/' && currentPath.startsWith(`${path}/`))) {
+            li.classList.add(styles.active);
+        }
 
         li.append(a);
         return li;
@@ -122,11 +123,19 @@ class Navigation extends BaseComponent {
      * @param {string} currentPath - The current URL path used to determine which navigation item should be marked as active.
      */
     updateActiveState(currentPath) {
+        // Remove active class from all items first
         this.element.querySelectorAll(`.${styles.active}`).forEach((item) => {
             item.classList.remove(styles.active);
         });
-        const activeItem = this.element.querySelector(`[data-navigate="${currentPath}"]`);
-        if (activeItem) activeItem.parentElement.classList.add(styles.active);
+
+        // Find and activate the matching nav item
+        const navItems = Array.from(this.element.querySelectorAll('[data-navigate]'));
+        navItems.forEach((link) => {
+            const navPath = link.getAttribute('data-navigate');
+            if (navPath && (currentPath === navPath || (navPath !== '/' && currentPath.startsWith(`${navPath}/`)))) {
+                link.parentElement.classList.add(styles.active);
+            }
+        });
     }
 }
 
