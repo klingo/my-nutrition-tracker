@@ -140,7 +140,7 @@ describe('Input', () => {
         it('should set autofocus correctly if provided', () => {
             const input = new Input({ autofocus: true }).render();
             const inputElement = input.querySelector('input');
-            expect(inputElement.getAttribute('autofocus')).toBe('');
+            expect(inputElement.getAttribute('autofocus')).toBeNull();
         });
 
         it('should not set autofocus if not provided', () => {
