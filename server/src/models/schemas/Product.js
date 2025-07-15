@@ -59,23 +59,20 @@ const ProductSchema = new mongoose.Schema(
         nutrients: {
             per100g: {
                 kcal: { type: Number, required: true, min: 0 },
+                carbs: {
+                    total: { type: Number, required: true, min: 0 },
+                    sugars: { type: Number, required: true, min: 0 },
+                    polyols: { type: Number, min: 0 },
+                },
                 fat: {
                     total: { type: Number, required: true, min: 0 },
                     saturated: { type: Number, required: true, min: 0 },
                     monounsaturated: { type: Number, min: 0 },
                     polyunsaturated: { type: Number, min: 0 },
                 },
-                carbs: {
-                    total: { type: Number, required: true, min: 0 },
-                    sugars: { type: Number, required: true, min: 0 },
-                    polyols: { type: Number, min: 0 },
-                },
                 protein: { type: Number, required: true, min: 0 },
-                salt: { type: Number, required: true, min: 0 },
-                sodium: { type: Number, min: 0 }, // in mg
                 fiber: { type: Number, required: true, min: 0 },
-                magnesium: { type: Number, min: 0 }, // in mg
-                potassium: { type: Number, min: 0 }, // in mg
+                salt: { type: Number, required: true, min: 0 },
                 vitamins: {
                     a: { type: Number, min: 0 }, // in IU
                     c: { type: Number, min: 0 }, // in mg
@@ -89,10 +86,12 @@ const ProductSchema = new mongoose.Schema(
                     b12: { type: Number, min: 0 }, // in mcg
                 },
                 minerals: {
+                    magnesium: { type: Number, min: 0 }, // in mg
+                    potassium: { type: Number, min: 0 }, // in mg
+                    sodium: { type: Number, min: 0 }, // in mg
                     calcium: { type: Number, min: 0 }, // in mg
                     iron: { type: Number, min: 0 }, // in mg
                     zinc: { type: Number, min: 0 }, // in mg
-                    selenium: { type: Number, min: 0 }, // in mcg
                 },
             },
         },
