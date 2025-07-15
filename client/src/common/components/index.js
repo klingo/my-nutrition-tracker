@@ -1,5 +1,6 @@
 export { default as Button } from './Button/index.js';
 export { default as ContentBlock } from './ContentBlock/index.js';
+export { default as ExpandableContainer } from './ExpandableContainer/index.js';
 export { default as Input } from './Input/index.js';
 export { default as Loader } from './Loader/index.js';
 export { default as MasonryContainer } from './MasonryContainer/index.js';

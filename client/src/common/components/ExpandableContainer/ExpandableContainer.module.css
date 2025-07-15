@@ -1,0 +1,9 @@
+.expandable-container {
+    overflow: hidden;
+    height: 0;
+    transition: height 0.2s ease-out;
+}
+
+.expandable-container.expanded {
+    height: auto;
+}
