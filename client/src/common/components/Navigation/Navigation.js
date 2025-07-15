@@ -69,7 +69,7 @@ class Navigation extends BaseComponent {
         }
         a.setAttribute('data-navigate', path);
 
-        if (currentPath === path || (path !== '/' && currentPath.startsWith(`${path}/`))) {
+        if (currentPath && (currentPath === path || (path !== '/' && currentPath.startsWith(`${path}/`)))) {
             li.classList.add(styles.active);
         }
 
