@@ -33,6 +33,7 @@ main {
     grid-area: main;
     background-color: var(--color-background);
     padding-top: 24px;
+    padding-bottom: 24px;
 }
 
 footer {
