@@ -5,7 +5,7 @@ import { GENDER, ACTIVITY_LEVEL } from '../models/constants/enums.js';
 import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
 import bcrypt from 'bcrypt';
 
-const salt = process.env.PASSWORD_SALT || 10;
+const saltRounds = parseInt(process.env.PASSWORD_SALT_ROUNDS) || 10;
 const pepper = process.env.PASSWORD_PEPPER || '';
 
 const genderMap = {
@@ -141,7 +141,7 @@ export const updateUserById = async (req, res) => {
 
         // Handle password update if provided
         if (password) {
-            updateData.password = await bcrypt.hash(password + pepper, salt);
+            updateData.password = await bcrypt.hash(password + pepper, saltRounds);
         }
 
         // Ensure restricted fields cannot be updated

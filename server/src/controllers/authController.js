@@ -3,7 +3,7 @@ import { RefreshToken, User } from '../models/index.js';
 import { clearAuthCookies, generateTokens, refreshTokens, setAuthCookies } from '../services/tokenService.js';
 import auth from '../middleware/auth.js';
 
-const salt = process.env.PASSWORD_SALT || 10;
+const saltRounds = parseInt(process.env.PASSWORD_SALT_ROUNDS) || 10;
 const pepper = process.env.PASSWORD_PEPPER || '';
 
 function decodeData(data) {
@@ -20,7 +20,8 @@ export const registerUser = async (req, res) => {
         // Decode if encoded (simple base64 decoding)
         if (req.body.encoded) {
             try {
-                [username, email, password] = decodeData({ username, email, password });
+                const decodedData = decodeData({ username, email, password });
+                ({ username, email, password } = decodedData);
             } catch {
                 return res.status(400).json({ message: 'Invalid encoded data' });
             }
@@ -31,7 +32,7 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'Username, email, and password are required' });
         }
 
-        const hashedPassword = await bcrypt.hash(password + pepper, salt);
+        const hashedPassword = await bcrypt.hash(password + pepper, saltRounds);
         const user = new User({ username, email, password: hashedPassword });
         await user.save();
 
