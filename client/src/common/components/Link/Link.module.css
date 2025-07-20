@@ -1,0 +1,10 @@
+.link {
+    cursor: pointer;
+    color: var(--color-primary);
+    text-underline-offset: 4px;
+    text-decoration-color: var(--color-primary-variant);
+}
+
+.link:hover {
+    text-decoration-color: var(--color-primary);
+}
