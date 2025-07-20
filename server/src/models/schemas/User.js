@@ -205,7 +205,7 @@ UserSchema.methods.handleFailedLogin = async function () {
     this.loginAttempts.lastAttempt = new Date();
 
     if (this.loginAttempts.count >= MAX_ATTEMPTS) {
-        this.loginAttempts.lockUntil = new Date(Date.now() + LOCK_TIME);
+        this.loginAttempts.lockedUntil = new Date(Date.now() + LOCK_TIME);
     }
 
     await this.save();
@@ -213,11 +213,11 @@ UserSchema.methods.handleFailedLogin = async function () {
 
 // Instance method to handle successful login
 UserSchema.methods.handleSuccessfulLogin = async function () {
-    if (this.loginAttempts.count > 0 || this.loginAttempts.lockUntil > new Date()) {
+    if (this.loginAttempts.count > 0 || this.loginAttempts.lockedUntil > new Date()) {
         this.loginAttempts = {
             count: 0,
             lastAttempt: null,
-            lockUntil: null,
+            lockedUntil: null,
         };
         await this.save();
     }

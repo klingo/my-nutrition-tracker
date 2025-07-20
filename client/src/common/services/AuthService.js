@@ -70,6 +70,8 @@ class AuthService {
                         return { success: false, status: 401, message: 'Invalid credentials' };
                     case 403:
                         return { success: false, status: 403, message: 'Account blocked' };
+                    case 423:
+                        return { success: false, status: 423, message: 'Account locked' };
                     case 500:
                         return { success: false, status: 500, message: 'Internal server error' };
                     default:

@@ -118,10 +118,7 @@ class LoginPage extends BasePage {
         this.messageBoxContainer.innerHTML = '';
 
         try {
-            console.log('Calling authService.login with:', username, '***'); // Don't log password
             const result = await authService.login(username, password);
-            console.log('Login result:', result);
-
             if (result.success) {
                 console.log('Login successful, updating auth state...');
 

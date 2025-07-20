@@ -83,6 +83,7 @@ export const loginUser = async (req, res) => {
         if (user.isAccountLocked()) {
             return res.status(423).json({
                 message: `Account locked. Try again after ${Math.ceil((user.loginAttempts.lockedUntil - new Date()) / 60000)} minutes`,
+                lockedUntil: user.loginAttempts.lockedUntil,
             });
         }
 
