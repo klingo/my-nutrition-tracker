@@ -1,0 +1,68 @@
+.fieldset {
+    display: flex;
+    min-height: 56px;
+    background-color: var(--color-input-background);
+    margin: 0;
+    padding: 0 16px;
+    position: relative;
+
+    outline: none;
+    border-radius: 4px;
+    border: none;
+}
+
+.fieldset:focus-within,
+.fieldset:active {
+    outline: 1px solid var(--color-primary);
+}
+
+.fieldset .legend {
+    position: absolute;
+    top: 3px;
+    left: 47px;
+    pointer-events: none;
+    color: var(--color-primary-variant);
+
+    font-size: var(--mnt-body-3-font-size);
+}
+
+.fieldset:focus-within .legend,
+.fieldset:active .legend {
+    color: var(--color-primary);
+}
+
+.fieldset.required .legend:after {
+    content: ' *';
+}
+
+.fieldset:not(:has(.icon)) .legend {
+    left: 15px;
+}
+
+.fieldset .icon {
+    display: inline-block;
+    align-self: center;
+    min-width: 24px;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    background-color: var(--color-primary-variant);
+
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}
+
+.fieldset .icon.gender {
+    mask-image: url('@assets/icons/social/wc_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/social/wc_24dp.svg');
+}
+
+.fieldset .content {
+    display: inline-block;
+    padding-top: 24px;
+    min-height: 32px;
+}
