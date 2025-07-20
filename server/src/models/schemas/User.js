@@ -41,7 +41,7 @@ const UserSchema = new mongoose.Schema(
         loginAttempts: {
             count: { type: Number, default: 0 },
             lastAttempt: { type: Date, default: null },
-            lockUntil: { type: Date, default: null },
+            lockedUntil: { type: Date, default: null },
         },
         profile: {
             firstName: { type: String, trim: true },
@@ -193,7 +193,7 @@ UserSchema.methods.calculateTDEE = function () {
 
 // Instance method to check if account is locked
 UserSchema.methods.isAccountLocked = function () {
-    return this.loginAttempts.lockUntil > new Date();
+    return this.loginAttempts.lockedUntil > new Date();
 };
 
 // Instance method to handle failed login

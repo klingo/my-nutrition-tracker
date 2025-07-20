@@ -74,7 +74,7 @@ export const loginUser = async (req, res) => {
 
         // Find user by username or email
         const query = { $or: [{ username: normalizedUsername }, { email: normalizedUsername }] };
-        const user = await User.findOne(query, '_id username password isBlocked accessLevel');
+        const user = await User.findOne(query, '_id username password isBlocked accessLevel loginAttempts');
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -89,7 +89,7 @@ export const loginUser = async (req, res) => {
         // Validate password
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
-            await user.handleFailedLoginAttempt();
+            await user.handleFailedLogin();
             return res.status(401).json({
                 message: 'Invalid credentials',
             });

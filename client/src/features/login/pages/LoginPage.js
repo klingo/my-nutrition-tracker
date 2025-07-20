@@ -151,6 +151,8 @@ class LoginPage extends BasePage {
                 'Sorry, the username and password you entered did not match our records. Please double-check and try again.';
         } else if (status === 403) {
             errorMessage = 'Your account is blocked.';
+        } else if (status === 423) {
+            errorMessage = 'Account is locked because of too many failed login attempts. Please try again later.';
         } else if (status === 429) {
             errorMessage = 'Too many login attempts. Please try again later.';
         } else if (status === 500) {
