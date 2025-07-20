@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { User, RefreshToken } from '../models/index.js';
+import config from '../config/app.config.js';
 
 /**
  * Generates access and refresh tokens for a user
@@ -16,8 +17,8 @@ export const generateTokens = async (user, oldToken = null, rotateRefreshToken =
             username: user.username,
             type: 'access',
         },
-        process.env.JWT_SECRET,
-        { expiresIn: '15m' }, // Short-lived; 15 minutes to 1 hour
+        config.jwt.secret,
+        { expiresIn: config.jwt.expiresIn }, // Short-lived; 15 minutes to 1 hour
     );
 
     // If we don't need to rotate the refresh token, just return the access token
@@ -55,8 +56,8 @@ export const generateTokens = async (user, oldToken = null, rotateRefreshToken =
             type: 'refresh',
             familyId,
         },
-        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
-        { expiresIn: '30d' }, // Long-lived; 7 days to 30 days
+        config.jwt.refreshSecret,
+        { expiresIn: config.jwt.refreshExpiresIn }, // Long-lived; 7 days to 30 days
     );
 
     // Calculate expiration date (30 days from now)
@@ -89,7 +90,7 @@ export const generateTokens = async (user, oldToken = null, rotateRefreshToken =
 export const refreshTokens = async (refreshToken, rotateRefreshToken = false) => {
     try {
         // Verify refresh token JWT
-        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET);
+        const decoded = jwt.verify(refreshToken, config.jwt.refreshSecret);
 
         // Check if token exists in database and is not revoked
         const tokenDoc = await RefreshToken.findOne({ token: refreshToken });
@@ -127,7 +128,7 @@ export const setAuthCookies = (res, tokens) => {
         httpOnly: true, // Prevents JavaScript access
         secure: true, // Always use HTTPS
         sameSite: 'strict', // Strict CSRF protection
-        maxAge: 15 * 60 * 1000, // 15 minutes, same as token expiration
+        maxAge: config.cookies.accessMaxAge, // Should be the same as token expiration
         path: '/', // Available across the entire site
     });
 
@@ -137,7 +138,7 @@ export const setAuthCookies = (res, tokens) => {
             httpOnly: true, // Prevents JavaScript access
             secure: true, // Always use HTTPS
             sameSite: 'strict', // Strict CSRF protection
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days, same as token expiration
+            maxAge: config.cookies.refreshMaxAge, // Should be the same as token expiration
             path: '/api/auth', // Available to all auth endpoints
         });
     }

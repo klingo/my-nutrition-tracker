@@ -1,10 +1,10 @@
-import 'dotenv/config';
 import { startServer } from './app.js';
 import mongoose from 'mongoose';
+import config from './config/app.config.js';
 
 mongoose.set('strictQuery', true);
 mongoose
-    .connect(process.env.MONGO_URI, {})
+    .connect(config.mongoUri, {})
     .then(() => {
         console.log('MongoDB connected successfully');
         // Start server only after DB connection is established

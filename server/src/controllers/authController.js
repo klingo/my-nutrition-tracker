@@ -1,10 +1,7 @@
-import bcrypt from 'bcrypt';
 import { RefreshToken, User } from '../models/index.js';
 import { clearAuthCookies, generateTokens, refreshTokens, setAuthCookies } from '../services/tokenService.js';
 import auth from '../middleware/auth.js';
-
-const saltRounds = parseInt(process.env.PASSWORD_SALT_ROUNDS) || 10;
-const pepper = process.env.PASSWORD_PEPPER || '';
+import config from '../config/app.config.js';
 
 function decodeData(data) {
     return Object.keys(data).reduce((decodedData, key) => {
@@ -32,15 +29,20 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'Username, email, and password are required' });
         }
 
-        const hashedPassword = await bcrypt.hash(password + pepper, saltRounds);
-        const user = new User({ username, email, password: hashedPassword });
+        // TODO: store height & weight as well
+        const user = new User({ username, email, password });
         await user.save();
+
+        // Generate tokens and set authentication cookies
+        const tokens = await generateTokens(user, null, true);
+        setAuthCookies(res, tokens);
 
         res.status(201).json({
             _embedded: {
                 user: {
                     username: user.username,
                     email: user.email,
+                    accessLevel: user.accessLevel,
                 },
             },
         });
@@ -72,15 +74,32 @@ export const loginUser = async (req, res) => {
 
         // Find user by username or email
         const query = { $or: [{ username: normalizedUsername }, { email: normalizedUsername }] };
-        const user = await User.findOne(query, '_id username password isBlocked');
-        if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+        const user = await User.findOne(query, '_id username password isBlocked accessLevel');
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        // Check if account is locked
+        if (user.isAccountLocked()) {
+            return res.status(423).json({
+                message: `Account locked. Try again after ${Math.ceil((user.loginAttempts.lockedUntil - new Date()) / 60000)} minutes`,
+            });
+        }
 
         // Validate password
-        const isPasswordValid = await bcrypt.compare(password + pepper, user.password);
-        if (!isPasswordValid) return res.status(401).json({ message: 'Invalid credentials' });
+        const isPasswordValid = await user.comparePassword(password);
+        if (!isPasswordValid) {
+            await user.handleFailedLoginAttempt();
+            return res.status(401).json({
+                message: 'Invalid credentials',
+            });
+        }
 
         // Validate account status
-        if (user.isBlocked) return res.status(403).json({ message: 'Account blocked' });
+        if (user.isBlocked) return res.status(403).json({ message: 'Account blocked.' });
+
+        // Clear failed login attempts
+        await user.handleSuccessfulLogin();
 
         // Generate tokens and save refresh token to database
         const tokens = await generateTokens(user, null, true);
@@ -98,7 +117,12 @@ export const loginUser = async (req, res) => {
         });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error' });
+        const statusCode = error.status || 500;
+        const message = error.message || 'An unexpected error occurred';
+        res.status(statusCode).json({
+            message,
+            error: config.env === 'development' ? error.stack : undefined,
+        });
     }
 };
 
@@ -112,7 +136,7 @@ export const refreshUserTokens = async (req, res) => {
         // Refresh tokens with rotation (generate new access and refresh tokens)
         const refreshResult = await refreshTokens(currentRefreshToken, true);
         if (!refreshResult) {
-            return res.status(403).json({ message: 'Invalid or expired refresh token' });
+            return res.status(403).json({ message: 'Invalid or expired refresh token. Please log in again' });
         }
 
         // Set authentication cookies
@@ -182,8 +206,7 @@ export const checkAuthStatus = async (req, res) => {
 
         // If no tokens at all, user is not authenticated
         if (!accessToken && !refreshToken) {
-            return res.json({
-                authenticated: false,
+            return res.status(401).json({
                 message: 'No authentication tokens',
                 _embedded: {
                     auth: {
@@ -197,12 +220,10 @@ export const checkAuthStatus = async (req, res) => {
         return auth()(req, res, async () => {
             try {
                 // If we get here, the user is authenticated (auth middleware verified or refreshed the token)
-                // Fetch minimal user data
-                const user = await User.findById(req.user.userId).select('username');
+                const user = await User.findById(req.user.userId).select('username email accessLevel').lean();
 
                 if (!user) {
                     return res.status(404).json({
-                        authenticated: false,
                         message: 'User not found',
                         _embedded: {
                             auth: {
@@ -228,7 +249,6 @@ export const checkAuthStatus = async (req, res) => {
             } catch (innerError) {
                 console.error('Auth status inner error:', innerError);
                 return res.status(500).json({
-                    authenticated: false,
                     message: 'Server error',
                     _embedded: {
                         auth: {
@@ -241,7 +261,6 @@ export const checkAuthStatus = async (req, res) => {
     } catch (error) {
         console.error('Auth status outer error:', error);
         return res.status(500).json({
-            authenticated: false,
             message: 'Server error',
             _embedded: {
                 auth: {

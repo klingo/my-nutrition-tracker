@@ -3,10 +3,6 @@ import { convertWeight } from '../utils/weightConversions.js';
 import { convertHeight } from '../utils/heightConversions.js';
 import { GENDER, ACTIVITY_LEVEL } from '../models/constants/enums.js';
 import { ACCESS_LEVELS } from '../models/constants/accessLevels.js';
-import bcrypt from 'bcrypt';
-
-const saltRounds = parseInt(process.env.PASSWORD_SALT_ROUNDS) || 10;
-const pepper = process.env.PASSWORD_PEPPER || '';
 
 const genderMap = {
     [GENDER.MALE]: 'Male',
@@ -112,7 +108,8 @@ export const getUserById = async (req, res) => {
 // Controller function to update a user by ID
 export const updateUserById = async (req, res) => {
     try {
-        const { password, profile, ...otherFields } = req.body;
+        // const { password, profile, ...otherFields } = req.body;
+        const { profile, ...otherFields } = req.body;
 
         // Create update object
         const updateData = {};
@@ -137,11 +134,6 @@ export const updateUserById = async (req, res) => {
                     updateData.profile[field] = profile[field];
                 }
             });
-        }
-
-        // Handle password update if provided
-        if (password) {
-            updateData.password = await bcrypt.hash(password + pepper, saltRounds);
         }
 
         // Ensure restricted fields cannot be updated

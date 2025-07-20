@@ -8,6 +8,35 @@
 
 A simple nutrition tracking application to help users log and monitor their dietary intake.
 
+## Environment Variables
+
+### Server
+
+| Variable               | Description                                 | Required | Default                |
+| ---------------------- | ------------------------------------------- | -------- | ---------------------- |
+| PORT                   | Port the server will run on                 | No       | 3001                   |
+| CLIENT_URL             | URL of the client application (CORS origin) | No       | https://localhost:3000 |
+| NODE_ENV               | Environment (development/production)        | No       | production             |
+| SSL_CERT_PATH          | Path to the SSL certificate file            | No       | null                   |
+| SSL_KEY_PATH           | Path to the SSL key file                    | No       | null                   |
+| MONGO_URI              | URI to connect to MongoDB                   | Yes      | null                   |
+| JWT_SECRET             | JWT secret key                              | Yes      | null                   |
+| JWT_EXPIRES_IN         | JWT acces token expiration time             | No       | 15m                    |
+| JWT_REFRESH_EXPIRES_IN | JWT refresh token expiration time           | No       | 30d                    |
+| COOKIE_ACCESS_MAX_AGE  | MaxAge of access token cookie (in ms)       | No       | 900000                 |
+| COOKIE_REFRESH_MAX_AGE | MaxAge of refresh token cookie (in ms)      | No       | 2592000000             |
+| PASSWORD_SALT_ROUNDS   | Number of salt rounds for password hashing  | No       | 10                     |
+| PASSWORD_PEPPER        | Password pepper for password hashing        | No       |                        |
+
+### Client
+
+| Variable      | Description                          | Required | Default    |
+| ------------- | ------------------------------------ | -------- | ---------- |
+| PORT          | Port the server will run on          | No       | 3000       |
+| NODE_ENV      | Environment (development/production) | No       | production |
+| SSL_CERT_PATH | Path to the SSL certificate file     | No       | null       |
+| SSL_KEY_PATH  | Path to the SSL key file             | No       | null       |
+
 ## License
 
 [MyNutritionTracker](https://github.com/klingo/my-nutrition-tracker) © 2025 by [Fabian Schaer](https://github.com/klingo) is licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).

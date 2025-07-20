@@ -4,15 +4,16 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import routes from './routes/index.js';
-import 'dotenv/config';
+import config from './config/app.config.js';
 import cookieParser from 'cookie-parser';
+import securityHeaders from './middleware/securityHeaders.js';
 
 const app = express();
 
 // Middleware
 app.use(
     cors({
-        origin: process.env.CLIENT_URL || 'https://localhost:3000',
+        origin: config.clientUrl,
         credentials: true, // Allow cookies to be sent with requests
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type'],
@@ -20,6 +21,9 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+
+// Security headers middleware
+app.use(securityHeaders);
 
 // API routes
 app.use('/api', routes);
@@ -30,17 +34,15 @@ app.use((err, req, res) => {
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-const PORT = process.env.PORT || 3001;
-
 // Load SSL certificate and key fron environment variables
 const sslOptions = {
-    cert: fs.readFileSync(path.resolve(process.env.SSL_CERT_PATH)),
-    key: fs.readFileSync(path.resolve(process.env.SSL_KEY_PATH)),
+    cert: fs.readFileSync(path.resolve(config.ssl.certPath)),
+    key: fs.readFileSync(path.resolve(config.ssl.keyPath)),
 };
 
 export function startServer() {
-    return https.createServer(sslOptions, app).listen(PORT, () => {
-        console.log(`API Server running on https://localhost:${PORT}`);
+    return https.createServer(sslOptions, app).listen(config.port, () => {
+        console.log(`API Server running on https://localhost:${config.port}`);
     });
 }
 

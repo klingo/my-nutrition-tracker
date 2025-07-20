@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../models/index.js';
 import { refreshTokens, setAuthCookies } from '../services/tokenService.js';
+import config from '../config/app.config.js';
 
 /**
  * Authentication middleware that verifies the JWT token and optionally checks user access level
@@ -35,7 +36,7 @@ const auth = (minAccessLevel = 0) => {
             } else {
                 // Verify existing access token
                 try {
-                    req.user = jwt.verify(accessToken, process.env.JWT_SECRET);
+                    req.user = jwt.verify(accessToken, config.jwt.secret);
                 } catch (tokenError) {
                     console.error('Token error:', tokenError);
                     // If token verification fails, try to refresh using refresh token

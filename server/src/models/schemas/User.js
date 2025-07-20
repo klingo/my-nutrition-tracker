@@ -3,6 +3,8 @@ import { GENDER, ACTIVITY_LEVEL, ACTIVITY_MULTIPLIERS } from '../constants/enums
 import { HEIGHT_UNITS, WEIGHT_UNITS } from '../constants/units.js';
 import { convertWeight } from '../../utils/weightConversions.js';
 import { convertHeight } from '../../utils/heightConversions.js';
+import bcrypt from 'bcrypt';
+import config from '../../config/app.config.js';
 
 const UserSchema = new mongoose.Schema(
     {
@@ -36,16 +38,27 @@ const UserSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        loginAttempts: {
+            count: { type: Number, default: 0 },
+            lastAttempt: { type: Date, default: null },
+            lockUntil: { type: Date, default: null },
+        },
         profile: {
-            firstName: { type: String, required: true, trim: true },
-            lastName: { type: String, required: true, trim: true },
-            dateOfBirth: { type: Date },
+            firstName: { type: String, trim: true },
+            lastName: { type: String, trim: true },
+            dateOfBirth: {
+                type: Date,
+                validate: {
+                    validator: (v) => v <= new Date(),
+                    message: 'Date of birth cannot be in the future',
+                },
+            },
             height: {
-                value: { type: Number, min: 0 },
+                value: { type: Number, min: 1, max: 300 },
                 unit: { type: String, enum: HEIGHT_UNITS },
             },
             weight: {
-                value: { type: Number, min: 0 },
+                value: { type: Number, min: 0, max: 1000 },
                 unit: { type: String, enum: WEIGHT_UNITS },
             },
             gender: {
@@ -57,26 +70,67 @@ const UserSchema = new mongoose.Schema(
                 enum: Object.values(ACTIVITY_LEVEL),
             },
             calculations: {
-                bmi: {
-                    value: { type: Number },
-                    calculatedAt: { type: Date },
-                },
-                bmr: {
-                    value: { type: Number },
-                    calculatedAt: { type: Date },
-                },
-                tdee: {
-                    value: { type: Number },
-                    calculatedAt: { type: Date },
-                },
-                lastHeightUsed: { type: Number },
-                lastWeightUsed: { type: Number },
-                lastActivityLevelUsed: { type: String },
+                bmi: { type: Number },
+                bmr: { type: Number },
+                tdee: { type: Number },
+                calculatedAt: { type: Date },
             },
         },
     },
     { timestamps: true },
 );
+
+// Pre-save hook to hash password
+UserSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+    try {
+        const salt = await bcrypt.genSalt(config.security.saltRounds);
+        this.password = await bcrypt.hash(this.password + config.security.pepper, salt);
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Instance method to compare password
+UserSchema.methods.comparePassword = async function (password) {
+    try {
+        return await bcrypt.compare(password + config.security.pepper, this.password);
+    } catch {
+        return false;
+    }
+};
+
+// Pre-save hook to update calculations
+UserSchema.methods.updateCalculations = async function () {
+    let isUpdated = false;
+    if (
+        this.isModified('profile.height.unit') ||
+        this.isModified('profile.height.value') ||
+        this.isModified('profile.weight.unit') ||
+        this.isModified('profile.weight.value')
+    ) {
+        this.profile.calculations.bmi = this.calculateBMI();
+        isUpdated = true;
+        if (this.isModified('profile.dateOfBirth') || this.isModified('profile.gender')) {
+            this.profile.calculations.bmr = this.calculateBMR();
+            isUpdated = true;
+        }
+    }
+    if (this.isModified('profile.activityLevel')) {
+        this.profile.calculations.tdee = this.calculateTDEE();
+        isUpdated = true;
+    }
+    if (isUpdated) this.profile.calculations.calculatedAt = new Date();
+};
+UserSchema.pre('save', async function (next) {
+    try {
+        await this.updateCalculations();
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 // Instance method to calculate BMI
 UserSchema.methods.calculateBMI = function () {
@@ -126,64 +180,55 @@ UserSchema.methods.calculateBMR = function () {
 
 // Instance method to calculate TDEE
 UserSchema.methods.calculateTDEE = function () {
-    const bmr = this.calculateBMR();
-    if (!bmr || !this.profile.activityLevel) {
+    const profile = this.profile;
+
+    const bmr = profile.calculations.bmr;
+    if (!bmr || !profile.activityLevel) {
         return null;
     }
 
-    const tdee = bmr * ACTIVITY_MULTIPLIERS[this.profile.activityLevel];
+    const tdee = bmr * ACTIVITY_MULTIPLIERS[profile.activityLevel];
     return Math.round(tdee);
 };
 
-// Method to update cached calculations
-UserSchema.methods.updateCalculations = async function () {
-    const bmi = this.calculateBMI();
-    const bmr = this.calculateBMR();
-    const tdee = this.calculateTDEE();
-    const now = new Date();
-
-    this.profile.calculations = {
-        bmi: {
-            value: bmi,
-            calculatedAt: now,
-        },
-        bmr: {
-            value: bmr,
-            calculatedAt: now,
-        },
-        tdee: {
-            value: tdee,
-            calculatedAt: now,
-        },
-        lastHeightUsed: this.profile.height.value,
-        lastWeightUsed: this.profile.weight.value,
-        lastActivityLevelUsed: this.profile.activityLevel,
-    };
-
-    await this.save();
-    return { bmi, bmr, tdee };
+// Instance method to check if account is locked
+UserSchema.methods.isAccountLocked = function () {
+    return this.loginAttempts.lockUntil > new Date();
 };
 
-// Static method to get energy calculations
-UserSchema.methods.getCalculations = async function () {
-    // Check if we need to recalculate
-    const needsUpdate =
-        !this.profile.calculations?.bmi?.value ||
-        !this.profile.calculations?.bmr?.value ||
-        !this.profile.calculations?.tdee?.value ||
-        this.profile.calculations.lastHeightUsed !== this.profile.height.value ||
-        this.profile.calculations.lastWeightUsed !== this.profile.weight.value ||
-        this.profile.calculations.lastActivityLevelUsed !== this.profile.activityLevel;
+// Instance method to handle failed login
+UserSchema.methods.handleFailedLogin = async function () {
+    const MAX_ATTEMPTS = 5;
+    const LOCK_TIME = 15 * 60 * 1000; // 15 minutes
 
-    if (needsUpdate) {
-        return await this.updateCalculations();
+    this.loginAttempts.count += 1;
+    this.loginAttempts.lastAttempt = new Date();
+
+    if (this.loginAttempts.count >= MAX_ATTEMPTS) {
+        this.loginAttempts.lockUntil = new Date(Date.now() + LOCK_TIME);
     }
 
-    return {
-        bmi: this.profile.calculations.bmi.value,
-        bmr: this.profile.calculations.bmr.value,
-        tdee: this.profile.calculations.tdee.value,
-    };
+    await this.save();
+};
+
+// Instance method to handle successful login
+UserSchema.methods.handleSuccessfulLogin = async function () {
+    if (this.loginAttempts.count > 0 || this.loginAttempts.lockUntil > new Date()) {
+        this.loginAttempts = {
+            count: 0,
+            lastAttempt: null,
+            lockUntil: null,
+        };
+        await this.save();
+    }
+};
+
+// Method to get user data
+UserSchema.methods.getUserData = () => {
+    const user = this.toObject();
+    delete user.password;
+    delete user.__v;
+    return user;
 };
 
 export default mongoose.model('User', UserSchema);
