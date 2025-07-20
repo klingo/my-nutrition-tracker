@@ -172,7 +172,7 @@ UserSchema.methods.calculateBMR = function () {
     } else if (profile.gender === GENDER.MALE) {
         bmr += 5;
     } else {
-        // For other/prefer_not_to_say, use average of male and female
+        // For other, use average of male and female
         bmr -= 78;
     }
     return Math.round(bmr);

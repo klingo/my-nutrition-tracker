@@ -8,7 +8,6 @@ const genderMap = {
     [GENDER.MALE]: 'Male',
     [GENDER.FEMALE]: 'Female',
     [GENDER.OTHER]: 'Other',
-    [GENDER.PREFER_NOT_TO_SAY]: 'Prefer not to say',
 };
 
 const accessLevelMap = {
