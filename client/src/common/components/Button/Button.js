@@ -13,8 +13,16 @@ export default class Button extends BaseComponent {
      * @param {string} icon
      * @param {function} onClick
      * @param {boolean} disabled
+     * @param {'button'|'submit'|'reset'} [buttonType='button']
      */
-    constructor({ text = '', type = 'secondary', icon = '', onClick = null, disabled = false } = {}) {
+    constructor({
+        text = '',
+        type = 'secondary',
+        icon = '',
+        onClick = null,
+        disabled = false,
+        buttonType = 'button',
+    } = {}) {
         super();
 
         this.text = text;
@@ -22,6 +30,7 @@ export default class Button extends BaseComponent {
         this.icon = this.#validateIcon(icon);
         this.onClick = onClick;
         this.disabled = disabled;
+        this.buttonType = this.#validateButtonType(buttonType);
     }
 
     #validate(value, validValues, name) {
@@ -34,6 +43,11 @@ export default class Button extends BaseComponent {
     #validateType(type) {
         const validTypes = new Set(['primary', 'secondary', 'mute']);
         return this.#validate(type, validTypes, 'button type');
+    }
+
+    #validateButtonType(buttonType) {
+        const validButtonTypes = new Set(['button', 'submit', 'reset']);
+        return this.#validate(buttonType, validButtonTypes, 'button buttonType');
     }
 
     #validateIcon(icon) {
@@ -71,6 +85,7 @@ export default class Button extends BaseComponent {
     }
 
     #configureButton(button) {
+        if (this.buttonType) button.setAttribute('type', this.buttonType);
         if (this.disabled) {
             button.disabled = true;
             button.setAttribute('aria-disabled', 'true');

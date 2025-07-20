@@ -9,6 +9,18 @@ describe('Button', () => {
         button.render();
     });
 
+    describe('constructor', () => {
+        it('should set default values when no parameters are provided', () => {
+            const button = new Button();
+            expect(button.text).toBe('');
+            expect(button.type).toBe('secondary');
+            expect(button.icon).toBe('');
+            expect(button.onClick).toBeNull();
+            expect(button.disabled).toBe(false);
+            expect(button.buttonType).toBe('button');
+        });
+    });
+
     describe('mount', () => {
         it('should call render if element is not already rendered', () => {
             const button = new Button();
@@ -35,6 +47,29 @@ describe('Button', () => {
 
         it('should throw error for invalid type', () => {
             expect(() => new Button({ type: 'invalid-type' })).toThrow('Invalid button type "invalid-type"');
+        });
+    });
+
+    describe('buttonType', () => {
+        it('should accept valid buttonType types', () => {
+            const buttonButton = new Button({ buttonType: 'button' }).render();
+            const submitButton = new Button({ buttonType: 'submit' }).render();
+            const resetButton = new Button({ buttonType: 'reset' }).render();
+
+            expect(buttonButton.type).toBe('button');
+            expect(submitButton.type).toBe('submit');
+            expect(resetButton.type).toBe('reset');
+        });
+
+        it('should render with correct default buttonType', () => {
+            const button = new Button().render();
+            expect(button.type).toBe('button');
+        });
+
+        it('should throw error for invalid buttonType', () => {
+            expect(() => new Button({ buttonType: 'invalid-buttonType' })).toThrow(
+                'Invalid button buttonType "invalid-buttonType"',
+            );
         });
     });
 
