@@ -1,0 +1,38 @@
+.overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    border-radius: 8px;
+    background-color: var(--color-overlay-background);
+    padding: 24px;
+    margin-top: 15vh;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 24px;
+}
+
+.overlay h1 {
+    margin-bottom: 0;
+}
+
+.overlay h2 {
+    margin-top: 16px;
+    margin-bottom: 0;
+}
+
+.message-box-container:empty {
+    display: none;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+}
+
+.signup {
+    color: var(--color-primary-variant);
+    margin-right: 8px;
+}

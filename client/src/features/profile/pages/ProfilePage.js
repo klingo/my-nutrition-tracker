@@ -41,7 +41,7 @@ class ProfilePage extends BasePage {
 
         if (!userData) return this.renderError(new Error('No user data available'));
 
-        const { profile, username, email, accessLevel, status, calculations } = userData;
+        const { profile, username, email, accessLevel, status } = userData;
         const masonryContainer = new MasonryContainer();
 
         // Account Section
@@ -59,7 +59,7 @@ class ProfilePage extends BasePage {
         this.renderField(profileContentBlock, 'First Name', profile.firstName);
         this.renderField(profileContentBlock, 'Last Name', profile.lastName);
         this.renderField(profileContentBlock, 'Gender', profile.gender);
-        this.renderField(profileContentBlock, 'Age', `${profile.age} years`);
+        this.renderField(profileContentBlock, 'Age', profile.age ? `${profile.age} years` : '');
         this.renderField(profileContentBlock, 'Date of Birth', profile.dateOfBirth);
         this.renderField(profileContentBlock, 'Height', `${profile.height.value} ${profile.height.unit}`);
         this.renderField(profileContentBlock, 'Weight', `${profile.weight.value} ${profile.weight.unit}`);
@@ -69,9 +69,9 @@ class ProfilePage extends BasePage {
         // Calculations Section
         const calculationsContentBlock = new ContentBlock();
         calculationsContentBlock.append(this.createSectionHeading('Calculations'));
-        this.renderField(calculationsContentBlock, 'Body Mass Index (BMI)', calculations.bmi);
-        this.renderField(calculationsContentBlock, 'Basal Metabolic Rate (BMR)', calculations.bmr);
-        this.renderField(calculationsContentBlock, 'Total Daily Energy Expenditure (TDEE)', calculations.tdee);
+        this.renderField(calculationsContentBlock, 'Body Mass Index (BMI)', profile.calculations?.bmi);
+        this.renderField(calculationsContentBlock, 'Basal Metabolic Rate (BMR)', profile.calculations?.bmr);
+        this.renderField(calculationsContentBlock, 'Total Daily Energy Expenditure (TDEE)', profile.calculations?.tdee);
         masonryContainer.add(calculationsContentBlock, { colSpan: 6 });
 
         masonryContainer.mount(this.element);

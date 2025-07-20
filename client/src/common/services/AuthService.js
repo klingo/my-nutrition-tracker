@@ -83,6 +83,61 @@ class AuthService {
         }
     }
 
+    async register(username, email, password, confirmPassword, { gender, dateOfBirth, height, weight }) {
+        try {
+            if (!username || !email || !password || !confirmPassword) {
+                throw new Error('Username, email, password, and confirm password are required');
+            }
+
+            if (password !== confirmPassword) {
+                throw new Error('Passwords do not match');
+            }
+
+            // Make register request - the server will set HttpOnly cookies
+            await callApi(
+                'POST',
+                '/api/auth/register',
+                {
+                    // Apply minimal obfuscation
+                    username: EncodeUtil.encode(username),
+                    email: EncodeUtil.encode(email),
+                    password: EncodeUtil.encode(password),
+                    profile: {
+                        gender: gender ? gender : undefined,
+                        height: height ? height : undefined,
+                        weight: weight ? weight : undefined,
+                        dateOfBirth: dateOfBirth ? dateOfBirth : undefined,
+                    },
+                    encoded: true,
+                },
+                {
+                    withCredentials: false,
+                    skipAuthRefresh: true, // Skip token refresh on 401 during signup
+                },
+            );
+
+            return { success: true };
+        } catch (error) {
+            console.error('Register error:', error);
+            if (error instanceof ApiError) {
+                switch (error.status) {
+                    case 400:
+                        return { success: false, status: 400, message: 'Invalid data' };
+                    case 409:
+                        return { success: false, status: 409, message: 'Username or email already exists' };
+                    case 422:
+                        return { success: false, status: 422, message: 'Invalid data' };
+                    case 500:
+                        return { success: false, status: 500, message: 'Internal server error' };
+                    default:
+                        return { success: false, status: error.status, message: 'Technical error' };
+                }
+            } else {
+                return { success: false, status: 0, message: `Network error: ${error.message}` };
+            }
+        }
+    }
+
     /**
      * Checks if the user is authenticated.
      * @return {Promise<null|boolean>} True if the user is authenticated, otherwise false.

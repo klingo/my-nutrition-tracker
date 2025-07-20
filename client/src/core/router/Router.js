@@ -42,8 +42,8 @@ class Router {
             return;
         }
 
-        // Check if user is authenticated and trying to access /login
-        if (path === '/login') {
+        // Check if user is authenticated and trying to access /login or /register
+        if (path === '/login' || path === '/register') {
             const isAuthenticated = await authService.isAuthenticated();
             if (isAuthenticated) {
                 window.history.replaceState({ path: defaultAuthenticatedRoute }, '', defaultAuthenticatedRoute);

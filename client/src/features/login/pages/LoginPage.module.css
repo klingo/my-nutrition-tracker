@@ -60,5 +60,5 @@
 
 .signup {
     color: var(--color-primary-variant);
-    text-decoration: line-through;
+    margin-right: 8px;
 }

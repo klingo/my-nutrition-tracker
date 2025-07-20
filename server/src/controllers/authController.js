@@ -2,6 +2,7 @@ import { RefreshToken, User } from '../models/index.js';
 import { clearAuthCookies, generateTokens, refreshTokens, setAuthCookies } from '../services/tokenService.js';
 import auth from '../middleware/auth.js';
 import config from '../config/app.config.js';
+import { HEIGHT_UNITS, WEIGHT_UNITS } from '../models/constants/units.js';
 
 function decodeData(data) {
     return Object.keys(data).reduce((decodedData, key) => {
@@ -12,7 +13,7 @@ function decodeData(data) {
 
 export const registerUser = async (req, res) => {
     try {
-        let { username, email, password } = req.body;
+        let { username, email, password, profile } = req.body;
 
         // Decode if encoded (simple base64 decoding)
         if (req.body.encoded) {
@@ -29,8 +30,25 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'Username, email, and password are required' });
         }
 
-        // TODO: store height & weight as well
         const user = new User({ username, email, password });
+        // Gender
+        if (profile.gender) user.profile.gender = profile.gender;
+        // Date of birth
+        if (profile.dateOfBirth) user.profile.dateOfBirth = profile.dateOfBirth;
+        // Height
+        if (profile.height) {
+            user.profile.height = {
+                value: profile.height,
+                unit: HEIGHT_UNITS.CENTIMETER,
+            };
+        }
+        // Weight
+        if (profile.weight) {
+            user.profile.weight = {
+                value: profile.weight,
+                unit: WEIGHT_UNITS.KILOGRAM,
+            };
+        }
         await user.save();
 
         // Generate tokens and set authentication cookies

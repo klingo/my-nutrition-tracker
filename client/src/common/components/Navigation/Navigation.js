@@ -42,6 +42,7 @@ class Navigation extends BaseComponent {
             ul.append(this.createLogoutButton());
         } else {
             ul.append(this.createNavItem('Login', '/login', currentPath));
+            ul.append(this.createNavItem('Register', '/register', currentPath));
         }
 
         return this.element;

@@ -37,39 +37,29 @@ const transformUser = (user) => {
         profile: {
             firstName: user.profile.firstName,
             lastName: user.profile.lastName,
-            dateOfBirth: user.profile.dateOfBirth.toISOString().split('T')[0],
-            age: Math.floor((new Date() - new Date(user.profile.dateOfBirth)) / (1000 * 60 * 60 * 24 * 365)),
+            dateOfBirth: user.profile.dateOfBirth && user.profile.dateOfBirth.toISOString().split('T')[0],
+            age:
+                user.profile.dateOfBirth &&
+                Math.floor((new Date() - new Date(user.profile.dateOfBirth)) / (1000 * 60 * 60 * 24 * 365)),
             height: {
-                value: convertHeight.toCm(user.profile.height.value, user.profile.height.unit),
+                value:
+                    user.profile.height.value &&
+                    convertHeight.toCm(user.profile.height.value, user.profile.height.unit),
                 unit: user.profile.height.unit,
             },
             weight: {
-                value: convertWeight.toKg(user.profile.weight.value, user.profile.weight.unit),
+                value:
+                    user.profile.weight.value &&
+                    convertWeight.toKg(user.profile.weight.value, user.profile.weight.unit),
                 unit: user.profile.weight.unit,
             },
             gender: genderMap[user.profile.gender],
             activityLevel: activityLevelMap[user.profile.activityLevel],
             calculations: {
-                bmi: {
-                    value: user.profile.calculations.bmi.value,
-                    calculatedAt: user.profile.calculations.bmi.calculatedAt
-                        ? user.profile.calculations.bmi.calculatedAt.toISOString().split('T')[0]
-                        : null,
-                },
-                bmr: {
-                    value: user.profile.calculations.bmr.value,
-                    calculatedAt: user.profile.calculations.bmr.calculatedAt
-                        ? user.profile.calculations.bmr.calculatedAt.toISOString().split('T')[0]
-                        : null,
-                },
-                tdee: {
-                    value: user.profile.calculations.tdee.value,
-                    calculatedAt: user.profile.calculations.tdee.calculatedAt
-                        ? user.profile.calculations.tdee.calculatedAt.toISOString().split('T')[0]
-                        : null,
-                },
-                lastWeightUsed: user.profile.calculations.lastWeightUsed,
-                lastActivityLevelUsed: user.profile.calculations.lastActivityLevelUsed,
+                bmi: user.profile.calculations.bmi,
+                bmr: user.profile.calculations.bmr,
+                tdee: user.profile.calculations.tdee,
+                calculatedAt: user.profile.calculations.calculatedAt,
             },
         },
     };
@@ -84,18 +74,12 @@ export const getUserById = async (req, res) => {
         // const user = await User.findById(req.params.id).select('-password');
         if (!user) return res.status(404).send({ message: 'User not found' });
 
-        // Get calculations
-        const calculations = await user.getCalculations();
-
         // Transform data for presentation
         const transformedUser = transformUser(user);
 
         res.json({
             _embedded: {
-                user: {
-                    ...transformedUser,
-                    calculations,
-                },
+                user: transformedUser,
             },
         });
     } catch (error) {

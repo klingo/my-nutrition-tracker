@@ -3,7 +3,7 @@ import BasePage from '@core/base/BasePage';
 import { defaultAuthenticatedRoute } from '@core/config/routes.js';
 import authService from '@common/services/AuthService.js';
 import { appInstance } from '@/main.js';
-import { Button, Input, MessageBox } from '@common/components';
+import { Button, Input, Link, MessageBox } from '@common/components';
 import logo from '@assets/logo/android-chrome-192x192.png';
 
 class LoginPage extends BasePage {
@@ -100,10 +100,14 @@ class LoginPage extends BasePage {
         // registerButton.mount(container);
 
         // Sign Up Text
+        const signupContainer = document.createElement('div');
+        container.append(signupContainer);
         const signupElement = document.createElement('span');
         signupElement.classList.add(styles.signup);
-        signupElement.textContent = "Don't have an account? Sign up.";
-        container.append(signupElement);
+        signupElement.textContent = "Don't have an account?";
+        signupContainer.append(signupElement);
+        const signupLink = new Link({ text: 'Create account', routePath: '/register' });
+        signupLink.mount(signupContainer);
 
         this.element.append(container);
     }
