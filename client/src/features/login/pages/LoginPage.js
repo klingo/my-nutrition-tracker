@@ -42,7 +42,7 @@ class LoginPage extends BasePage {
         this.usernameInput = new Input({
             name: 'username',
             id: 'username',
-            label: 'Username',
+            label: 'Username or Email',
             autocorrect: false,
             spellcheck: false,
             required: true,
