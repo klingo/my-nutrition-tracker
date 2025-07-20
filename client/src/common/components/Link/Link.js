@@ -3,7 +3,16 @@ import BaseComponent from '@core/base/BaseComponent';
 import { appInstance } from '@/main.js';
 import { routes } from '@core/config/routes';
 
+/**
+ * Represents a customizable Link component.
+ * @class Link
+ */
 export default class Link extends BaseComponent {
+    /**
+     * @param {Object} params - The input parameters for the constructor.
+     * @param {string} params.text - The text of the link.
+     * @param {string} params.routePath - The route path to be navigated to when the link is clicked.
+     */
     constructor({ text, routePath }) {
         super();
 
