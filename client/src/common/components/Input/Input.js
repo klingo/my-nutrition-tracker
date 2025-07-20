@@ -1,6 +1,6 @@
 import styles from './Input.module.css';
 import BaseComponent from '@core/base/BaseComponent';
-import setAttributes from '@common/utils/setAttributes.js';
+import setAttributes from '@common/utils/setAttributes';
 
 /**
  * Represents a customizable Input component.
@@ -8,11 +8,13 @@ import setAttributes from '@common/utils/setAttributes.js';
  */
 export default class Input extends BaseComponent {
     /**
-     * @param {'text'|'password'|´email'|'number'} [type='text'] - Input type
+     * @param {'text'|'password'|'number'|'email'} [type='text'] - Input type
      * @param {string} name
      * @param {string} id
      * @param {string} label
      * @param {string} value
+     * @param {string} pattern
+     * @param {string} patternErrorMessage
      * @param {boolean} autocorrect
      * @param {boolean} spellcheck
      * @param {boolean} autocomplete
@@ -21,8 +23,12 @@ export default class Input extends BaseComponent {
      * @param {number} maxLength
      * @param {boolean} required
      * @param {boolean} disabled
+     * @param {string} errorMessage
      * @param {string} icon
-     * @param {function} onChange
+     * @param {Object} numberConfig
+     * @param {number} numberConfig.min
+     * @param {number} numberConfig.max
+     * @param {number} numberConfig.step
      */
     constructor({
         type = 'text',
@@ -30,16 +36,23 @@ export default class Input extends BaseComponent {
         id = '',
         label = '',
         value = '',
+        pattern = '',
+        patternErrorMessage = '',
         autocorrect = true,
         spellcheck = true,
         autocomplete = '',
         autofocus = false,
-        minLength = 0,
-        maxLength = 255,
+        minLength = undefined,
+        maxLength = undefined,
         required = false,
         disabled = false,
+        errorMessage = '',
         icon = '',
-        onChange = null,
+        numberConfig = {
+            min: null,
+            max: null,
+            step: null,
+        },
     } = {}) {
         super();
 
@@ -49,6 +62,8 @@ export default class Input extends BaseComponent {
         this.id = id;
         this.label = label;
         this.value = value;
+        this.pattern = pattern;
+        this.patternErrorMessage = patternErrorMessage;
         this.required = required;
         this.autocorrect = autocorrect;
         this.spellcheck = spellcheck;
@@ -57,7 +72,10 @@ export default class Input extends BaseComponent {
         this.minLength = minLength;
         this.maxLength = maxLength;
         this.disabled = disabled;
-        this.onChange = onChange;
+        this.errorMessage = errorMessage;
+        this.numberConfig = numberConfig;
+
+        this.errorElement = null;
     }
 
     #validate(value, validValues, name) {
@@ -68,12 +86,12 @@ export default class Input extends BaseComponent {
     }
 
     #validateType(type) {
-        const validTypes = new Set(['text', 'password']);
+        const validTypes = new Set(['text', 'password', 'number', 'email']);
         return this.#validate(type, validTypes, 'input type');
     }
 
     #validateIcon(icon) {
-        const validIcons = new Set(['account', 'person', 'lock']);
+        const validIcons = new Set(['account', 'person', 'lock', 'mail', 'height', 'weight']);
         return icon && this.#validate(icon, validIcons, 'input icon');
     }
 
@@ -97,6 +115,13 @@ export default class Input extends BaseComponent {
             const floatingLabel = this.#createFloatingLabel(this.label);
             outline.appendChild(floatingLabel);
         }
+
+        if (this.required) this.#addErrorIcon(label);
+
+        div.append(this.#createHelperLine(input));
+
+        // TODO: Support "helper-text" on bottom
+        // See: https://m2.material.io/components/text-fields
 
         this.element = div;
         return this.element;
@@ -125,14 +150,32 @@ export default class Input extends BaseComponent {
             { name: 'spellcheck', value: !this.spellcheck ? 'false' : undefined },
             { name: 'autocomplete', value: this.autocomplete || undefined },
             { name: 'autofocus', value: this.autofocus ? '' : undefined },
-            { name: 'minlength', value: this.minLength.toString() },
-            { name: 'maxlength', value: this.maxLength.toString() },
+            { name: 'aria-invalid', value: 'false' },
         ]);
+
+        if (['text', 'email', 'search', 'password', 'tel', 'url'].includes(this.type)) {
+            if (this.minLength) input.setAttribute('minlength', this.minLength.toString());
+            if (this.maxLength) input.setAttribute('maxlength', this.maxLength.toString());
+            if (this.pattern) input.setAttribute('pattern', this.pattern);
+        }
+
+        if (this.type === 'number' && this.numberConfig) {
+            if (this.numberConfig.min !== undefined && this.numberConfig.min !== null)
+                input.setAttribute('min', this.numberConfig.min.toString());
+            if (this.numberConfig.max !== undefined && this.numberConfig.max !== null) {
+                const maxLength = this.numberConfig.max.toString().length;
+                input.setAttribute('max', this.numberConfig.max.toString());
+                input.addEventListener('input', () => {
+                    if (input.value.length > maxLength) input.value = input.value.slice(0, maxLength);
+                });
+            }
+            if (this.numberConfig.step !== undefined && this.numberConfig.step !== null)
+                input.setAttribute('step', this.numberConfig.step.toString());
+        }
 
         if (this.required) {
             input.required = true;
             input.setAttribute('aria-required', 'true');
-            // TODO: add required styling
         }
 
         if (this.disabled) {
@@ -141,12 +184,8 @@ export default class Input extends BaseComponent {
             // TODO: add disabled styling
         }
 
-        if (this.onChange && typeof this.onChange === 'function') {
-            input.addEventListener('change', (e) => {
-                this.value = e.target.value;
-                this.onChange(e);
-            });
-        }
+        input.addEventListener('invalid', (event) => this.#handleInvalid(event));
+        input.addEventListener('input', (event) => this.#handleInput(event));
 
         return input;
     }
@@ -189,6 +228,9 @@ export default class Input extends BaseComponent {
                 account: styles.account,
                 person: styles.person,
                 lock: styles.lock,
+                mail: styles.mail,
+                height: styles.height,
+                weight: styles.weight,
             };
 
             const icon = document.createElement('div');
@@ -199,10 +241,97 @@ export default class Input extends BaseComponent {
         }
     }
 
+    #addErrorIcon(label) {
+        const icon = document.createElement('div');
+        icon.classList.add(styles.trailingIcon, styles.error);
+        icon.setAttribute('alt', '');
+        icon.setAttribute('aria-hidden', 'true');
+        label.appendChild(icon);
+    }
+
     #createFloatingLabel(textContent) {
         const floatingLabel = document.createElement('span');
         floatingLabel.classList.add(styles.floatingLabel);
         floatingLabel.textContent = textContent;
         return floatingLabel;
+    }
+
+    #createHelperLine(input) {
+        const helperLine = document.createElement('div');
+        helperLine.classList.add(styles.helperLine);
+
+        this.errorElement = document.createElement('span');
+        this.errorElement.classList.add(styles.errorText);
+        this.errorElement.style.display = 'none';
+        helperLine.appendChild(this.errorElement);
+
+        if (this.maxLength) {
+            const characterCounter = document.createElement('span');
+            characterCounter.classList.add(styles.characterCounter);
+            characterCounter.textContent = `${this.value.length}/${this.maxLength}`;
+            helperLine.appendChild(characterCounter);
+
+            input.addEventListener('input', () => {
+                characterCounter.textContent = `${input.value.length}/${this.maxLength}`;
+            });
+        }
+
+        return helperLine;
+    }
+
+    #handleInvalid(event) {
+        event.preventDefault();
+        const input = event.target;
+        input.setAttribute('aria-invalid', 'true');
+
+        if (input.validity.valueMissing) {
+            this.errorMessage = 'This field is required';
+        } else if (input.validity.typeMismatch) {
+            this.errorMessage = 'Please enter a valid value';
+        } else if (input.validity.patternMismatch) {
+            this.errorMessage = this.patternErrorMessage || 'Please match the requested format';
+        } else if (input.validity.tooShort) {
+            this.errorMessage = `Please enter at least ${input.minLength} characters`;
+        } else if (input.validity.tooLong) {
+            this.errorMessage = `Please enter no more than ${input.maxLength} characters`;
+        } else if (input.validity.rangeUnderflow) {
+            this.errorMessage = `Value must be greater than or equal to ${input.min}`;
+        } else if (input.validity.rangeOverflow) {
+            this.errorMessage = `Value must be less than or equal to ${input.max}`;
+        } else if (input.validity.stepMismatch) {
+            this.errorMessage = 'Please enter a valid value';
+        } else if (input.validity.badInput) {
+            this.errorMessage = 'Please enter a valid value';
+        }
+
+        this.#updateErrorMessage();
+    }
+
+    #handleInput(event) {
+        const input = event.target;
+        if (input.validity.valid) {
+            input.setAttribute('aria-invalid', 'false');
+            this.errorMessage = '';
+            this.#updateErrorMessage();
+        } else if (this.errorMessage) {
+            this.#handleInvalid(event);
+        }
+    }
+
+    #updateErrorMessage() {
+        if (!this.errorElement) {
+            this.errorElement = this.element.querySelector(`.${styles.errorText}`);
+            if (!this.errorElement) return;
+        }
+
+        if (this.errorMessage) {
+            this.errorElement.textContent = this.errorMessage;
+            this.errorElement.style.display = 'block';
+            this.element.classList.add(styles.hasError);
+        } else {
+            this.errorElement.textContent = '';
+            this.errorElement.style.display = 'none';
+            this.element.classList.remove(styles.hasError);
+        }
     }
 }

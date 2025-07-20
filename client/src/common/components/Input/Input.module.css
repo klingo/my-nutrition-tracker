@@ -1,14 +1,13 @@
 .input {
     display: flex;
     flex-direction: column;
-    background-color: var(--color-input-background);
-    border-radius: 4px;
 }
 
 .input .label {
     height: 56px;
     overflow: visible;
     padding: 0 16px;
+    background-color: var(--color-input-background);
 
     border-radius: 4px;
     display: inline-flex;
@@ -47,6 +46,43 @@
 .input .label .icon.lock {
     mask-image: url('@assets/icons/actions/lock_24dp.svg');
     -webkit-mask-image: url('@assets/icons/actions/lock_24dp.svg');
+}
+
+.input .label .icon.mail {
+    mask-image: url('@assets/icons/communicate/mail_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/communicate/mail_24dp.svg');
+}
+
+.input .label .icon.height {
+    mask-image: url('@assets/icons/text/height_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/text/height_24dp.svg');
+}
+
+.input .label .icon.weight {
+    mask-image: url('@assets/icons/social/weight_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/social/weight_24dp.svg');
+}
+
+.input .label .trailing-icon {
+    display: none;
+    align-self: center;
+    min-width: 24px;
+    width: 24px;
+    height: 24px;
+    margin-left: 8px;
+    background-color: var(--color-error);
+
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}
+
+.input .label .trailing-icon.error {
+    mask-image: url('@assets/icons/actions/error_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/actions/error_24dp.svg');
 }
 
 .input .label input {
@@ -120,6 +156,7 @@
     transform: translateY(-50%);
     pointer-events: none;
     color: var(--color-primary-variant);
+    will-change: transform, color;
 
     transition:
         transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -127,12 +164,57 @@
 }
 
 .input .label input:focus + .outline > .floating-label,
-.input .label input:valid + .outline > .floating-label,
 .input .label input:not(:placeholder-shown) + .outline > .floating-label {
-    transform: translateY(-100%) scale(0.75);
+    transform: translate3d(0, -100%, 0) scale(0.75);
     z-index: 2;
 }
 
 .input .label input:focus + .outline > .floating-label {
     color: var(--color-primary);
+}
+
+/*.input .label input:invalid:not(:placeholder-shown) + .outline > .floating-label {*/
+/*    color: var(--color-error);*/
+/*}*/
+
+.input.has-error .label input:not(:placeholder-shown) + .outline > .floating-label,
+.input.has-error + .outline > .floating-label {
+    color: var(--color-error);
+}
+
+/*.input .label input:invalid:not(:placeholder-shown) ~ .trailing-icon {*/
+/*    display: inline-block;*/
+/*}*/
+
+.input.has-error label input:not(:placeholder-shown) ~ .trailing-icon {
+    display: inline-block;
+}
+
+.input .label input[required] + .outline > .floating-label:after {
+    content: ' *';
+}
+
+.input .helper-line {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 4px;
+
+    pointer-events: none;
+    color: var(--color-primary);
+    font-size: var(--mnt-body-2-font-size);
+
+    align-content: end;
+}
+
+.input .helper-line .error-text {
+    display: none;
+    color: var(--color-error);
+}
+
+.input:has(input:invalid:not(:placeholder-shown)) .helper-line .error-text {
+    display: inline-block;
+}
+
+.input .helper-line .character-counter {
+    float: right;
 }
