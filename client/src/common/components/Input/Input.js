@@ -8,7 +8,7 @@ import setAttributes from '@common/utils/setAttributes';
  */
 export default class Input extends BaseComponent {
     /**
-     * @param {'text'|'password'|'number'|'email'} [type='text'] - Input type
+     * @param {'text'|'password'|'number'|'email'|'date'} [type='text'] - Input type
      * @param {string} name
      * @param {string} id
      * @param {string} label
@@ -86,12 +86,12 @@ export default class Input extends BaseComponent {
     }
 
     #validateType(type) {
-        const validTypes = new Set(['text', 'password', 'number', 'email']);
+        const validTypes = new Set(['text', 'password', 'number', 'email', 'date']);
         return this.#validate(type, validTypes, 'input type');
     }
 
     #validateIcon(icon) {
-        const validIcons = new Set(['account', 'person', 'lock', 'mail', 'height', 'weight']);
+        const validIcons = new Set(['account', 'person', 'lock', 'mail', 'height', 'weight', 'birthday']);
         return icon && this.#validate(icon, validIcons, 'input icon');
     }
 
@@ -159,7 +159,7 @@ export default class Input extends BaseComponent {
             if (this.pattern) input.setAttribute('pattern', this.pattern);
         }
 
-        if (this.type === 'number' && this.numberConfig) {
+        if (this.numberConfig && (this.type === 'number' || this.type === 'date')) {
             if (this.numberConfig.min !== undefined && this.numberConfig.min !== null)
                 input.setAttribute('min', this.numberConfig.min.toString());
             if (this.numberConfig.max !== undefined && this.numberConfig.max !== null) {
@@ -231,6 +231,7 @@ export default class Input extends BaseComponent {
                 mail: styles.mail,
                 height: styles.height,
                 weight: styles.weight,
+                birthday: styles.birthday,
             };
 
             const icon = document.createElement('div');
@@ -295,13 +296,19 @@ export default class Input extends BaseComponent {
         } else if (input.validity.tooLong) {
             this.errorMessage = `Please enter no more than ${input.maxLength} characters`;
         } else if (input.validity.rangeUnderflow) {
-            this.errorMessage = `Value must be greater than or equal to ${input.min}`;
+            this.errorMessage =
+                this.type === 'date'
+                    ? `Date must be after ${input.min}`
+                    : `Value must be greater than or equal to ${input.min}`;
         } else if (input.validity.rangeOverflow) {
-            this.errorMessage = `Value must be less than or equal to ${input.max}`;
+            this.errorMessage =
+                this.type === 'date'
+                    ? 'Date must not be in the future'
+                    : `Value must be less than or equal to ${input.max}`;
         } else if (input.validity.stepMismatch) {
             this.errorMessage = 'Please enter a valid value';
         } else if (input.validity.badInput) {
-            this.errorMessage = 'Please enter a valid value';
+            this.errorMessage = this.type === 'date' ? 'Please enter a valid date' : 'Please enter a valid value';
         }
 
         this.#updateErrorMessage();

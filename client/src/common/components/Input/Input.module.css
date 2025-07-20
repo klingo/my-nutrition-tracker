@@ -63,6 +63,11 @@
     -webkit-mask-image: url('@assets/icons/social/weight_24dp.svg');
 }
 
+.input .label .icon.birthday {
+    mask-image: url('@assets/icons/activities/cake_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/activities/cake_24dp.svg');
+}
+
 .input .label .trailing-icon {
     display: none;
     align-self: center;
