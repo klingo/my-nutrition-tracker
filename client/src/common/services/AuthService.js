@@ -36,7 +36,6 @@ class AuthService {
      * @return {Promise<Object>} A promise that resolves to an object indicating whether the login was successful or not. If successful, the object will contain a `success` property set to true. If unsuccessful, the object will contain `success` set to false, along with `status` and `message` properties detailing the error.
      */
     async login(username, password) {
-        console.log(`login(${username}, password: ${password})`);
         try {
             if (!username || !password) {
                 throw new Error('Username and password are required');
