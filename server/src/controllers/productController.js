@@ -104,7 +104,15 @@ export const updateProduct = async (req, res) => {
         const { name, fat, protein, fiber, carbs } = req.body;
         const product = await Product.findByIdAndUpdate(
             id,
-            { name, fat, protein, fiber, carbs },
+            {
+                $set: {
+                    name: { $eg: name },
+                    fat: { $eq: fat },
+                    protein: { $eq: protein },
+                    fiber: { $eq: fiber },
+                    carbs: { $eq: carbs },
+                },
+            },
             { new: true, runValidators: true },
         );
         if (!product) {
