@@ -64,6 +64,7 @@ const UserSchema = new mongoose.Schema(
             gender: {
                 type: String,
                 enum: Object.values(GENDER),
+                default: null,
             },
             activityLevel: {
                 type: String,
