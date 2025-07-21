@@ -10,7 +10,12 @@ export const uploadImage = async (req, res) => {
 
     try {
         // Read the file data
-        const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
+        const uploadsDir = path.resolve(__dirname, '..', 'uploads');
+        const filePath = path.resolve(uploadsDir, req.file.filename);
+        // Ensure the filePath is within uploadsDir
+        if (!filePath.startsWith(uploadsDir + path.sep)) {
+            return res.status(400).json({ message: 'Invalid file path.' });
+        }
         const imageData = fs.readFileSync(filePath);
 
         // Create a new Image document
