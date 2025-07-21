@@ -23,8 +23,6 @@
     "dependencies": {
         "@fontsource-variable/roboto": "^5.2.6",
         "@fontsource-variable/roboto-condensed": "^5.2.6",
-        "axios": "^1.10.0",
-        "cookie-parser": "^1.4.7",
         "masonry-layout": "^4.2.2",
         "tabulator-tables": "^6.3.1"
     },

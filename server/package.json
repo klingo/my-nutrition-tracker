@@ -17,10 +17,11 @@
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-        "ling:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+        "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
     },
     "dependencies": {
         "bcrypt": "^6.0.0",
+        "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
         "dotenv": "^17.2.0",
         "express": "^5.1.0",
