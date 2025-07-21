@@ -227,7 +227,7 @@ class RegisterPage extends BasePage {
         }
 
         const dateOfBirth = this.birthdayInput.getValue();
-        const gender = this.element.querySelector('input[name="gender"]:checked').value;
+        const gender = this.element.querySelector('input[name="gender"]:checked')?.value;
         console.log(dateOfBirth);
         if (hasError) return;
 
