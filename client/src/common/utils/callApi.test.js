@@ -553,4 +553,76 @@ describe('callApi', () => {
             expect(global.fetch).toHaveBeenCalledTimes(3);
         });
     });
+
+    describe('CSRF token handling', () => {
+        const mockCsrfToken = 'test-csrf-token';
+        const mockResponseData = { success: true };
+
+        beforeEach(() => {
+            // Reset mocks before each test
+            vi.resetAllMocks();
+            global.fetch = vi.fn();
+            vi.resetModules();
+            authService.refreshAccessToken = vi.fn().mockResolvedValue(false);
+        });
+
+        it('should include CSRF token in headers for POST requests', async () => {
+            // Mock CSRF token fetch
+            global.fetch.mockImplementationOnce(() =>
+                Promise.resolve({
+                    ok: true,
+                    headers: { get: () => 'application/json' },
+                    json: () => Promise.resolve({}),
+                }),
+            );
+
+            // Mock document.cookie for CSRF token
+            Object.defineProperty(document, 'cookie', {
+                writable: true,
+                value: `csrf_token=${mockCsrfToken}`,
+            });
+
+            // Mock the actual API response
+            global.fetch.mockImplementationOnce(() =>
+                Promise.resolve({
+                    ok: true,
+                    headers: { get: () => 'application/json' },
+                    json: () => Promise.resolve(mockResponseData),
+                }),
+            );
+
+            await callApi('POST', 'https://api.example.com/data', { key: 'value' });
+
+            // Verify CSRF token was included in headers
+            expect(global.fetch).toHaveBeenCalledWith(
+                'https://api.example.com/data',
+                expect.objectContaining({
+                    method: 'POST',
+                    headers: expect.objectContaining({
+                        'X-CSRF-Token': mockCsrfToken,
+                    }),
+                }),
+            );
+        });
+
+        it('should not include CSRF token for GET requests', async () => {
+            global.fetch.mockResolvedValueOnce({
+                ok: true,
+                headers: { get: () => 'application/json' },
+                json: () => Promise.resolve(mockResponseData),
+            });
+
+            await callApi('GET', 'https://api.example.com/data');
+
+            expect(global.fetch).toHaveBeenCalledWith(
+                'https://api.example.com/data',
+                expect.objectContaining({
+                    method: 'GET',
+                    headers: expect.not.objectContaining({
+                        'X-CSRF-Token': expect.any(String),
+                    }),
+                }),
+            );
+        });
+    });
 });

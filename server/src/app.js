@@ -7,6 +7,7 @@ import routes from './routes/index.js';
 import config from './config/app.config.js';
 import cookieParser from 'cookie-parser';
 import securityHeaders from './middleware/securityHeaders.js';
+import { validateCsrfToken } from './middleware/csrfProtection.js';
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(
         origin: config.clientUrl,
         credentials: true, // Allow cookies to be sent with requests
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type'],
+        allowedHeaders: ['Content-Type', 'X-CSRF-Token'],
     }),
 );
 app.use(express.json());
@@ -24,6 +25,9 @@ app.use(cookieParser());
 
 // Security headers middleware
 app.use(securityHeaders);
+
+// CSRF protection middleware
+app.use(validateCsrfToken);
 
 // API routes
 app.use('/api', routes);

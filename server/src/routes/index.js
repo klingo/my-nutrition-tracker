@@ -4,8 +4,11 @@ import productRoutes from './product.routes.js';
 import logRoutes from './log.routes.js';
 import userRoutes from './user.routes.js';
 import imageRoutes from './image.routes.js';
+import { csrfTokenProvider } from '../middleware/csrfProtection.js';
 
 const router = express.Router();
+
+router.get('/csrf-token', csrfTokenProvider);
 
 router.use('/auth', authRoutes);
 router.use('/products', productRoutes);

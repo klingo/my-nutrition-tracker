@@ -6,13 +6,60 @@ const DEFAULT_HEADERS = { 'Content-Type': 'application/json' };
 // Flag to prevent infinite refresh loops
 let isRefreshing = false;
 
+// Store CSRF token in memory
+let csrfToken = null;
+
 /**
- * Makes an API call with support for HttpOnly cookies and automatic token refresh
- * @param {string} method - The HTTP method (GET, POST, PUT, DELETE, etc.)
- * @param {string} url - The API endpoint URL
- * @param {object} body - The request body (for POST, PUT, etc.)
- * @param {object} options - Additional options (headers, withCredentials, skipAuthRefresh)
- * @returns {Promise<object>} - The API response
+ * Fetches the CSRF token by making an API call and reading the token from the cookies.
+ * The token is retrieved from the 'csrf_token' cookie, which must be set by the server.
+ *
+ * @return {Promise<string|null>} A promise that resolves to the CSRF token as a string if found, or null if not found or an error occurs.
+ */
+async function fetchCsrfToken() {
+    try {
+        // Make request to set the CSRF token cookie
+        const response = await fetch('/api/csrf-token', {
+            method: 'GET',
+            credentials: 'include', // Include cookies
+        });
+
+        if (!response.ok) {
+            console.error('Failed to fetch CSRF token:', response.statusText);
+            return null;
+        }
+
+        // Read the CSRF token from the cookie
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrf_token') {
+                return decodeURIComponent(value);
+            }
+        }
+
+        console.error('CSRF token cookie not found');
+        return null;
+    } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+        return null;
+    }
+}
+
+/**
+ * Makes an HTTP API call with the specified method, URL, body, and options.
+ * Handles state-changing requests (e.g., POST, PUT, DELETE) by including a CSRF token if available.
+ * Implements token refresh logic for 401 Unauthorized errors, if enabled.
+ *
+ * @param {string} method - The HTTP method to use for the request (e.g., GET, POST, PUT, DELETE).
+ * @param {string} url - The URL of the API endpoint to send the request to.
+ * @param {Object|null} body - The request payload to be sent for methods that allow a body (e.g., POST, PUT).
+ * @param {Object} [options={}] - Additional options for the API call.
+ * @param {Object} [options.headers={}] - Custom headers to include in the request.
+ * @param {boolean} [options.withCredentials=false] - Indicates whether to include credentials (e.g., cookies) in the request.
+ * @param {boolean} [options.skipAuthRefresh=false] - Skips token refresh logic if set to true when encountering a 401 error.
+ * @param {AbortSignal} [options.signal] - An optional AbortSignal to allow request cancellation.
+ * @return {Promise<Object>} - A promise that resolves with the response data in JSON format, or an empty object for non-JSON responses.
+ * @throws {ApiError} - If the response is not successful or a network error occurs.
  */
 async function callApi(method, url, body, options = {}) {
     const { headers = {}, withCredentials = false, skipAuthRefresh = false, signal } = options;
@@ -21,6 +68,19 @@ async function callApi(method, url, body, options = {}) {
         ...DEFAULT_HEADERS,
         ...headers,
     };
+
+    // For state-changing methods, include CSRF token in headers
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
+        // If we don't have a CSRF token yet, fetch one
+        if (!csrfToken) {
+            csrfToken = await fetchCsrfToken();
+        }
+
+        // Include the CSRF token in the headers
+        if (csrfToken) {
+            mergedHeaders['X-CSRF-Token'] = csrfToken;
+        }
+    }
 
     try {
         const requestOptions = {
