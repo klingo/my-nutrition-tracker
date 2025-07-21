@@ -1,12 +1,14 @@
 import BasePage from '@core/base/BasePage';
-import callApi from '@common/utils/callApi';
 import { Button, ContentBlock } from '@common/components';
+import { TabulatorFull as Tabulator } from 'tabulator-tables';
+import 'tabulator-tables/dist/css/tabulator_midnight.min.css'; // Import the default CSS
 
 class ProductsPage extends BasePage {
     constructor(router, signal) {
         super(router, signal);
 
         this.pageTitle = 'Products';
+        this.tabulator = null;
         this.setState({
             products: [],
             pagination: {
@@ -18,58 +20,76 @@ class ProductsPage extends BasePage {
         });
     }
 
-    async componentDidMount() {
-        await super.componentDidMount();
-        const { currentPage, itemsPerPage } = this.getState().pagination;
-        await this.fetchProductsData(currentPage, itemsPerPage);
-    }
-
-    async fetchProductsData(page = 1, limit = 10) {
-        try {
-            this.setState({ loading: true, error: null });
-            const response = await callApi('GET', `/api/products?page=${page}&limit=${limit}`, null, {
-                signal: this.abortSignal,
-            });
-
-            this.setState({ products: response._embedded.products, pagination: response.pagination, loading: false });
-        } catch (error) {
-            if (error.name !== 'AbortError') {
-                console.error('Error fetching products data:', error);
-                this.setState({ error, loading: false });
-            }
-        }
-    }
-
     async renderContent() {
         console.log('ProductsPage renderContent() called');
-        const { products, pagination } = this.getState();
 
+        // Create a content block
         const productsContentBlock = new ContentBlock();
-        if (!products || products.length === 0) {
-            productsContentBlock.append(document.createTextNode('No products found.'));
-        } else {
-            products.forEach((product) => {
-                // TODO: implement product rendering
-                const productCard = document.createElement('div');
-                productCard.textContent = product.name;
-                productsContentBlock.append(productCard);
-            });
-        }
 
-        productsContentBlock.mount(this.element);
+        // Create container for the table
+        const tableContainer = document.createElement('div');
+        tableContainer.style.marginTop = '20px';
+        productsContentBlock.append(tableContainer);
 
+        // Initialize Tabulator in the container
+        this.tabulator = new Tabulator(tableContainer, {
+            columns: [
+                { title: 'Name', field: 'name', width: 200 },
+                { title: 'Fat (g)', field: 'fat', width: 100, hozAlign: 'right' },
+                { title: 'Protein (g)', field: 'protein', width: 120, hozAlign: 'right' },
+                { title: 'Fiber (g)', field: 'fiber', width: 100, hozAlign: 'right' },
+                { title: 'Carbs (g)', field: 'carbs', width: 120, hozAlign: 'right' },
+            ],
+            layout: 'fitColumns',
+            pagination: 'remote',
+            paginationSize: 25,
+            paginationSizeSelector: [10, 25, 50, 100],
+            ajaxURL: '/api/products',
+            ajaxParams: {},
+            ajaxConfig: {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            },
+            ajaxResponse: (url, params, response) => {
+                return response._embedded?.products || [];
+            },
+            ajaxURLGenerator: (url, config, params) => {
+                const query = [];
+                if (params.page) query.push(`page=${params.page}`);
+                if (params.size) query.push(`limit=${params.size}`);
+                if (params.sort?.length) {
+                    const sort = params.sort[0];
+                    query.push(`sortBy=${sort.field}`);
+                    query.push(`sortOrder=${sort.dir === 'asc' ? 'asc' : 'desc'}`);
+                }
+                return query.length ? `${url}?${query.join('&')}` : url;
+            },
+        });
+
+        // Add the "Add Product" button
         const addProductButton = new Button({
             text: 'Add Product',
             type: 'primary',
             icon: 'add',
             onClick: () => {
                 // TODO: open add product overlay
+                this.router.navigate('/products/add');
             },
         });
-        addProductButton.mount(this.element);
+        addProductButton.mount(productsContentBlock);
 
-        // TODO: implement pagination
-        console.log(pagination);
+        productsContentBlock.mount(this.element);
+
+        return this.element;
+    }
+
+    unmount() {
+        if (this.tabulator) {
+            this.tabulator.destroy();
+        }
+        super.unmount();
     }
 }
 
