@@ -1,0 +1,157 @@
+.icon {
+    display: inline-block;
+    align-self: center;
+    min-width: 24px;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    background-color: var(--color-primary-variant);
+
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}
+
+/* System Icons */
+.icon.account {
+    mask-image: url('@assets/icons/ui-actions/logout_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/ui-actions/logout_24dp.svg');
+}
+
+.icon.person {
+    mask-image: url('@assets/icons/social/person_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/social/person_24dp.svg');
+}
+
+.icon.lock {
+    mask-image: url('@assets/icons/actions/lock_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/actions/lock_24dp.svg');
+}
+
+.icon.mail {
+    mask-image: url('@assets/icons/communicate/mail_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/communicate/mail_24dp.svg');
+}
+
+.icon.height {
+    mask-image: url('@assets/icons/text/height_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/text/height_24dp.svg');
+}
+
+.icon.weight {
+    mask-image: url('@assets/icons/social/weight_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/social/weight_24dp.svg');
+}
+
+.icon.birthday {
+    mask-image: url('@assets/icons/activities/cake_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/activities/cake_24dp.svg');
+}
+
+.icon.error {
+    background-color: var(--color-error);
+    mask-image: url('@assets/icons/actions/error_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/actions/error_24dp.svg');
+}
+
+/* Nutrient Icons */
+.icon.barcode {
+    mask-image: url('@assets/icons/mnt/barcode.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/barcode.svg');
+}
+
+.icon.calcium {
+    mask-image: url('@assets/icons/mnt/calcium.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/calcium.svg');
+}
+
+.icon.calories {
+    background: linear-gradient(225deg, #f33e3e, #ea9079);
+    mask-image: url('@assets/icons/mnt/calories.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/calories.svg');
+}
+
+.icon.carbohydrates {
+    background-color: #e3ab54;
+    mask-image: url('@assets/icons/mnt/carbohydrates.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/carbohydrates.svg');
+}
+.icon.fat {
+    background-color: #42b95b;
+    mask-image: url('@assets/icons/mnt/fat.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/fat.svg');
+}
+
+.icon.fiber {
+    background: linear-gradient(225deg, #4cb04f 0%, #4cb04f 50%, #b34a49 100%);
+    mask-image: url('@assets/icons/mnt/fiber.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/fiber.svg');
+}
+
+.icon.magnesium {
+    mask-image: url('@assets/icons/mnt/magnesium.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/magnesium.svg');
+}
+
+.icon.monounsaturated-fat {
+    background: linear-gradient(0deg, #90a522 0%, #90a522 30%, #fff 70%, #fff 100%);
+    mask-image: url('@assets/icons/mnt/monounsaturated-fat.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/monounsaturated-fat.svg');
+}
+
+.icon.package-size {
+    mask-image: url('@assets/icons/mnt/package-size.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/package-size.svg');
+}
+
+.icon.polyols {
+    mask-image: url('@assets/icons/mnt/polyols.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/polyols.svg');
+}
+
+.icon.polyunsaturated-fat {
+    background-color: #f2b3a4;
+    mask-image: url('@assets/icons/mnt/polyunsaturated-fat.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/polyunsaturated-fat.svg');
+}
+.icon.potassium {
+    mask-image: url('@assets/icons/mnt/potassium.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/potassium.svg');
+}
+
+.icon.protein {
+    background: linear-gradient(225deg, #bf534f, #e48181);
+    mask-image: url('@assets/icons/mnt/protein.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/protein.svg');
+}
+
+.icon.salt {
+    background-color: #fff;
+    mask-image: url('@assets/icons/mnt/salt.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/salt.svg');
+}
+
+.icon.saturated-fat {
+    background-color: #f9b02e;
+    mask-image: url('@assets/icons/mnt/saturated-fat.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/saturated-fat.svg');
+}
+
+.icon.serving-size {
+    mask-image: url('@assets/icons/mnt/serving-size.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/serving-size.svg');
+}
+
+.icon.sodium {
+    mask-image: url('@assets/icons/mnt/sodium.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/sodium.svg');
+}
+
+.icon.sugars {
+    background-color: #fff;
+    mask-image: url('@assets/icons/mnt/sugars.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/sugars.svg');
+}

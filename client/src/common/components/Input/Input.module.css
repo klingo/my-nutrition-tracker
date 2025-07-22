@@ -16,78 +16,10 @@
     box-sizing: border-box;
 }
 
-.input .label .icon {
-    display: inline-block;
-    align-self: center;
-    min-width: 24px;
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    background-color: var(--color-primary-variant);
-
-    mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    -webkit-mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-}
-
-.input .label .icon.account {
-    mask-image: url('@assets/icons/ui-actions/logout_24dp.svg');
-    -webkit-mask-image: url('@assets/icons/ui-actions/logout_24dp.svg');
-}
-
-.input .label .icon.person {
-    mask-image: url('@assets/icons/social/person_24dp.svg');
-    -webkit-mask-image: url('@assets/icons/social/person_24dp.svg');
-}
-
-.input .label .icon.lock {
-    mask-image: url('@assets/icons/actions/lock_24dp.svg');
-    -webkit-mask-image: url('@assets/icons/actions/lock_24dp.svg');
-}
-
-.input .label .icon.mail {
-    mask-image: url('@assets/icons/communicate/mail_24dp.svg');
-    -webkit-mask-image: url('@assets/icons/communicate/mail_24dp.svg');
-}
-
-.input .label .icon.height {
-    mask-image: url('@assets/icons/text/height_24dp.svg');
-    -webkit-mask-image: url('@assets/icons/text/height_24dp.svg');
-}
-
-.input .label .icon.weight {
-    mask-image: url('@assets/icons/social/weight_24dp.svg');
-    -webkit-mask-image: url('@assets/icons/social/weight_24dp.svg');
-}
-
-.input .label .icon.birthday {
-    mask-image: url('@assets/icons/activities/cake_24dp.svg');
-    -webkit-mask-image: url('@assets/icons/activities/cake_24dp.svg');
-}
-
 .input .label .trailing-icon {
     display: none;
-    align-self: center;
-    min-width: 24px;
-    width: 24px;
-    height: 24px;
     margin-left: 8px;
-    background-color: var(--color-error);
-
-    mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    -webkit-mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-}
-
-.input .label .trailing-icon.error {
-    mask-image: url('@assets/icons/actions/error_24dp.svg');
-    -webkit-mask-image: url('@assets/icons/actions/error_24dp.svg');
+    margin-right: 0;
 }
 
 .input .label input {
@@ -146,7 +78,7 @@
     border-radius: 4px;
 }
 
-.input .label:has(.icon) .outline .floating-label {
+.input .label[data-has-icon='true'] .outline .floating-label {
     left: 48px;
 }
 

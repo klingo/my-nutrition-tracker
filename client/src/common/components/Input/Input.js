@@ -1,4 +1,5 @@
 import styles from './Input.module.css';
+import iconStyles from '@styles/icons.module.css';
 import BaseComponent from '@core/base/BaseComponent';
 import setAttributes from '@common/utils/setAttributes';
 
@@ -91,7 +92,33 @@ export default class Input extends BaseComponent {
     }
 
     #validateIcon(icon) {
-        const validIcons = new Set(['account', 'person', 'lock', 'mail', 'height', 'weight', 'birthday']);
+        const validIcons = new Set([
+            'account',
+            'person',
+            'lock',
+            'mail',
+            'height',
+            'weight',
+            'birthday',
+            'barcode',
+            'calcium',
+            'calories',
+            'carbohydrates',
+            'fat',
+            'fiber',
+            'magnesium',
+            'monounsaturated-fat',
+            'package-size',
+            'polyols',
+            'polyunsaturated-fat',
+            'potassium',
+            'protein',
+            'salt',
+            'saturated-fat',
+            'serving-size',
+            'sodium',
+            'sugars',
+        ]);
         return icon && this.#validate(icon, validIcons, 'input icon');
     }
 
@@ -224,27 +251,18 @@ export default class Input extends BaseComponent {
 
     #addIcon(label) {
         if (this.icon) {
-            const iconClasses = {
-                account: styles.account,
-                person: styles.person,
-                lock: styles.lock,
-                mail: styles.mail,
-                height: styles.height,
-                weight: styles.weight,
-                birthday: styles.birthday,
-            };
-
             const icon = document.createElement('div');
-            icon.classList.add(styles.icon, iconClasses[this.icon]);
+            icon.classList.add(iconStyles.icon, iconStyles[this.icon]);
             icon.setAttribute('alt', '');
             icon.setAttribute('aria-hidden', 'true');
+            label.setAttribute('data-has-icon', 'true');
             label.appendChild(icon);
         }
     }
 
     #addErrorIcon(label) {
         const icon = document.createElement('div');
-        icon.classList.add(styles.trailingIcon, styles.error);
+        icon.classList.add(iconStyles.icon, iconStyles.error, styles.trailingIcon);
         icon.setAttribute('alt', '');
         icon.setAttribute('aria-hidden', 'true');
         label.appendChild(icon);
