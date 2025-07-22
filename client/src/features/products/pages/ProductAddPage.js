@@ -4,34 +4,11 @@ import { Button, ContentBlock, ExpandableContainer, Input } from '@common/compon
 class ProductAddPage extends BasePage {
     constructor(router, signal) {
         super(router, signal);
+
         this.pageTitle = 'Add New Product';
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
-
-    handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            // Get all form data at once
-            const formData = new FormData(e.target);
-            const formValues = Object.fromEntries(formData.entries());
-
-            // Convert string values to numbers where needed
-            const numericFields = ['calories', 'protein', 'carbs', 'fat', 'fiber' /* other numeric fields */];
-            const processedData = Object.entries(formValues).reduce((acc, [key, value]) => {
-                acc[key] = numericFields.includes(key) ? (value ? parseFloat(value) : 0) : value;
-                return acc;
-            }, {});
-
-            console.log('Submitting product:', processedData);
-
-            // TODO: Implement API call to add product
-            // After successful submission, navigate back to products list
-            this.router.navigate('/products');
-        } catch (error) {
-            console.error('Error adding product:', error);
-            // TODO: Show error to user
-            this.renderContent(error);
-        }
-    };
 
     renderContent() {
         const contentBlock = new ContentBlock();
@@ -285,19 +262,61 @@ class ProductAddPage extends BasePage {
         });
 
         // Add submit button
-        const submitButton = new Button({
-            type: 'primary',
-            text: 'Add Product',
-        });
-
         const buttonWrapper = document.createElement('div');
         buttonWrapper.style.marginTop = '20px';
-        buttonWrapper.append(submitButton.render());
+        const submitButton = new Button({
+            text: 'Add Product',
+            type: 'primary',
+            buttonType: 'submit',
+        });
+        submitButton.mount(buttonWrapper);
         form.append(buttonWrapper);
 
         contentBlock.append(form);
         contentBlock.mount(this.element);
         return this.element;
+    }
+
+    handleSubmit = async (event) => {
+        event.preventDefault();
+
+        // Validate form
+        const inputFields = this.element.querySelectorAll('input');
+        let isFormValid = true;
+        inputFields.forEach((field) => {
+            if (!field.checkValidity()) isFormValid = false;
+        });
+        if (!isFormValid) return;
+
+        try {
+            // Get all form data at once
+            const formData = new FormData(event.target);
+            const formValues = Object.fromEntries(formData.entries());
+
+            // Convert string values to numbers where needed
+            const numericFields = ['calories', 'protein', 'carbs', 'fat', 'fiber' /* other numeric fields */];
+            const processedData = Object.entries(formValues).reduce((acc, [key, value]) => {
+                acc[key] = numericFields.includes(key) ? (value ? parseFloat(value) : 0) : value;
+                return acc;
+            }, {});
+
+            console.log('Submitting product:', processedData);
+
+            // TODO: Implement API call to add product
+            // After successful submission, navigate back to products list
+            this.router.navigate('/products');
+        } catch (error) {
+            console.error('Error adding product:', error);
+            // TODO: Show error to user
+            this.renderContent(error);
+        }
+    };
+
+    handleKeyDown(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            this.handleSubmit(event);
+        }
     }
 
     createSectionHeading(text) {
