@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import Input from '@common/components/Input';
 import styles from '@common/components/Input/Input.module.css';
+import iconStyles from '@styles/icons.module.css';
 
 describe('Input', () => {
     describe('mount', () => {
@@ -181,14 +182,14 @@ describe('Input', () => {
 
         it('should add correct icon class when icon is provided', () => {
             const input = new Input({ icon: 'mail' }).render();
-            const icon = input.querySelector(`.${styles.icon}`);
+            const icon = input.querySelector(`.${iconStyles.icon}`);
             expect(icon).not.toBeNull();
-            expect(icon.classList.contains(styles.mail)).toBe(true);
+            expect(icon.classList.contains(iconStyles.mail)).toBe(true);
         });
 
         it('should not add icon when no icon is provided', () => {
             const input = new Input().render();
-            const icon = input.querySelector(`.${styles.icon}`);
+            const icon = input.querySelector(`.${iconStyles.icon}`);
             expect(icon).toBeNull();
         });
     });
