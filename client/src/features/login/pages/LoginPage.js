@@ -13,6 +13,7 @@ class LoginPage extends BasePage {
         this.loginButton = null;
         this.messageBoxContainer = null;
         this.handleLogin = this.handleLogin.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     async renderContent() {
@@ -37,6 +38,7 @@ class LoginPage extends BasePage {
 
         const form = document.createElement('form');
         form.classList.add(styles.form);
+        form.addEventListener('keydown', this.handleKeyDown);
         container.append(form);
 
         this.usernameInput = new Input({
@@ -115,6 +117,14 @@ class LoginPage extends BasePage {
     async handleLogin(event) {
         event.preventDefault();
 
+        // Validate form
+        const inputFields = this.element.querySelectorAll('input');
+        let isFormValid = true;
+        inputFields.forEach((field) => {
+            if (!field.checkValidity()) isFormValid = false;
+        });
+        if (!isFormValid) return;
+
         const username = this.usernameInput.getValue();
         const password = this.passwordInput.getValue();
 
@@ -138,6 +148,13 @@ class LoginPage extends BasePage {
             this.#displayErrorMessage('An unexpected error occurred. Please try again later.');
         } finally {
             this.loginButton.setLoading(false).setText('Login');
+        }
+    }
+
+    handleKeyDown(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            this.handleLogin(event);
         }
     }
 
