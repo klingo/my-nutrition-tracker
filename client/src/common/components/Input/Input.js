@@ -41,18 +41,17 @@ export default class Input extends BaseComponent {
         patternErrorMessage = '',
         autocorrect = true,
         spellcheck = true,
-        autocomplete = '',
+        autocomplete = undefined,
         autofocus = false,
         minLength = undefined,
         maxLength = undefined,
         required = false,
         disabled = false,
-        errorMessage = '',
         icon = '',
         numberConfig = {
-            min: null,
-            max: null,
-            step: null,
+            min: undefined,
+            max: undefined,
+            step: undefined,
         },
     } = {}) {
         super();
@@ -73,9 +72,9 @@ export default class Input extends BaseComponent {
         this.minLength = minLength;
         this.maxLength = maxLength;
         this.disabled = disabled;
-        this.errorMessage = errorMessage;
         this.numberConfig = numberConfig;
 
+        this.errorMessage = '';
         this.errorElement = null;
     }
 

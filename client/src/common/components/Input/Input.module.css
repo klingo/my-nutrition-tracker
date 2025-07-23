@@ -129,12 +129,13 @@
 
 .input .label input[required] + .outline > .floating-label:after {
     content: ' *';
+    color: var(--color-error);
 }
 
 .input .helper-line {
+    height: 20px;
     padding-left: 16px;
     padding-right: 16px;
-    padding-top: 4px;
 
     pointer-events: none;
     color: var(--color-primary);
