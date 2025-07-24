@@ -1,5 +1,5 @@
 import BasePage from '@core/base/BasePage';
-import { Button, ContentBlock, ExpandableContainer, Input } from '@common/components';
+import { Button, ContentBlock, ExpandableContainer, Input, MasonryContainer } from '@common/components';
 
 class ProductAddPage extends BasePage {
     constructor(router, signal) {
@@ -51,7 +51,7 @@ class ProductAddPage extends BasePage {
             },
             {
                 name: 'carbs',
-                label: 'Total Carbohydrates (g)',
+                label: 'Carbohydrates (g)',
                 type: 'number',
                 icon: 'carbohydrates',
                 required: true,
@@ -81,7 +81,7 @@ class ProductAddPage extends BasePage {
                 numberConfig: { min: 0, max: 999, step: 0.1 },
             },
             {
-                name: 'saturated',
+                name: 'saturatedFat',
                 label: 'Saturated Fat (g)',
                 type: 'number',
                 icon: 'saturated-fat',
@@ -89,14 +89,14 @@ class ProductAddPage extends BasePage {
                 numberConfig: { min: 0, max: 999, step: 0.1 },
             },
             {
-                name: 'monounsaturated',
+                name: 'monounsaturatedFat',
                 label: 'Monounsaturated Fat (g)',
                 type: 'number',
                 icon: 'monounsaturated-fat',
                 numberConfig: { min: 0, max: 999, step: 0.1 },
             },
             {
-                name: 'polyunsaturated',
+                name: 'polyunsaturatedFat',
                 label: 'Polyunsaturated Fat (g)',
                 type: 'number',
                 icon: 'polyunsaturated-fat',
@@ -156,8 +156,8 @@ class ProductAddPage extends BasePage {
                 icon: 'calcium',
                 numberConfig: { min: 0, max: 9999, step: 0.1 },
             },
-            { name: 'iron', label: 'Iron (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'zinc', label: 'Zinc (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
+            // { name: 'iron', label: 'Iron (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
+            // { name: 'zinc', label: 'Zinc (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
         ];
         const microsVitaminsFields = [
             { name: 'a', label: 'Vitamin A (IU)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
@@ -172,8 +172,10 @@ class ProductAddPage extends BasePage {
             { name: 'k', label: 'Vitamin K (mcg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
         ];
 
+        // Product
         const productHeading = this.createSectionHeading('Product Information');
         form.append(productHeading);
+        const productMasonryContainer = new MasonryContainer({ layoutMode: 'fixedWidth' });
         productFields.forEach((field) => {
             const wrapper = document.createElement('div');
             wrapper.style.marginBottom = '15px';
@@ -189,11 +191,14 @@ class ProductAddPage extends BasePage {
             });
 
             wrapper.append(input.render());
-            form.append(wrapper);
+            productMasonryContainer.add(wrapper, { fixedWidth: 270 });
         });
+        productMasonryContainer.mount(form);
 
+        // Macros
         const macrosHeading = this.createSectionHeading('Macronutrients');
         form.append(macrosHeading);
+        const macrosMasonryContainer = new MasonryContainer({ layoutMode: 'fixedWidth' });
         macrosFields.forEach((field) => {
             const wrapper = document.createElement('div');
             wrapper.style.marginBottom = '15px';
@@ -208,18 +213,24 @@ class ProductAddPage extends BasePage {
             });
 
             wrapper.append(input.render());
-            form.append(wrapper);
+            macrosMasonryContainer.add(wrapper, { fixedWidth: 270 });
         });
+        macrosMasonryContainer.mount(form);
 
+        // Micros
         const microsHeading = this.createSectionHeading('Micronutrients');
         form.append(microsHeading);
+
+        // Minerals
         const mineralsHeading = this.createSubSectionHeading('Minerals');
         form.append(mineralsHeading);
-
         const expandableMineralsContainer = new ExpandableContainer();
         expandableMineralsContainer.mount(form);
-        mineralsHeading.addEventListener('click', () => expandableMineralsContainer.toggle());
-
+        mineralsHeading.addEventListener('click', () => {
+            expandableMineralsContainer.toggle();
+            mineralsMasonryContainer.layout();
+        });
+        const mineralsMasonryContainer = new MasonryContainer({ layoutMode: 'fixedWidth' });
         microsMineralsFields.forEach((field) => {
             const wrapper = document.createElement('div');
             wrapper.style.marginBottom = '15px';
@@ -234,16 +245,20 @@ class ProductAddPage extends BasePage {
             });
 
             wrapper.append(input.render());
-            expandableMineralsContainer.append(wrapper);
+            mineralsMasonryContainer.add(wrapper, { fixedWidth: 270 });
         });
+        mineralsMasonryContainer.mount(expandableMineralsContainer.element);
 
+        // Vitamins
         const vitaminsHeading = this.createSubSectionHeading('Vitamins');
         form.append(vitaminsHeading);
-
         const expandableVitaminsContainer = new ExpandableContainer();
         expandableVitaminsContainer.mount(form);
-        vitaminsHeading.addEventListener('click', () => expandableVitaminsContainer.toggle());
-
+        vitaminsHeading.addEventListener('click', () => {
+            expandableVitaminsContainer.toggle();
+            vitaminsMasonryContainer.layout();
+        });
+        const vitaminsMasonryContainer = new MasonryContainer({ layoutMode: 'fixedWidth' });
         microsVitaminsFields.forEach((field) => {
             const wrapper = document.createElement('div');
             wrapper.style.marginBottom = '15px';
@@ -258,8 +273,9 @@ class ProductAddPage extends BasePage {
             });
 
             wrapper.append(input.render());
-            expandableVitaminsContainer.append(wrapper);
+            vitaminsMasonryContainer.add(wrapper, { fixedWidth: 270 });
         });
+        vitaminsMasonryContainer.mount(expandableVitaminsContainer.element);
 
         // Add submit button
         const buttonWrapper = document.createElement('div');
@@ -294,7 +310,27 @@ class ProductAddPage extends BasePage {
             const formValues = Object.fromEntries(formData.entries());
 
             // Convert string values to numbers where needed
-            const numericFields = ['calories', 'protein', 'carbs', 'fat', 'fiber' /* other numeric fields */];
+            const numericFields = [
+                'barcode',
+                'packageAmount',
+                'referenceAmount',
+                'calories',
+                'carbs',
+                'sugars',
+                'polyols',
+                'fat',
+                'saturatedFat',
+                'monounsaturatedFat',
+                'polyunsaturatedFat',
+                'protein',
+                'fiber',
+                'salt',
+                'magnesium',
+                'potassium',
+                'sodium',
+                'calcium',
+                /* other numeric fields */
+            ];
             const processedData = Object.entries(formValues).reduce((acc, [key, value]) => {
                 acc[key] = numericFields.includes(key) ? (value ? parseFloat(value) : 0) : value;
                 return acc;
@@ -304,7 +340,7 @@ class ProductAddPage extends BasePage {
 
             // TODO: Implement API call to add product
             // After successful submission, navigate back to products list
-            this.router.navigate('/products');
+            // this.router.navigate('/products');
         } catch (error) {
             console.error('Error adding product:', error);
             // TODO: Show error to user
