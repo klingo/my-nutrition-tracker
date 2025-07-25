@@ -66,7 +66,9 @@ export default defineConfig({
                     cert: fs.readFileSync(resolve(__dirname, process.env.SSL_CERT_PATH)),
                 },
             }),
+        host: '0.0.0.0',
         port: process.env.PORT || 3000,
+        strictPort: true,
         open: true,
         proxy: {
             '/api': {
