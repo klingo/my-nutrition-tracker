@@ -1,0 +1,24 @@
+table thead tr th:nth-child(1) {
+    min-width: 240px;
+    text-align: left;
+}
+
+table thead tr th:nth-child(2) {
+    width: 160px;
+}
+
+table thead tr th:nth-child(3) {
+    min-width: 48px;
+}
+
+table tbody tr {
+    height: 48px;
+}
+
+table tbody tr.sub-row td:nth-child(1) {
+    padding-left: 24px;
+}
+
+table + table {
+    margin-top: 24px;
+}

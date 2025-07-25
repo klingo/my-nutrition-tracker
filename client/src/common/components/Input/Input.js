@@ -30,6 +30,7 @@ export default class Input extends BaseComponent {
      * @param {number} numberConfig.min
      * @param {number} numberConfig.max
      * @param {number} numberConfig.step
+     * @param {boolean} compact
      */
     constructor({
         type = 'text',
@@ -48,11 +49,13 @@ export default class Input extends BaseComponent {
         required = false,
         disabled = false,
         icon = '',
+        textAlignRight = false,
         numberConfig = {
             min: undefined,
             max: undefined,
             step: undefined,
         },
+        compact = false,
     } = {}) {
         super();
 
@@ -72,7 +75,9 @@ export default class Input extends BaseComponent {
         this.minLength = minLength;
         this.maxLength = maxLength;
         this.disabled = disabled;
+        this.textAlignRight = textAlignRight;
         this.numberConfig = numberConfig;
+        this.compact = compact;
 
         this.errorMessage = '';
         this.errorElement = null;
@@ -142,7 +147,7 @@ export default class Input extends BaseComponent {
             outline.appendChild(floatingLabel);
         }
 
-        if (this.required) this.#addErrorIcon(label);
+        this.#addErrorIcon(label);
 
         div.append(this.#createHelperLine(input));
 
@@ -156,6 +161,7 @@ export default class Input extends BaseComponent {
     #createLabel() {
         const label = document.createElement('label');
         label.classList.add(styles.label);
+        if (this.compact) label.classList.add(styles.compact);
         return label;
     }
 
@@ -189,7 +195,7 @@ export default class Input extends BaseComponent {
             if (this.numberConfig.min !== undefined && this.numberConfig.min !== null)
                 input.setAttribute('min', this.numberConfig.min.toString());
             if (this.numberConfig.max !== undefined && this.numberConfig.max !== null) {
-                const maxLength = this.numberConfig.max.toString().length;
+                const maxLength = (this.numberConfig.max + this.numberConfig.step).toString().length;
                 input.setAttribute('max', this.numberConfig.max.toString());
                 input.addEventListener('input', () => {
                     if (input.value.length > maxLength) input.value = input.value.slice(0, maxLength);
@@ -197,7 +203,10 @@ export default class Input extends BaseComponent {
             }
             if (this.numberConfig.step !== undefined && this.numberConfig.step !== null)
                 input.setAttribute('step', this.numberConfig.step.toString());
+            if (this.numberConfig.inputmode) input.setAttribute('inputmode', this.numberConfig.inputmode);
         }
+
+        if (this.textAlignRight) input.classList.add(styles.textAlignRight);
 
         if (this.required) {
             input.required = true;
@@ -226,6 +235,7 @@ export default class Input extends BaseComponent {
         if (this.element) {
             const input = this.element.querySelector('input');
             if (input) {
+                console.log('set new value: ', newValue);
                 input.value = newValue;
             }
         }

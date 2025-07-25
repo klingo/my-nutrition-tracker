@@ -1,5 +1,14 @@
+import styles from './ProductAddPage.module.css';
 import BasePage from '@core/base/BasePage';
-import { Button, ContentBlock, ExpandableContainer, Input, MasonryContainer } from '@common/components';
+import { Button, ContentBlock, Input, MasonryContainer } from '@common/components';
+import {
+    getCarbohydratesEntries,
+    getGeneralEntries,
+    getLipidsEntries,
+    getMineralsEntries,
+    getProteinsEntries,
+    getVitaminsEntries,
+} from '@features/products/constants/productFormConfig';
 
 class ProductAddPage extends BasePage {
     constructor(router, signal) {
@@ -40,137 +49,6 @@ class ProductAddPage extends BasePage {
                 numberConfig: { min: 0, max: 9999, step: 1 },
             },
         ];
-        const macrosFields = [
-            {
-                name: 'calories',
-                label: 'Calories (kcal)',
-                type: 'number',
-                icon: 'calories',
-                required: true,
-                numberConfig: { min: 0, max: 9999, step: 1 },
-            },
-            {
-                name: 'carbs',
-                label: 'Carbohydrates (g)',
-                type: 'number',
-                icon: 'carbohydrates',
-                required: true,
-                numberConfig: { min: 0, max: 999, step: 1 },
-            },
-            {
-                name: 'sugars',
-                label: 'Sugars (g)',
-                type: 'number',
-                icon: 'sugars',
-                required: true,
-                numberConfig: { min: 0, max: 999, step: 1 },
-            },
-            {
-                name: 'polyols',
-                label: 'Polyols (g)',
-                type: 'number',
-                icon: 'polyols',
-                numberConfig: { min: 0, max: 999, step: 1 },
-            },
-            {
-                name: 'fat',
-                label: 'Total Fat (g)',
-                type: 'number',
-                icon: 'fat',
-                required: true,
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-            {
-                name: 'saturatedFat',
-                label: 'Saturated Fat (g)',
-                type: 'number',
-                icon: 'saturated-fat',
-                required: true,
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-            {
-                name: 'monounsaturatedFat',
-                label: 'Monounsaturated Fat (g)',
-                type: 'number',
-                icon: 'monounsaturated-fat',
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-            {
-                name: 'polyunsaturatedFat',
-                label: 'Polyunsaturated Fat (g)',
-                type: 'number',
-                icon: 'polyunsaturated-fat',
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-            {
-                name: 'protein',
-                label: 'Protein (g)',
-                type: 'number',
-                icon: 'protein',
-                required: true,
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-            {
-                name: 'fiber',
-                label: 'Fiber (g)',
-                type: 'number',
-                icon: 'fiber',
-                required: true,
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-            {
-                name: 'salt',
-                label: 'Salt (g)',
-                type: 'number',
-                icon: 'salt',
-                required: true,
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-        ];
-        const microsMineralsFields = [
-            {
-                name: 'magnesium',
-                label: 'Magnesium (g)',
-                type: 'number',
-                icon: 'magnesium',
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-            {
-                name: 'potassium',
-                label: 'Potassium (g)',
-                type: 'number',
-                icon: 'potassium',
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-            {
-                name: 'sodium',
-                label: 'Sodium (g)',
-                type: 'number',
-                icon: 'sodium',
-                numberConfig: { min: 0, max: 999, step: 0.1 },
-            },
-            {
-                name: 'calcium',
-                label: 'Calcium (mg)',
-                type: 'number',
-                icon: 'calcium',
-                numberConfig: { min: 0, max: 9999, step: 0.1 },
-            },
-            // { name: 'iron', label: 'Iron (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            // { name: 'zinc', label: 'Zinc (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-        ];
-        const microsVitaminsFields = [
-            { name: 'a', label: 'Vitamin A (IU)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'b1', label: 'Vitamin B1 (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'b2', label: 'Vitamin B2 (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'b3', label: 'Vitamin B3 (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'b6', label: 'Vitamin B6 (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'b12', label: 'Vitamin B12 (mcg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'c', label: 'Vitamin C (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'd', label: 'Vitamin D (IU)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'e', label: 'Vitamin E (IU)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-            { name: 'k', label: 'Vitamin K (mcg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
-        ];
 
         // Product
         const productHeading = this.createSectionHeading('Product Information');
@@ -195,89 +73,15 @@ class ProductAddPage extends BasePage {
         });
         productMasonryContainer.mount(form);
 
-        // Macros
-        const macrosHeading = this.createSectionHeading('Macronutrients');
-        form.append(macrosHeading);
-        const macrosMasonryContainer = new MasonryContainer({ layoutMode: 'fixedWidth' });
-        macrosFields.forEach((field) => {
-            const wrapper = document.createElement('div');
-            wrapper.style.marginBottom = '15px';
+        const options = { textAlignRight: true, compact: true };
+        this.#renderSection(form, 'General', getGeneralEntries(options));
+        this.#renderSection(form, 'Carbohydrates', getCarbohydratesEntries(options));
+        this.#renderSection(form, 'Lipids', getLipidsEntries(options));
+        this.#renderSection(form, 'Proteins', getProteinsEntries(options));
+        this.#renderSection(form, 'Minerals', getMineralsEntries(options));
+        this.#renderSection(form, 'Vitamins', getVitaminsEntries(options));
 
-            const input = new Input({
-                type: field.type,
-                name: field.name,
-                label: field.label,
-                icon: field.icon,
-                required: field.required,
-                numberConfig: field.numberConfig,
-            });
-
-            wrapper.append(input.render());
-            macrosMasonryContainer.add(wrapper, { fixedWidth: 270 });
-        });
-        macrosMasonryContainer.mount(form);
-
-        // Micros
-        const microsHeading = this.createSectionHeading('Micronutrients');
-        form.append(microsHeading);
-
-        // Minerals
-        const mineralsHeading = this.createSubSectionHeading('Minerals');
-        form.append(mineralsHeading);
-        const expandableMineralsContainer = new ExpandableContainer();
-        expandableMineralsContainer.mount(form);
-        mineralsHeading.addEventListener('click', () => {
-            expandableMineralsContainer.toggle();
-            mineralsMasonryContainer.layout();
-        });
-        const mineralsMasonryContainer = new MasonryContainer({ layoutMode: 'fixedWidth' });
-        microsMineralsFields.forEach((field) => {
-            const wrapper = document.createElement('div');
-            wrapper.style.marginBottom = '15px';
-
-            const input = new Input({
-                type: field.type,
-                name: field.name,
-                label: field.label,
-                icon: field.icon,
-                required: field.required,
-                numberConfig: field.numberConfig,
-            });
-
-            wrapper.append(input.render());
-            mineralsMasonryContainer.add(wrapper, { fixedWidth: 270 });
-        });
-        mineralsMasonryContainer.mount(expandableMineralsContainer.element);
-
-        // Vitamins
-        const vitaminsHeading = this.createSubSectionHeading('Vitamins');
-        form.append(vitaminsHeading);
-        const expandableVitaminsContainer = new ExpandableContainer();
-        expandableVitaminsContainer.mount(form);
-        vitaminsHeading.addEventListener('click', () => {
-            expandableVitaminsContainer.toggle();
-            vitaminsMasonryContainer.layout();
-        });
-        const vitaminsMasonryContainer = new MasonryContainer({ layoutMode: 'fixedWidth' });
-        microsVitaminsFields.forEach((field) => {
-            const wrapper = document.createElement('div');
-            wrapper.style.marginBottom = '15px';
-
-            const input = new Input({
-                type: field.type,
-                name: field.name,
-                label: field.label,
-                icon: field.icon,
-                required: field.required,
-                numberConfig: field.numberConfig,
-            });
-
-            wrapper.append(input.render());
-            vitaminsMasonryContainer.add(wrapper, { fixedWidth: 270 });
-        });
-        vitaminsMasonryContainer.mount(expandableVitaminsContainer.element);
-
-        // Add submit button
+        // Add Submit button
         const buttonWrapper = document.createElement('div');
         buttonWrapper.style.marginTop = '20px';
         const submitButton = new Button({
@@ -291,6 +95,79 @@ class ProductAddPage extends BasePage {
         contentBlock.append(form);
         contentBlock.mount(this.element);
         return this.element;
+    }
+
+    #renderSection(form, headingText, entries) {
+        // https://cronometer.com/#custom-foods
+        const tableElement = document.createElement('table');
+
+        const tableHeadElement = document.createElement('thead');
+        tableElement.append(tableHeadElement);
+        const headerRow = document.createElement('tr');
+        tableHeadElement.append(headerRow);
+        const headerSectionCell = document.createElement('th');
+        headerSectionCell.textContent = headingText;
+        headerRow.append(headerSectionCell);
+        const headerAmountCell = document.createElement('th');
+        headerAmountCell.textContent = 'Amount';
+        headerRow.append(headerAmountCell);
+        const headerUnitCell = document.createElement('th');
+        headerUnitCell.textContent = '';
+        headerRow.append(headerUnitCell);
+
+        const tableBodyElement = document.createElement('tbody');
+        tableElement.append(tableBodyElement);
+
+        for (const entry of entries || []) {
+            const row = document.createElement('tr');
+            tableBodyElement.append(row);
+
+            const sectionCell = document.createElement('td');
+            const label = document.createElement('label');
+            label.textContent = entry.name;
+            if (entry.inputConfig?.id) label.htmlFor = entry.inputConfig?.id;
+            sectionCell.append(label);
+            row.append(sectionCell);
+
+            const amountCell = document.createElement('td');
+            if (entry.inputConfig) {
+                const inputElement = new Input(entry.inputConfig);
+                inputElement.mount(amountCell);
+            } else if (entry.labelConfig) {
+                const labelElement = document.createElement('label');
+                labelElement.setAttribute('name', entry.labelConfig.name);
+                labelElement.setAttribute('id', entry.labelConfig.id);
+                if (entry.labelConfig.textAlignRight) labelElement.style.textAlign = 'right';
+                amountCell.append(labelElement);
+            }
+            row.append(amountCell);
+            const unitCell = document.createElement('td');
+            unitCell.textContent = entry.unit;
+            row.append(unitCell);
+
+            for (const subEntry of entry.subEntries || []) {
+                const subRow = document.createElement('tr');
+                subRow.classList.add(styles.subRow);
+                tableBodyElement.append(subRow);
+
+                const subSectionCell = document.createElement('td');
+                const subLabel = document.createElement('label');
+                subLabel.textContent = subEntry.name;
+                if (subEntry.inputConfig?.id) subLabel.htmlFor = subEntry.inputConfig.id;
+                subSectionCell.append(subLabel);
+                subRow.append(subSectionCell);
+
+                const subAmountCell = document.createElement('td');
+                const inputElement = new Input(subEntry.inputConfig);
+                inputElement.mount(subAmountCell);
+                subRow.append(subAmountCell);
+                const subUnitCell = document.createElement('td');
+                subUnitCell.textContent = subEntry.unit;
+                subRow.append(subUnitCell);
+            }
+        }
+
+        form.append(tableElement);
     }
 
     handleSubmit = async (event) => {

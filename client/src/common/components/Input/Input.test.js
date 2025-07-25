@@ -177,7 +177,8 @@ describe('Input', () => {
 
         it('should not render leading icon if not provided', () => {
             const input = new Input().render();
-            expect(input.querySelector('.icon')).toBeNull();
+            expect(input.querySelectorAll(`.${iconStyles.icon}`).length).toBe(1);
+            expect(input.querySelector(`.${iconStyles.icon}`).classList).toContain(styles.trailingIcon);
         });
 
         it('should add correct icon class when icon is provided', () => {
@@ -185,12 +186,6 @@ describe('Input', () => {
             const icon = input.querySelector(`.${iconStyles.icon}`);
             expect(icon).not.toBeNull();
             expect(icon.classList.contains(iconStyles.mail)).toBe(true);
-        });
-
-        it('should not add icon when no icon is provided', () => {
-            const input = new Input().render();
-            const icon = input.querySelector(`.${iconStyles.icon}`);
-            expect(icon).toBeNull();
         });
     });
 

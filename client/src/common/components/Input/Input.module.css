@@ -16,6 +16,10 @@
     box-sizing: border-box;
 }
 
+.input .label.compact {
+    height: 44px;
+}
+
 .input .label .trailing-icon {
     display: none;
     margin-left: 8px;
@@ -40,6 +44,10 @@
     color: var(--color-primary);
 
     caret-color: var(--color-primary) !important;
+}
+
+.input .label input.text-align-right {
+    text-align: right;
 }
 
 /* Override autocomplete styles */
@@ -132,8 +140,20 @@
     color: var(--color-error);
 }
 
+/* Remove Arrows/Spinners: Chrome, Safari, Edge, Opera */
+.input .label input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Remove Arrows/Spinners: Firefox */
+.input .label input[type='number'] {
+    -moz-appearance: textfield;
+}
+
 .input .helper-line {
-    height: 20px;
+    /*height: 20px;*/
     padding-left: 16px;
     padding-right: 16px;
 
