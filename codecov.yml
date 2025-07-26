@@ -36,39 +36,58 @@ component_management:
           name: Core Base
           paths:
               - client/src/core/base/**
+
         - component_id: core_config
           name: Core Config
           paths:
               - client/src/core/config/**
+
         - component_id: core_router
           name: Core Router
           paths:
               - client/src/core/router/**
+
         - component_id: common_components
           name: Common Components
           paths:
               - client/src/common/components**
+
         - component_id: common_services
           name: Common Services
           paths:
               - client/src/common/services**
+
         - component_id: common_utils
           name: Common Utils
           paths:
               - client/src/common/utils**
+
         - component_id: features_common
           name: Features Common
           paths:
               - client/src/features/common/**
-        - component_id: features_login
-          name: Features Common
-          paths:
-              - client/src/features/login/**
+
         - component_id: features_login
           name: Features Login
           paths:
+              - client/src/features/login/**
+
+        - component_id: features_overview
+          name: Features Overview
+          paths:
               - client/src/features/overview/**
+
         - component_id: features_products
           name: Features Products
           paths:
               - client/src/features/products/**
+
+        - component_id: features_profile
+          name: Features Profile
+          paths:
+              - client/src/features/profile/**
+
+        - component_id: features_register
+          name: Features Register
+          paths:
+              - client/src/features/register/**
