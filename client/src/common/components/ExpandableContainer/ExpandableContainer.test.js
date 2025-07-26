@@ -1,241 +1,256 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import ExpandableContainer from './ExpandableContainer.js';
-import styles from './ExpandableContainer.module.css';
+import { describe, expect, it, beforeEach, vi, afterEach } from 'vitest';
+import ExpandableContainer from './ExpandableContainer';
+
+// Mocking CSS modules
+vi.mock('./ExpandableContainer.module.css', () => ({
+    default: {
+        expandableContainer: 'expandableContainer',
+        expanded: 'expanded',
+    },
+}));
+
+// Mocking BaseComponent
+vi.mock('@core/base/BaseComponent', () => {
+    class BaseComponent {
+        constructor() {
+            this.element = null;
+        }
+
+        render() {}
+
+        append() {}
+    }
+    return { default: BaseComponent };
+});
 
 describe('ExpandableContainer', () => {
-    let container;
-    let mockElement;
+    let expandableContainer;
 
     beforeEach(() => {
-        // Create a new instance of ExpandableContainer for each test
-        container = new ExpandableContainer();
-        mockElement = {
-            style: {},
-            classList: {
-                add: vi.fn(),
-                remove: vi.fn(),
-                contains: vi.fn(),
-            },
-            addEventListener: vi.fn(),
-            removeAttribute: vi.fn(),
-            setAttribute: vi.fn(),
-            getAttribute: vi.fn(),
-            scrollHeight: 100,
-            offsetHeight: 0,
-        };
-        container.element = mockElement;
-        global.requestAnimationFrame = vi.fn((cb) => cb());
+        vi.useFakeTimers();
+        expandableContainer = new ExpandableContainer();
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
     });
 
     describe('constructor', () => {
-        it('should initialize with default values when no parameters are provided', () => {
-            const defaultContainer = new ExpandableContainer();
-            expect(defaultContainer.initiallyExpanded).toBe(false);
+        it('should initialize with initiallyExpanded as false by default', () => {
+            // Assert
+            expect(expandableContainer.initiallyExpanded).toBe(false);
         });
 
-        it('should initialize with expanded state when initiallyExpanded is true', () => {
-            const expandedContainer = new ExpandableContainer(true);
-            expect(expandedContainer.initiallyExpanded).toBe(true);
+        it('should initialize with initiallyExpanded as true if provided', () => {
+            // Arrange
+            const container = new ExpandableContainer(true);
+            // Assert
+            expect(container.initiallyExpanded).toBe(true);
+        });
+
+        it('should initialize with initiallyExpanded as false for falsy values other than undefined', () => {
+            // Arrange
+            const container = new ExpandableContainer(null);
+            // Assert
+            expect(container.initiallyExpanded).toBe(false);
         });
     });
 
     describe('render', () => {
-        it('should create a container with correct default attributes when initially collapsed', () => {
-            const element = container.render();
+        it('should create a div element with the correct class and role', () => {
+            // Act
+            const element = expandableContainer.render();
 
-            expect(element).toBeInstanceOf(HTMLElement);
-            expect(element.classList).toContain(styles.expandableContainer);
-            expect(element.getAttribute('role')).toEqual('region');
-            expect(element.getAttribute('aria-hidden')).toEqual('true');
-            expect(element.style.display).toBe('none');
+            // Assert
+            expect(element.tagName).toBe('DIV');
+            expect(element.classList.contains('expandableContainer')).toBe(true);
+            expect(element.getAttribute('role')).toBe('region');
         });
 
-        it('should create a container with expanded state when initiallyExpanded is true', () => {
-            const expandedContainer = new ExpandableContainer(true);
-            expandedContainer.render();
+        it('should not be expanded initially by default', () => {
+            // Act
+            expandableContainer.render();
 
-            expect(expandedContainer.element.classList).toContain(styles.expanded);
-            expect(expandedContainer.element.style.height).toBe('auto');
+            // Assert
+            expect(expandableContainer.isExpanded()).toBe(false);
+            expect(expandableContainer.element.classList.contains('expanded')).toBe(false);
+        });
+
+        it('should be expanded initially if initiallyExpanded is true', () => {
+            // Arrange
+            const container = new ExpandableContainer(true);
+            const expandSpy = vi.spyOn(container, 'expand');
+
+            // Act
+            container.render();
+
+            // Assert
+            expect(expandSpy).toHaveBeenCalled();
+        });
+    });
+
+    describe('expand', () => {
+        beforeEach(() => {
+            expandableContainer.render();
+            // Mock scrollHeight for consistent testing
+            Object.defineProperty(expandableContainer.element, 'scrollHeight', {
+                configurable: true,
+                value: 100,
+            });
+        });
+
+        it('should expand the container', async () => {
+            // Arrange
+            const eventListener = vi.fn();
+            expandableContainer.element.addEventListener('expandableContainerChange', eventListener);
+
+            // Act
+            expandableContainer.expand();
+            await vi.runAllTimersAsync();
+
+            // Assert
+            expect(eventListener).toHaveBeenCalled();
+            const event = eventListener.mock.calls[0][0];
+            expect(event.detail).toEqual({ isExpanded: true });
+            expect(expandableContainer.element.style.height).toBe('100px');
+            expect(expandableContainer.element.classList.contains('expanded')).toBe(true);
+            expect(expandableContainer.element.hasAttribute('aria-hidden')).toBe(false);
+        });
+
+        it('should handle transition end correctly', async () => {
+            // Act
+            expandableContainer.expand();
+            await vi.runAllTimersAsync();
+            expandableContainer.element.dispatchEvent(new Event('transitionend'));
+
+            // Assert
+            expect(expandableContainer.isExpanded()).toBe(true);
+            expect(expandableContainer.element.style.display).toBe('auto');
+        });
+
+        it('should not do anything if already transitioning', () => {
+            // Arrange
+            const requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame');
+            expandableContainer.expand(); // Start transition
+            expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(1);
+
+            // Act
+            expandableContainer.expand(); // Try to expand again
+
+            // Assert
+            expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(1); // Should not be called again
+        });
+    });
+
+    describe('collapse', () => {
+        beforeEach(() => {
+            expandableContainer.render();
+            // Expand it first to test collapse
+            expandableContainer.expand();
+            vi.runAllTimers();
+            expandableContainer.element.dispatchEvent(new Event('transitionend'));
+
+            // Mock scrollHeight for consistent testing
+            Object.defineProperty(expandableContainer.element, 'scrollHeight', {
+                configurable: true,
+                value: 100,
+            });
+        });
+
+        it('should collapse the container', async () => {
+            // Arrange
+            const eventListener = vi.fn();
+            expandableContainer.element.addEventListener('expandableContainerChange', eventListener);
+
+            // Act
+            expandableContainer.collapse();
+            await vi.runAllTimersAsync();
+
+            // Assert
+            expect(eventListener).toHaveBeenCalled();
+            const event = eventListener.mock.calls[0][0];
+            expect(event.detail).toEqual({ isExpanded: false });
+            expect(expandableContainer.element.style.height).toBe('0px');
+            expect(expandableContainer.element.classList.contains('expanded')).toBe(false);
+            expect(expandableContainer.element.getAttribute('aria-hidden')).toBe('true');
+        });
+
+        it('should handle transition end correctly', async () => {
+            // Act
+            expandableContainer.collapse();
+            await vi.runAllTimersAsync();
+            expandableContainer.element.dispatchEvent(new Event('transitionend'));
+
+            // Assert
+            expect(expandableContainer.isExpanded()).toBe(false);
+            expect(expandableContainer.element.style.display).toBe('none');
+        });
+
+        it('should not do anything if already transitioning', () => {
+            // Arrange
+            const requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame');
+            expandableContainer.collapse(); // Start transition
+            expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(1);
+
+            // Act
+            expandableContainer.collapse(); // Try to expand again
+
+            // Assert
+            expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(1); // Should not be called again
         });
     });
 
     describe('toggle', () => {
-        it('should call slideIn when container is hidden', () => {
-            mockElement.getAttribute.mockReturnValue('true');
-            const slideInSpy = vi.spyOn(container, 'slideIn');
-
-            container.toggle();
-
-            expect(slideInSpy).toHaveBeenCalled();
+        beforeEach(() => {
+            expandableContainer.render();
         });
 
-        it('should call slideOut when container is visible', () => {
-            mockElement.getAttribute.mockReturnValue('false');
-            const slideOutSpy = vi.spyOn(container, 'slideOut');
+        it('should expand if collapsed', () => {
+            // Arrange
+            const expandSpy = vi.spyOn(expandableContainer, 'expand');
 
-            container.toggle();
+            // Act
+            expandableContainer.toggle();
 
-            expect(slideOutSpy).toHaveBeenCalled();
-        });
-    });
-
-    describe('slideOut', () => {
-        it('should set up transition and hide the container', () => {
-            container.slideOut();
-
-            expect(mockElement.style.height).toBe('0');
-            expect(mockElement.classList.remove).toHaveBeenCalledWith(styles.expanded);
-            expect(mockElement.setAttribute).toHaveBeenCalledWith('aria-hidden', 'true');
-            expect(mockElement.addEventListener).toHaveBeenCalledWith('transitionend', expect.any(Function), {
-                once: true,
-            });
+            // Assert
+            expect(expandSpy).toHaveBeenCalled();
         });
 
-        it('should not proceed if already transitioning', () => {
-            container['#isTransitioning'] = true;
-            container.slideOut();
+        it('should collapse if expanded', () => {
+            // Arrange
+            expandableContainer.expand();
+            vi.runAllTimers();
+            expandableContainer.element.dispatchEvent(new Event('transitionend'));
+            const collapseSpy = vi.spyOn(expandableContainer, 'collapse');
 
-            expect(mockElement.style.height).toEqual('0');
-        });
-    });
+            // Act
+            expandableContainer.toggle();
 
-    describe('slideIn', () => {
-        it('should set up transition and show the container', () => {
-            container.slideIn();
-
-            const rafCallback = global.requestAnimationFrame.mock.calls[0][0];
-            rafCallback();
-
-            expect(mockElement.style.display).toBe('');
-            expect(mockElement.style.height).toBe('100px');
-            expect(mockElement.classList.add).toHaveBeenCalledWith(styles.expanded);
-            expect(mockElement.removeAttribute).toHaveBeenCalledWith('aria-hidden');
-        });
-
-        it('should call slideInCallback if defined', () => {
-            const mockCallback = vi.fn();
-            container.addSlideInCallback(mockCallback);
-
-            container.slideIn();
-            const rafCallback = global.requestAnimationFrame.mock.calls[0][0];
-            rafCallback();
-
-            expect(mockCallback).toHaveBeenCalled();
-        });
-
-        it('should not proceed if already transitioning', () => {
-            // First call slideIn to set up the initial state
-            container.slideIn();
-            const rafCallback = global.requestAnimationFrame.mock.calls[0][0];
-            rafCallback(); // This will set #isTransitioning to true
-
-            // Reset the mock to track new calls
-            const mockRAF = vi.fn();
-            global.requestAnimationFrame = mockRAF;
-
-            // Try to slide in again while still transitioning
-            container.slideIn();
-
-            // Verify no new animation frame was requested
-            expect(mockRAF).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('handleTransitionEnd', () => {
-        it('should set display to none when container is hidden', () => {
-            // Set up the transitionend handler
-            container.slideOut();
-            const transitionEndHandler = mockElement.addEventListener.mock.calls.find(
-                (call) => call[0] === 'transitionend',
-            )[1];
-
-            // Set up the test
-            mockElement.getAttribute.mockReturnValue('true');
-
-            // Trigger the transitionend event
-            transitionEndHandler();
-
-            expect(mockElement.style.display).toBe('none');
-        });
-
-        it('should set height to auto when container is visible', () => {
-            // Set up the transitionend handler
-            container.slideIn();
-            const rafCallback = global.requestAnimationFrame.mock.calls[0][0];
-            rafCallback();
-            const transitionEndHandler = mockElement.addEventListener.mock.calls.find(
-                (call) => call[0] === 'transitionend',
-            )[1];
-
-            // Set up the test
-            mockElement.getAttribute.mockReturnValue('false');
-
-            // Trigger the transitionend event
-            transitionEndHandler();
-
-            expect(mockElement.style.height).toBe('auto');
-        });
-    });
-
-    describe('callback management', () => {
-        it('should add slide-in callback', () => {
-            const mockCallback = vi.fn();
-
-            container.addSlideInCallback(mockCallback);
-            container.slideIn();
-
-            const rafCallback = global.requestAnimationFrame.mock.calls[0][0];
-            rafCallback();
-
-            expect(mockCallback).toHaveBeenCalled();
-        });
-
-        it('should not add invalid callback', () => {
-            // Test with an invalid callback
-            const result = container.addSlideInCallback('not a function');
-
-            // Verify the method returns the container for chaining
-            expect(result).toBe(container);
-
-            // Test the behavior by trying to trigger the callback
-            container.slideIn();
-            const rafCallback = global.requestAnimationFrame.mock.calls[0][0];
-            rafCallback();
-
-            // No callback should have been called
-            // (We can't test the private field directly, but we can verify the behavior)
-        });
-
-        it('should remove slide-in callback', () => {
-            const mockCallback = vi.fn();
-
-            // Add and then remove the callback
-            container.addSlideInCallback(mockCallback);
-            const removeResult = container.removeSlideInCallback();
-
-            // Verify the method returns the container for chaining
-            expect(removeResult).toBe(container);
-
-            // Test the behavior by trying to trigger the callback
-            container.slideIn();
-            const rafCallback = global.requestAnimationFrame.mock.calls[0][0];
-            rafCallback();
-
-            // The callback should not have been called
-            expect(mockCallback).not.toHaveBeenCalled();
+            // Assert
+            expect(collapseSpy).toHaveBeenCalled();
         });
     });
 
     describe('append', () => {
-        it('should append children to the container element', () => {
-            const child1 = document.createElement('div');
-            const child2 = document.createElement('span');
+        it('should throw an error if called before render', () => {
+            // Assert
+            expect(() => expandableContainer.append(document.createElement('div'))).toThrow(
+                'ExpandableContainer: Cannot append content before render() is called',
+            );
+        });
 
-            container.render();
-            container.append(child1, child2);
+        it('should append children to the element after render', () => {
+            // Arrange
+            expandableContainer.render();
+            const child = document.createElement('p');
+            child.textContent = 'Test';
 
-            expect(container.children).toContain(child1);
-            expect(container.children).toContain(child2);
+            // Act
+            expandableContainer.append(child);
+
+            // Assert
+            expect(expandableContainer.element.contains(child)).toBe(true);
+            expect(expandableContainer.element.textContent).toBe('Test');
         });
     });
 });

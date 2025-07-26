@@ -1,97 +1,85 @@
 import styles from './ExpandableContainer.module.css';
 import BaseComponent from '@core/base/BaseComponent';
 
+/**
+ * A component for creating an expandable/collapsible container with transition effects.
+ * This class extends the BaseComponent and provides methods to manage a container
+ * element that can be expanded or collapsed with animations.
+ * @class ExpandableContainer
+ * @extends BaseComponent
+ * @param {Object} options - Configuration options
+ * @param {boolean} [options.initiallyExpanded=false] - Whether the expandable container starts expanded
+ */
 class ExpandableContainer extends BaseComponent {
-    #slideInCallback = null;
     #isTransitioning = false;
+    #isExpanded = false;
 
     constructor(initiallyExpanded = false) {
         super();
 
-        this.initiallyExpanded = initiallyExpanded;
+        this.initiallyExpanded = !!initiallyExpanded;
     }
 
     /**
      * Renders the ExpandableContainer and returns the container element
-     * @return {HTMLDivElement}
+     * @return {HTMLDivElement} The root element of the expandable container component
      */
     render() {
-        const container = document.createElement('div');
-        container.classList.add(styles.expandableContainer);
-        container.setAttribute('role', 'region');
+        this.element = document.createElement('div');
+        this.element.classList.add(styles.expandableContainer);
+        this.element.setAttribute('role', 'region');
 
-        if (this.initiallyExpanded) {
-            container.classList.add(styles.expanded);
-            container.style.height = 'auto';
-        } else {
-            container.setAttribute('aria-hidden', 'true');
-            container.style.display = 'none';
-        }
+        if (this.initiallyExpanded) this.expand();
 
-        this.element = container;
         return this.element;
     }
 
     /**
      * Handles transition end event
      */
-    #handleTransitionEnd() {
-        if (this.element.getAttribute('aria-hidden') === 'true') {
-            this.element.style.display = 'none';
-        } else {
-            this.element.style.height = 'auto';
-        }
+    #handleTransitionEnd(isExpanded) {
+        this.element.style.display = isExpanded ? 'auto' : 'none';
         this.#isTransitioning = false;
+        this.#isExpanded = isExpanded;
     }
 
     /**
-     * Forces reflow
-     * @param element
-     * @return {number|number|number|*}
-     */
-    #forceReflow(element) {
-        return element.offsetHeight;
-    }
-
-    /**
-     * Slides out the container
+     * Collapses the container
      * @return {ExpandableContainer}
      */
-    slideOut() {
+    collapse() {
         if (this.#isTransitioning) return this;
         this.#isTransitioning = true;
-
         this.element.style.height = `${this.element.scrollHeight}px`;
-        this.#forceReflow(this.element);
 
+        this.#notifyChange(false);
         requestAnimationFrame(() => {
             this.element.style.height = '0';
             this.element.classList.remove(styles.expanded);
             this.element.setAttribute('aria-hidden', 'true');
-            this.element.addEventListener('transitionend', () => this.#handleTransitionEnd(), { once: true });
+            this.element.addEventListener('transitionend', () => this.#handleTransitionEnd(false), { once: true });
         });
 
         return this;
     }
 
     /**
-     * Slides in the container
+     * Expands the container
      * @return {ExpandableContainer}
      */
-    slideIn() {
+    expand() {
         if (this.#isTransitioning) return this;
         this.#isTransitioning = true;
 
         this.element.style.display = '';
         this.element.style.height = '0';
 
+        this.#notifyChange(true);
         requestAnimationFrame(() => {
             this.element.style.height = `${this.element.scrollHeight}px`;
             this.element.classList.add(styles.expanded);
             this.element.removeAttribute('aria-hidden');
-
-            this.element.addEventListener('transitionend', () => this.#handleTransitionEnd(), { once: true });
-            if (this.#slideInCallback) this.#slideInCallback();
+            this.element.addEventListener('transitionend', () => this.#handleTransitionEnd(true), { once: true });
         });
 
         return this;
@@ -102,8 +90,14 @@ class ExpandableContainer extends BaseComponent {
      * @return {ExpandableContainer}
      */
     toggle() {
-        const isCollapsed = this.element.getAttribute('aria-hidden') === 'true';
-        return isCollapsed ? this.slideIn() : this.slideOut();
+        return this.#isExpanded ? this.collapse() : this.expand();
+    }
+
+    /**
+     * Returns the current state of the expansion.
+     */
+    isExpanded() {
+        return this.#isExpanded;
     }
 
     /**
@@ -111,30 +105,26 @@ class ExpandableContainer extends BaseComponent {
      * @param children
      * @return {ExpandableContainer}
      */
-    append(...children) {
-        this.element.append(...children);
+    append(children) {
+        if (!this.element) throw new Error('ExpandableContainer: Cannot append content before render() is called');
+        this.element.append(children);
         return this;
     }
 
     /**
-     * Adds a callback to be called when the container slides in
-     * @param callback
-     * @return {ExpandableContainer}
+     * Dispatches a custom "expandableContainerChange" event when the expandableContainer state changes
+     * @private
+     * @param {boolean} isExpanded - A boolean indicating whether the container is expanded.
      */
-    addSlideInCallback(callback) {
-        if (typeof callback === 'function') {
-            this.#slideInCallback = callback;
+    #notifyChange(isExpanded) {
+        if (this.element) {
+            this.element.dispatchEvent(
+                new CustomEvent('expandableContainerChange', {
+                    detail: { isExpanded },
+                    bubbles: true,
+                }),
+            );
         }
-        return this;
-    }
-
-    /**
-     * Removes the slide-in callback
-     * @return {ExpandableContainer}
-     */
-    removeSlideInCallback() {
-        this.#slideInCallback = null;
-        return this;
     }
 }
 
