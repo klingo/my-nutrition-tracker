@@ -1,0 +1,44 @@
+.accordion .header {
+    height: 48px;
+    border-top: 1px solid var(--color-primary-variant);
+}
+
+.accordion .header button {
+    height: 100%;
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    font-size: var(--mnt-header-3-font-size);
+    font-weight: var(--mnt-header-3-font-weight);
+    color: var(--color-primary);
+}
+
+.accordion .header button span {
+    width: 100%;
+    text-align: left;
+}
+
+.accordion .header button div {
+    transition: transform 0.15s ease-in-out;
+}
+
+.accordion .header button[aria-expanded='true'] div {
+    transform: rotate(-180deg);
+}
+
+.accordion .header button:hover div {
+    background-color: var(--color-primary);
+}
+
+.accordion .content {
+    border-bottom: 1px solid var(--color-primary-variant);
+    overflow: hidden;
+}
+
+.accordion + .accordion .header {
+    border-top: none;
+}

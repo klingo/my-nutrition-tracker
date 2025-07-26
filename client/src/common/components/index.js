@@ -1,3 +1,4 @@
+export { default as Accordion } from './Accordion/index.js';
 export { default as Button } from './Button/index.js';
 export { default as ContentBlock } from './ContentBlock/index.js';
 export { default as ExpandableContainer } from './ExpandableContainer/index.js';

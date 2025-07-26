@@ -57,6 +57,11 @@
     -webkit-mask-image: url('@assets/icons/actions/error_24dp.svg');
 }
 
+.icon.chevron-down {
+    mask-image: url('@assets/icons/hardware/keyboard_arrow_down_24dp.svg');
+    -webkit-mask-image: url('@assets/icons/hardware/keyboard_arrow_down_24dp.svg');
+}
+
 /* Nutrient Icons */
 .icon.barcode {
     mask-image: url('@assets/icons/mnt/barcode.svg');
