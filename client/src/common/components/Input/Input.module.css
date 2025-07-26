@@ -46,7 +46,7 @@
     caret-color: var(--color-primary) !important;
 }
 
-.input .label input.text-align-right {
+.input .label input[type='number'] {
     text-align: right;
 }
 

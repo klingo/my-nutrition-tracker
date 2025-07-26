@@ -1,11 +1,13 @@
 import styles from './ProductAddPage.module.css';
 import BasePage from '@core/base/BasePage';
-import { Button, ContentBlock, Input, MasonryContainer } from '@common/components';
+import { Button, ContentBlock, ExpandableContainer, Input } from '@common/components';
 import {
     getCarbohydratesEntries,
     getGeneralEntries,
     getLipidsEntries,
     getMineralsEntries,
+    getProductAdvancedInfoEntries,
+    getProductInfoEntries,
     getProteinsEntries,
     getVitaminsEntries,
 } from '@features/products/constants/productFormConfig';
@@ -20,68 +22,17 @@ class ProductAddPage extends BasePage {
     }
 
     renderContent() {
-        const contentBlock = new ContentBlock();
         const form = document.createElement('form');
         form.name = 'product-form';
         form.onsubmit = this.handleSubmit;
 
-        // Add form fields
-        const productFields = [
-            { name: 'name', label: 'Product Name', type: 'text', required: true, minLength: 5, maxLength: 100 },
-            { name: 'brand', label: 'Brand', type: 'text' },
-            // { name: 'category', label: 'Category', type: 'text' },
-            { name: 'barcode', label: 'Barcode', type: 'text', icon: 'barcode' },
-            {
-                name: 'packageAmount',
-                label: 'Package size (g)',
-                type: 'number',
-                icon: 'package-size',
-                required: true,
-                numberConfig: { min: 0, max: 9999, step: 1 },
-            },
-            {
-                name: 'referenceAmount',
-                label: 'Reference amount (g)',
-                type: 'number',
-                icon: 'serving-size',
-                required: true,
-                value: 100,
-                numberConfig: { min: 0, max: 9999, step: 1 },
-            },
-        ];
+        // Product information
+        this.#renderProductContentBlock(form, 'Product Information', { compact: true });
 
-        // Product
-        const productHeading = this.createSectionHeading('Product Information');
-        form.append(productHeading);
-        const productMasonryContainer = new MasonryContainer({ layoutMode: 'fixedWidth' });
-        productFields.forEach((field) => {
-            const wrapper = document.createElement('div');
-            wrapper.style.marginBottom = '15px';
+        // Nutritional input
+        this.#renderNutritionContentBlock(form, 'Nutrition Overview', { compact: true });
 
-            const input = new Input({
-                type: field.type,
-                name: field.name,
-                label: field.label,
-                icon: field.icon,
-                required: field.required,
-                value: field.value,
-                numberConfig: field.numberConfig,
-            });
-
-            wrapper.append(input.render());
-            productMasonryContainer.add(wrapper, { fixedWidth: 270 });
-        });
-        productMasonryContainer.mount(form);
-
-        const options = { textAlignRight: true, compact: true };
-        this.#renderSection(form, 'General', getGeneralEntries(options));
-        this.#renderSection(form, 'Carbohydrates', getCarbohydratesEntries(options));
-        this.#renderSection(form, 'Lipids', getLipidsEntries(options));
-        this.#renderSection(form, 'Proteins', getProteinsEntries(options));
-        this.#renderSection(form, 'Minerals', getMineralsEntries(options));
-        this.#renderSection(form, 'Vitamins', getVitaminsEntries(options));
-
-        // Add Submit button
+        // Submit button
         const buttonWrapper = document.createElement('div');
         buttonWrapper.style.marginTop = '20px';
         const submitButton = new Button({
@@ -92,12 +43,45 @@ class ProductAddPage extends BasePage {
         submitButton.mount(buttonWrapper);
         form.append(buttonWrapper);
 
-        contentBlock.append(form);
-        contentBlock.mount(this.element);
+        this.element.append(form);
         return this.element;
     }
 
-    #renderSection(form, headingText, entries) {
+    #renderProductContentBlock(form, headingText, options) {
+        const contentBlock = new ContentBlock();
+        contentBlock.mount(form);
+
+        const productHeading = this.createSectionHeading(headingText);
+        contentBlock.append(productHeading);
+
+        const infoContainer = new ExpandableContainer(true);
+        infoContainer.mount(contentBlock.element);
+        this.#renderEntriesSection(infoContainer.element, 'Info', getProductInfoEntries(options));
+
+        const advancedInfoContainer = new ExpandableContainer();
+        advancedInfoContainer.mount(contentBlock.element);
+        this.#renderEntriesSection(infoContainer.element, 'Advanced Info', getProductAdvancedInfoEntries(options));
+        // Category
+        // Tags
+        // Images(?)
+    }
+
+    #renderNutritionContentBlock(form, headingText, options) {
+        const contentBlock = new ContentBlock();
+        contentBlock.mount(form);
+
+        const productHeading = this.createSectionHeading(headingText);
+        contentBlock.append(productHeading);
+
+        this.#renderEntriesSection(contentBlock, 'General', getGeneralEntries(options));
+        this.#renderEntriesSection(contentBlock, 'Carbohydrates', getCarbohydratesEntries(options));
+        this.#renderEntriesSection(contentBlock, 'Lipids', getLipidsEntries(options));
+        this.#renderEntriesSection(contentBlock, 'Proteins', getProteinsEntries(options));
+        this.#renderEntriesSection(contentBlock, 'Minerals', getMineralsEntries(options));
+        this.#renderEntriesSection(contentBlock, 'Vitamins', getVitaminsEntries(options));
+    }
+
+    #renderEntriesSection(form, headingText, entries) {
         // https://cronometer.com/#custom-foods
         const tableElement = document.createElement('table');
 
@@ -124,8 +108,9 @@ class ProductAddPage extends BasePage {
 
             const sectionCell = document.createElement('td');
             const label = document.createElement('label');
-            label.textContent = entry.name;
+            label.textContent = entry.labelText;
             if (entry.inputConfig?.id) label.htmlFor = entry.inputConfig?.id;
+            if (entry.inputConfig?.required) label.classList.add(styles.required);
             sectionCell.append(label);
             row.append(sectionCell);
 
@@ -152,7 +137,7 @@ class ProductAddPage extends BasePage {
 
                 const subSectionCell = document.createElement('td');
                 const subLabel = document.createElement('label');
-                subLabel.textContent = subEntry.name;
+                subLabel.textContent = subEntry.labelText;
                 if (subEntry.inputConfig?.id) subLabel.htmlFor = subEntry.inputConfig.id;
                 subSectionCell.append(subLabel);
                 subRow.append(subSectionCell);

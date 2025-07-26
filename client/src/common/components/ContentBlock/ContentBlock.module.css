@@ -3,3 +3,7 @@
     padding: 16px;
     box-sizing: border-box;
 }
+
+.content-block + .content-block {
+    margin-top: 16px;
+}

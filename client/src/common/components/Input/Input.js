@@ -49,7 +49,6 @@ export default class Input extends BaseComponent {
         required = false,
         disabled = false,
         icon = '',
-        textAlignRight = false,
         numberConfig = {
             min: undefined,
             max: undefined,
@@ -75,7 +74,6 @@ export default class Input extends BaseComponent {
         this.minLength = minLength;
         this.maxLength = maxLength;
         this.disabled = disabled;
-        this.textAlignRight = textAlignRight;
         this.numberConfig = numberConfig;
         this.compact = compact;
 
@@ -205,8 +203,6 @@ export default class Input extends BaseComponent {
                 input.setAttribute('step', this.numberConfig.step.toString());
             if (this.numberConfig.inputmode) input.setAttribute('inputmode', this.numberConfig.inputmode);
         }
-
-        if (this.textAlignRight) input.classList.add(styles.textAlignRight);
 
         if (this.required) {
             input.required = true;

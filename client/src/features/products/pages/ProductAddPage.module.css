@@ -1,9 +1,10 @@
 table thead tr th:nth-child(1) {
-    min-width: 240px;
+    width: 240px;
     text-align: left;
 }
 
 table thead tr th:nth-child(2) {
+    min-width: 110px;
     width: 160px;
 }
 
@@ -17,6 +18,12 @@ table tbody tr {
 
 table tbody tr.sub-row td:nth-child(1) {
     padding-left: 24px;
+}
+
+table tbody tr td label.required::after {
+    content: '*';
+    margin-left: 4px;
+    color: var(--color-error);
 }
 
 table + table {
