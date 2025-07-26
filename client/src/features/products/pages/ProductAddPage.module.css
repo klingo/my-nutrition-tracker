@@ -23,10 +23,6 @@ table colgroup col:nth-child(2) {
     width: 160px;
 }
 
-table colgroup col:nth-child(3) {
-    min-width: 48px;
-}
-
 table thead tr th:nth-child(1) {
     text-align: left;
 }

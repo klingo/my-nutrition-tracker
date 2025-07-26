@@ -109,9 +109,6 @@ class ProductAddPage extends BasePage {
             const headerAmountCell = document.createElement('th');
             headerAmountCell.textContent = 'Amount';
             headerRow.append(headerAmountCell);
-            const headerUnitCell = document.createElement('th');
-            headerUnitCell.textContent = '';
-            headerRow.append(headerUnitCell);
         }
 
         // Table Body
@@ -142,9 +139,6 @@ class ProductAddPage extends BasePage {
                 amountCell.append(labelElement);
             }
             row.append(amountCell);
-            const unitCell = document.createElement('td');
-            unitCell.textContent = entry.unit;
-            row.append(unitCell);
 
             for (const subEntry of entry.subEntries || []) {
                 const subRow = document.createElement('tr');
@@ -164,9 +158,6 @@ class ProductAddPage extends BasePage {
                 const inputElement = new Input(subEntry.inputConfig);
                 inputElement.mount(subAmountCell);
                 subRow.append(subAmountCell);
-                const subUnitCell = document.createElement('td');
-                subUnitCell.textContent = subEntry.unit;
-                subRow.append(subUnitCell);
             }
         }
 
