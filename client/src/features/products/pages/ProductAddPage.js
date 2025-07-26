@@ -97,6 +97,8 @@ class ProductAddPage extends BasePage {
 
         // Table Head
         if (!skipTableHead) {
+            tableElement.classList.add(styles.borders);
+
             const tableHeadElement = document.createElement('thead');
             tableElement.append(tableHeadElement);
             const headerRow = document.createElement('tr');
