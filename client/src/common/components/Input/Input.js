@@ -30,6 +30,8 @@ export default class Input extends BaseComponent {
      * @param {number} numberConfig.min
      * @param {number} numberConfig.max
      * @param {number} numberConfig.step
+     * @param {string} numberConfig.inputmode='numeric'
+     * @param {string} numberConfig.suffix=''
      * @param {boolean} compact
      */
     constructor({
@@ -53,6 +55,8 @@ export default class Input extends BaseComponent {
             min: undefined,
             max: undefined,
             step: undefined,
+            inputmode: 'numeric',
+            suffix: '',
         },
         compact = false,
     } = {}) {
@@ -135,6 +139,14 @@ export default class Input extends BaseComponent {
 
         const input = this.#createInput();
         label.appendChild(input);
+
+        // Suffix
+        if (this.numberConfig.suffix) {
+            const suffixElement = document.createElement('span');
+            suffixElement.textContent = this.numberConfig.suffix;
+            suffixElement.classList.add(styles.suffixText);
+            input.after(suffixElement);
+        }
 
         const outline = document.createElement('div');
         outline.classList.add(styles.outline);

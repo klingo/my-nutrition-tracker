@@ -67,6 +67,12 @@
     outline: 1px solid var(--color-primary);
 }
 
+.input .label span.suffix-text {
+    align-self: center;
+    color: var(--color-primary-variant);
+    margin-left: 4px;
+}
+
 .input .label .outline {
     display: flex;
     position: absolute;
