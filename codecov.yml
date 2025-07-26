@@ -60,7 +60,7 @@ component_management:
           name: Features Common
           paths:
               - client/src/features/common/**
-        - component_id: features_common
+        - component_id: features_login
           name: Features Common
           paths:
               - client/src/features/login/**
