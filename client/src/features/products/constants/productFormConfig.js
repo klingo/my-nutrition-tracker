@@ -6,7 +6,6 @@ export const getProductInfoEntries = ({ compact = true } = {}) => [
             type: 'text',
             required: true,
             minLength: 5,
-            maxLength: 100,
             compact,
         },
     },
@@ -89,19 +88,6 @@ export const getCarbohydratesEntries = ({ compact = true } = {}) => [
         },
         subEntries: [
             {
-                labelText: 'Fiber',
-                unit: 'g',
-                inputConfig: {
-                    name: 'fiber',
-                    id: 'fiber',
-                    type: 'number',
-                    icon: 'fiber',
-                    numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal' },
-                    compact,
-                },
-            },
-            // Starch
-            {
                 labelText: 'Sugars',
                 unit: 'g',
                 inputConfig: {
@@ -127,6 +113,19 @@ export const getCarbohydratesEntries = ({ compact = true } = {}) => [
             },
         ],
     },
+    {
+        labelText: 'Fiber',
+        unit: 'g',
+        inputConfig: {
+            name: 'fiber',
+            id: 'fiber',
+            type: 'number',
+            icon: 'fiber',
+            numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal' },
+            compact,
+        },
+    },
+    // Starch
     {
         labelText: 'Net Carbohydrates',
         unit: 'g',

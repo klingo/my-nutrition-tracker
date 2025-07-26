@@ -1,15 +1,22 @@
-table thead tr th:nth-child(1) {
-    width: 240px;
-    text-align: left;
+table {
+    padding-bottom: 8px;
 }
 
-table thead tr th:nth-child(2) {
+table colgroup col:nth-child(1) {
+    width: 240px;
+}
+
+table colgroup col:nth-child(2) {
     min-width: 110px;
     width: 160px;
 }
 
-table thead tr th:nth-child(3) {
+table colgroup col:nth-child(3) {
     min-width: 48px;
+}
+
+table thead tr th:nth-child(1) {
+    text-align: left;
 }
 
 table tbody tr {
@@ -17,7 +24,7 @@ table tbody tr {
 }
 
 table tbody tr.sub-row td:nth-child(1) {
-    padding-left: 24px;
+    /*padding-left: 24px;*/
 }
 
 table tbody tr td label.required::after {

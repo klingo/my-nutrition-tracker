@@ -1,6 +1,7 @@
 import styles from './ProductAddPage.module.css';
+import iconStyles from '@styles/icons.module.css';
 import BasePage from '@core/base/BasePage';
-import { Button, ContentBlock, ExpandableContainer, Input } from '@common/components';
+import { Accordion, Button, ContentBlock, Input } from '@common/components';
 import {
     getCarbohydratesEntries,
     getGeneralEntries,
@@ -54,13 +55,18 @@ class ProductAddPage extends BasePage {
         const productHeading = this.createSectionHeading(headingText);
         contentBlock.append(productHeading);
 
-        const infoContainer = new ExpandableContainer(true);
-        infoContainer.mount(contentBlock.element);
-        this.#renderEntriesSection(infoContainer.element, 'Info', getProductInfoEntries(options));
+        const infoAccordion = new Accordion({ title: 'Info', initiallyExpanded: true });
+        infoAccordion.mount(contentBlock.element);
+        this.#renderEntriesSection(infoAccordion, 'Info', getProductInfoEntries(options), true);
 
-        const advancedInfoContainer = new ExpandableContainer();
-        advancedInfoContainer.mount(contentBlock.element);
-        this.#renderEntriesSection(infoContainer.element, 'Advanced Info', getProductAdvancedInfoEntries(options));
+        const advancedInfoAccordion = new Accordion({ title: 'Advanced Info', initiallyExpanded: false });
+        advancedInfoAccordion.mount(contentBlock.element);
+        this.#renderEntriesSection(
+            advancedInfoAccordion,
+            'Advanced Info',
+            getProductAdvancedInfoEntries(options),
+            true,
+        );
         // Category
         // Tags
         // Images(?)
@@ -81,24 +87,32 @@ class ProductAddPage extends BasePage {
         this.#renderEntriesSection(contentBlock, 'Vitamins', getVitaminsEntries(options));
     }
 
-    #renderEntriesSection(form, headingText, entries) {
-        // https://cronometer.com/#custom-foods
+    #renderEntriesSection(parent, headingText, entries, skipTableHead = false) {
         const tableElement = document.createElement('table');
 
-        const tableHeadElement = document.createElement('thead');
-        tableElement.append(tableHeadElement);
-        const headerRow = document.createElement('tr');
-        tableHeadElement.append(headerRow);
-        const headerSectionCell = document.createElement('th');
-        headerSectionCell.textContent = headingText;
-        headerRow.append(headerSectionCell);
-        const headerAmountCell = document.createElement('th');
-        headerAmountCell.textContent = 'Amount';
-        headerRow.append(headerAmountCell);
-        const headerUnitCell = document.createElement('th');
-        headerUnitCell.textContent = '';
-        headerRow.append(headerUnitCell);
+        // Colgroup
+        const colGroupElement = document.createElement('colgroup');
+        for (let i = 0; i < 3; i++) colGroupElement.append(document.createElement('col'));
+        tableElement.append(colGroupElement);
 
+        // Table Head
+        if (!skipTableHead) {
+            const tableHeadElement = document.createElement('thead');
+            tableElement.append(tableHeadElement);
+            const headerRow = document.createElement('tr');
+            tableHeadElement.append(headerRow);
+            const headerSectionCell = document.createElement('th');
+            headerSectionCell.textContent = headingText;
+            headerRow.append(headerSectionCell);
+            const headerAmountCell = document.createElement('th');
+            headerAmountCell.textContent = 'Amount';
+            headerRow.append(headerAmountCell);
+            const headerUnitCell = document.createElement('th');
+            headerUnitCell.textContent = '';
+            headerRow.append(headerUnitCell);
+        }
+
+        // Table Body
         const tableBodyElement = document.createElement('tbody');
         tableElement.append(tableBodyElement);
 
@@ -136,10 +150,12 @@ class ProductAddPage extends BasePage {
                 tableBodyElement.append(subRow);
 
                 const subSectionCell = document.createElement('td');
+                const icon = document.createElement('div');
+                icon.classList.add(iconStyles.icon, iconStyles.subdirectoryRight);
                 const subLabel = document.createElement('label');
                 subLabel.textContent = subEntry.labelText;
                 if (subEntry.inputConfig?.id) subLabel.htmlFor = subEntry.inputConfig.id;
-                subSectionCell.append(subLabel);
+                subSectionCell.append(icon, subLabel);
                 subRow.append(subSectionCell);
 
                 const subAmountCell = document.createElement('td');
@@ -152,7 +168,7 @@ class ProductAddPage extends BasePage {
             }
         }
 
-        form.append(tableElement);
+        parent.append(tableElement);
     }
 
     handleSubmit = async (event) => {
