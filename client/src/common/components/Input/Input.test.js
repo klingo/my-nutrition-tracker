@@ -19,6 +19,7 @@ describe('Input', () => {
             expect(input.id).toBe('');
             expect(input.label).toBe('');
             expect(input.value).toBe('');
+            expect(input.width).toBeUndefined();
             expect(input.required).toBe(false);
             expect(input.disabled).toBe(false);
             expect(input.autocorrect).toBe(true);
@@ -42,6 +43,7 @@ describe('Input', () => {
                 id: 'email-id',
                 label: 'Email Address',
                 value: 'test@example.com',
+                width: '300px',
                 required: true,
                 disabled: true,
                 autocorrect: false,
@@ -50,7 +52,7 @@ describe('Input', () => {
                 autofocus: true,
                 minLength: 5,
                 maxLength: 50,
-                pattern: '[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$',
+                pattern: '[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,}$',
                 patternErrorMessage: 'Invalid email format',
                 icon: 'mail',
                 compact: true,
@@ -61,6 +63,7 @@ describe('Input', () => {
             expect(customInput.id).toBe('email-id');
             expect(customInput.label).toBe('Email Address');
             expect(customInput.value).toBe('test@example.com');
+            expect(customInput.width).toBe('300px');
             expect(customInput.required).toBe(true);
             expect(customInput.disabled).toBe(true);
             expect(customInput.autocorrect).toBe(false);
@@ -69,7 +72,7 @@ describe('Input', () => {
             expect(customInput.autofocus).toBe(true);
             expect(customInput.minLength).toBe(5);
             expect(customInput.maxLength).toBe(50);
-            expect(customInput.pattern).toBe('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$');
+            expect(customInput.pattern).toBe('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,}$');
             expect(customInput.patternErrorMessage).toBe('Invalid email format');
             expect(customInput.icon).toBe('mail');
             expect(customInput.compact).toBe(true);
@@ -147,6 +150,37 @@ describe('Input', () => {
 
             const labelElement = element.querySelector('label');
             expect(labelElement.classList.contains(styles.compact)).toBe(true);
+        });
+
+        it('should render input with custom width when provided', () => {
+            const widthInput = new Input({ width: '300px' });
+            const element = widthInput.render();
+
+            expect(element.style.width).toBe('300px');
+        });
+
+        it('should render input without width style when width is not provided', () => {
+            const element = input.render();
+
+            // When width is not set, the style.width should be empty
+            expect(element.style.width).toBe('');
+        });
+
+        it('should render input with different width values', () => {
+            const widthInput1 = new Input({ width: '100%' });
+            const element1 = widthInput1.render();
+
+            expect(element1.style.width).toBe('100%');
+
+            const widthInput2 = new Input({ width: '250px' });
+            const element2 = widthInput2.render();
+
+            expect(element2.style.width).toBe('250px');
+
+            const widthInput3 = new Input({ width: '15em' });
+            const element3 = widthInput3.render();
+
+            expect(element3.style.width).toBe('15em');
         });
 
         it('should render input with error element', () => {
@@ -301,6 +335,42 @@ describe('Input', () => {
             input.mount(parent);
 
             expect(parent.contains(mockElement)).toBe(true);
+        });
+    });
+
+    describe('width parameter', () => {
+        it('should set the width property when provided', () => {
+            const widthInput = new Input({ width: '300px' });
+            expect(widthInput.width).toBe('300px');
+        });
+
+        it('should not set the width property when not provided', () => {
+            expect(input.width).toBeUndefined();
+        });
+
+        it('should render the input with the provided width', () => {
+            const widthInput = new Input({ width: '300px' });
+            const element = widthInput.render();
+            expect(element.style.width).toBe('300px');
+        });
+
+        it('should render the input without width style when width is not provided', () => {
+            const element = input.render();
+            expect(element.style.width).toBe('');
+        });
+
+        it('should render the input with different width values', () => {
+            const widthInput1 = new Input({ width: '100%' });
+            const element1 = widthInput1.render();
+            expect(element1.style.width).toBe('100%');
+
+            const widthInput2 = new Input({ width: '250px' });
+            const element2 = widthInput2.render();
+            expect(element2.style.width).toBe('250px');
+
+            const widthInput3 = new Input({ width: '15em' });
+            const element3 = widthInput3.render();
+            expect(element3.style.width).toBe('15em');
         });
     });
 });

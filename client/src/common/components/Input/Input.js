@@ -45,6 +45,7 @@ export default class Input extends BaseComponent {
      * @param {string} id
      * @param {string} label
      * @param {string} value
+     * @param {string} width
      * @param {string} pattern
      * @param {string} patternErrorMessage
      * @param {boolean} autocorrect
@@ -71,6 +72,7 @@ export default class Input extends BaseComponent {
         id = '',
         label = '',
         value = '',
+        width = undefined,
         pattern = '',
         patternErrorMessage = '',
         autocorrect = true,
@@ -102,6 +104,7 @@ export default class Input extends BaseComponent {
         this.id = id;
         this.label = label;
         this.value = value;
+        this.width = width;
         this.pattern = pattern;
         this.patternErrorMessage = patternErrorMessage;
         this.required = required;
@@ -191,6 +194,7 @@ export default class Input extends BaseComponent {
     #createContainer() {
         const div = document.createElement('div');
         div.classList.add(styles.input);
+        if (this.width) div.style.width = this.width;
         return div;
     }
 
