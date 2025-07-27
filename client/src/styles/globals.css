@@ -30,6 +30,7 @@ header {
 
 nav {
     grid-area: nav;
+    width: 100vw;
     background-color: var(--color-status-bar);
 }
 
