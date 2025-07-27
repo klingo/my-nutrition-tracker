@@ -33,6 +33,11 @@ describe('ExpandableContainer', () => {
 
     afterEach(() => {
         vi.useRealTimers();
+
+        // Clean up any mutation observers
+        if (expandableContainer && expandableContainer.unmount) {
+            expandableContainer.unmount();
+        }
     });
 
     describe('constructor', () => {
@@ -79,13 +84,33 @@ describe('ExpandableContainer', () => {
         it('should be expanded initially if initiallyExpanded is true', () => {
             // Arrange
             const container = new ExpandableContainer(true);
-            const expandSpy = vi.spyOn(container, 'expand');
 
             // Act
             container.render();
 
             // Assert
-            expect(expandSpy).toHaveBeenCalled();
+            expect(container.isExpanded()).toBe(true);
+            expect(container.element.classList.contains('expanded')).toBe(true);
+            expect(container.element.style.height).toBe('auto');
+        });
+
+        it('should be able to collapse after initial expansion', () => {
+            // Arrange
+            const container = new ExpandableContainer(true);
+            container.render();
+
+            // Mock scrollHeight for consistent testing
+            Object.defineProperty(container.element, 'scrollHeight', {
+                configurable: true,
+                value: 100,
+            });
+
+            // Act
+            container.toggle();
+
+            // Assert
+            expect(container.element.style.height).toBe('0px');
+            expect(container.element.classList.contains('expanded')).toBe(false);
         });
     });
 
@@ -125,20 +150,24 @@ describe('ExpandableContainer', () => {
 
             // Assert
             expect(expandableContainer.isExpanded()).toBe(true);
-            expect(expandableContainer.element.style.display).toBe('auto');
+            expect(expandableContainer.element.style.display).toBe('');
+            expect(expandableContainer.element.style.height).toBe('auto');
         });
 
         it('should not do anything if already transitioning', () => {
             // Arrange
-            const requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame');
-            expandableContainer.expand(); // Start transition
-            expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(1);
+            // Set up a spy on addEventListener to check if it's called
+            const addEventListenerSpy = vi.spyOn(expandableContainer.element, 'addEventListener');
 
             // Act
+            expandableContainer.expand(); // Start transition
+            addEventListenerSpy.mockClear(); // Clear the spy after first call
+
             expandableContainer.expand(); // Try to expand again
 
             // Assert
-            expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(1); // Should not be called again
+            // If the method returned early due to isTransitioning, addEventListener shouldn't be called
+            expect(addEventListenerSpy).not.toHaveBeenCalled();
         });
     });
 
@@ -183,20 +212,25 @@ describe('ExpandableContainer', () => {
 
             // Assert
             expect(expandableContainer.isExpanded()).toBe(false);
-            expect(expandableContainer.element.style.display).toBe('none');
+            // In the updated implementation, we keep the element visible with height 0
+            // instead of setting display:none to allow for re-expansion
+            expect(expandableContainer.element.style.height).toBe('0px');
         });
 
         it('should not do anything if already transitioning', () => {
             // Arrange
-            const requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame');
-            expandableContainer.collapse(); // Start transition
-            expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(1);
+            // Set up a spy on addEventListener to check if it's called
+            const addEventListenerSpy = vi.spyOn(expandableContainer.element, 'addEventListener');
 
             // Act
-            expandableContainer.collapse(); // Try to expand again
+            expandableContainer.collapse(); // Start transition
+            addEventListenerSpy.mockClear(); // Clear the spy after first call
+
+            expandableContainer.collapse(); // Try to collapse again
 
             // Assert
-            expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(1); // Should not be called again
+            // If the method returned early due to isTransitioning, addEventListener shouldn't be called
+            expect(addEventListenerSpy).not.toHaveBeenCalled();
         });
     });
 
@@ -251,6 +285,97 @@ describe('ExpandableContainer', () => {
             // Assert
             expect(expandableContainer.element.contains(child)).toBe(true);
             expect(expandableContainer.element.textContent).toBe('Test');
+        });
+    });
+
+    describe('initiallyExpanded functionality', () => {
+        it('should dispatch expandableContainerChange event when initiallyExpanded=true', () => {
+            // Arrange
+            const container = new ExpandableContainer(true);
+
+            // Create a spy on dispatchEvent before rendering
+            const dispatchEventSpy = vi.spyOn(HTMLElement.prototype, 'dispatchEvent');
+
+            // Render the container
+            container.render();
+
+            // Assert - The event should have been dispatched during render
+            expect(dispatchEventSpy).toHaveBeenCalled();
+
+            // Find the expandableContainerChange event in the calls
+            const expandEvent = dispatchEventSpy.mock.calls.find(
+                (call) => call[0] && call[0].type === 'expandableContainerChange',
+            );
+
+            expect(expandEvent).toBeDefined();
+            expect(expandEvent[0].detail).toEqual({ isExpanded: true });
+
+            // Clean up the spy
+            dispatchEventSpy.mockRestore();
+        });
+
+        it('should be able to toggle (collapse and expand) after initial expansion', async () => {
+            // Arrange
+            const container = new ExpandableContainer(true);
+            container.render();
+
+            // Mock scrollHeight for consistent testing
+            Object.defineProperty(container.element, 'scrollHeight', {
+                configurable: true,
+                value: 100,
+            });
+
+            // Act - First collapse
+            container.toggle();
+            await vi.runAllTimersAsync();
+            container.element.dispatchEvent(new Event('transitionend'));
+
+            // Assert - Should be collapsed
+            expect(container.isExpanded()).toBe(false);
+            expect(container.element.classList.contains('expanded')).toBe(false);
+            expect(container.element.style.height).toBe('0px');
+
+            // Act - Then expand again
+            container.toggle();
+            await vi.runAllTimersAsync();
+            container.element.dispatchEvent(new Event('transitionend'));
+
+            // Assert - Should be expanded again
+            expect(container.isExpanded()).toBe(true);
+            expect(container.element.classList.contains('expanded')).toBe(true);
+            expect(container.element.style.height).toBe('auto');
+        });
+
+        it('should properly handle content being added after initial expansion', async () => {
+            // Arrange
+            const container = new ExpandableContainer(true);
+            container.render();
+
+            // Mock initial scrollHeight
+            Object.defineProperty(container.element, 'scrollHeight', {
+                configurable: true,
+                value: 50,
+            });
+
+            // Act - Add content
+            const content = document.createElement('div');
+            content.style.height = '100px';
+            container.append(content);
+
+            // Update scrollHeight to simulate content being added
+            Object.defineProperty(container.element, 'scrollHeight', {
+                configurable: true,
+                value: 150,
+            });
+
+            // Trigger mutation observer manually (since we're in a test environment)
+            container.recalculateHeight();
+            await vi.runAllTimersAsync();
+            container.element.dispatchEvent(new Event('transitionend'));
+
+            // Assert - Height should adjust to new content
+            expect(container.isExpanded()).toBe(true);
+            expect(container.element.style.height).toBe('auto');
         });
     });
 });
