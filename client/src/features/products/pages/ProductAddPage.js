@@ -28,10 +28,10 @@ class ProductAddPage extends BasePage {
         form.onsubmit = this.handleSubmit;
 
         // Product information
-        this.#renderProductContentBlock(form, 'Product Information', { compact: true });
+        this.#renderProductContentBlock(form, 'Product Information', { compact: true, width: '140px' });
 
         // Nutritional input
-        this.#renderNutritionContentBlock(form, 'Nutrition Overview', { compact: true });
+        this.#renderNutritionContentBlock(form, 'Nutrition Overview', { compact: true, width: '140px' });
 
         // Submit button
         const buttonWrapper = document.createElement('div');
@@ -48,7 +48,7 @@ class ProductAddPage extends BasePage {
         return this.element;
     }
 
-    #renderProductContentBlock(form, headingText, options) {
+    #renderProductContentBlock(form, headingText, inputConfig) {
         const contentBlock = new ContentBlock();
         contentBlock.mount(form);
 
@@ -57,14 +57,14 @@ class ProductAddPage extends BasePage {
 
         const infoAccordion = new Accordion({ title: 'Info', initiallyExpanded: true });
         infoAccordion.mount(contentBlock.element);
-        this.#renderEntriesSection(infoAccordion, 'Info', getProductInfoEntries(options), true);
+        this.#renderEntriesSection(infoAccordion, 'Info', getProductInfoEntries(inputConfig), true);
 
         const advancedInfoAccordion = new Accordion({ title: 'Advanced Info', initiallyExpanded: false });
         advancedInfoAccordion.mount(contentBlock.element);
         this.#renderEntriesSection(
             advancedInfoAccordion,
             'Advanced Info',
-            getProductAdvancedInfoEntries(options),
+            getProductAdvancedInfoEntries({ ...inputConfig }),
             true,
         );
         // Category
@@ -72,19 +72,19 @@ class ProductAddPage extends BasePage {
         // Images(?)
     }
 
-    #renderNutritionContentBlock(form, headingText, options) {
+    #renderNutritionContentBlock(form, headingText, inputConfig) {
         const contentBlock = new ContentBlock();
         contentBlock.mount(form);
 
         const productHeading = this.createSectionHeading(headingText);
         contentBlock.append(productHeading);
 
-        this.#renderEntriesSection(contentBlock, 'General', getGeneralEntries(options));
-        this.#renderEntriesSection(contentBlock, 'Carbohydrates', getCarbohydratesEntries(options));
-        this.#renderEntriesSection(contentBlock, 'Lipids', getLipidsEntries(options));
-        this.#renderEntriesSection(contentBlock, 'Proteins', getProteinsEntries(options));
-        this.#renderEntriesSection(contentBlock, 'Minerals', getMineralsEntries(options));
-        this.#renderEntriesSection(contentBlock, 'Vitamins', getVitaminsEntries(options));
+        this.#renderEntriesSection(contentBlock, 'General', getGeneralEntries(inputConfig));
+        this.#renderEntriesSection(contentBlock, 'Carbohydrates', getCarbohydratesEntries(inputConfig));
+        this.#renderEntriesSection(contentBlock, 'Lipids', getLipidsEntries(inputConfig));
+        this.#renderEntriesSection(contentBlock, 'Proteins', getProteinsEntries(inputConfig));
+        this.#renderEntriesSection(contentBlock, 'Minerals', getMineralsEntries(inputConfig));
+        this.#renderEntriesSection(contentBlock, 'Vitamins', getVitaminsEntries(inputConfig));
     }
 
     #renderEntriesSection(parent, headingText, entries, skipTableHead = false) {
@@ -92,7 +92,7 @@ class ProductAddPage extends BasePage {
 
         // Colgroup
         const colGroupElement = document.createElement('colgroup');
-        for (let i = 0; i < 3; i++) colGroupElement.append(document.createElement('col'));
+        for (let i = 0; i < 2; i++) colGroupElement.append(document.createElement('col'));
         tableElement.append(colGroupElement);
 
         // Table Head

@@ -1,4 +1,4 @@
-export const getProductInfoEntries = ({ compact = true } = {}) => [
+export const getProductInfoEntries = (inputConfig = {}) => [
     {
         labelText: 'Product Name',
         inputConfig: {
@@ -6,7 +6,8 @@ export const getProductInfoEntries = ({ compact = true } = {}) => [
             type: 'text',
             required: true,
             minLength: 5,
-            compact,
+            ...inputConfig,
+            width: '100%' /* overwrite inputConfig.width */,
         },
     },
     {
@@ -14,7 +15,8 @@ export const getProductInfoEntries = ({ compact = true } = {}) => [
         inputConfig: {
             name: 'brand',
             type: 'text',
-            compact,
+            ...inputConfig,
+            width: '100%' /* overwrite inputConfig.width */,
         },
     },
     {
@@ -26,7 +28,7 @@ export const getProductInfoEntries = ({ compact = true } = {}) => [
             icon: 'package-size',
             required: true,
             numberConfig: { min: 0, max: 9999, step: 1, inputmode: 'numeric', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -38,25 +40,26 @@ export const getProductInfoEntries = ({ compact = true } = {}) => [
             required: true,
             value: 100,
             numberConfig: { min: 0, max: 9999, step: 1, inputmode: 'numeric', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
     },
 ];
 
-export const getProductAdvancedInfoEntries = ({ compact = true } = {}) => [
+export const getProductAdvancedInfoEntries = (inputConfig = {}) => [
     {
         labelText: 'Barcode',
         inputConfig: {
             name: 'barcode',
             type: 'text',
             icon: 'barcode',
-            compact,
+            ...inputConfig,
+            width: '100%' /* overwrite inputConfig.width */,
         },
     },
     // { name: 'category', label: 'Category', type: 'text' },
 ];
 
-export const getGeneralEntries = ({ compact = true } = {}) => [
+export const getGeneralEntries = (inputConfig = {}) => [
     {
         labelText: 'Energy',
         inputConfig: {
@@ -66,12 +69,12 @@ export const getGeneralEntries = ({ compact = true } = {}) => [
             icon: 'calories',
             required: true,
             numberConfig: { min: 0, max: 9999, step: 1, inputmode: 'numeric', suffix: 'kcal' },
-            compact,
+            ...inputConfig,
         },
     },
 ];
 
-export const getCarbohydratesEntries = ({ compact = true } = {}) => [
+export const getCarbohydratesEntries = (inputConfig = {}) => [
     {
         labelText: 'Total Carbohydrates',
         inputConfig: {
@@ -81,7 +84,7 @@ export const getCarbohydratesEntries = ({ compact = true } = {}) => [
             icon: 'carbohydrates',
             required: true,
             numberConfig: { min: 0, max: 999, step: 1, inputmode: 'numeric', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
         subEntries: [
             {
@@ -92,7 +95,7 @@ export const getCarbohydratesEntries = ({ compact = true } = {}) => [
                     type: 'number',
                     icon: 'sugars',
                     numberConfig: { min: 0, max: 999, step: 1, inputmode: 'numeric', suffix: 'g' },
-                    compact,
+                    ...inputConfig,
                 },
             },
             {
@@ -103,7 +106,7 @@ export const getCarbohydratesEntries = ({ compact = true } = {}) => [
                     type: 'number',
                     icon: 'polyols',
                     numberConfig: { min: 0, max: 999, step: 1, inputmode: 'numeric', suffix: 'g' },
-                    compact,
+                    ...inputConfig,
                 },
             },
         ],
@@ -116,7 +119,7 @@ export const getCarbohydratesEntries = ({ compact = true } = {}) => [
             type: 'number',
             icon: 'fiber',
             numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
     },
     // Starch
@@ -129,7 +132,7 @@ export const getCarbohydratesEntries = ({ compact = true } = {}) => [
     },
 ];
 
-export const getLipidsEntries = ({ compact = true } = {}) => [
+export const getLipidsEntries = (inputConfig = {}) => [
     {
         labelText: 'Total Fat',
         inputConfig: {
@@ -139,7 +142,7 @@ export const getLipidsEntries = ({ compact = true } = {}) => [
             icon: 'fat',
             required: true,
             numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
         subEntries: [
             {
@@ -150,7 +153,7 @@ export const getLipidsEntries = ({ compact = true } = {}) => [
                     type: 'number',
                     icon: 'saturated-fat',
                     numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-                    compact,
+                    ...inputConfig,
                 },
             },
             {
@@ -161,7 +164,7 @@ export const getLipidsEntries = ({ compact = true } = {}) => [
                     type: 'number',
                     icon: 'monounsaturated-fat',
                     numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-                    compact,
+                    ...inputConfig,
                 },
             },
             {
@@ -172,7 +175,7 @@ export const getLipidsEntries = ({ compact = true } = {}) => [
                     type: 'number',
                     icon: 'polyunsaturated-fat',
                     numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-                    compact,
+                    ...inputConfig,
                 },
                 // Omega 3
                 // Omega 6
@@ -182,7 +185,7 @@ export const getLipidsEntries = ({ compact = true } = {}) => [
     },
 ];
 
-export const getProteinsEntries = ({ compact = true } = {}) => [
+export const getProteinsEntries = (inputConfig = {}) => [
     {
         labelText: 'Protein',
         inputConfig: {
@@ -192,12 +195,12 @@ export const getProteinsEntries = ({ compact = true } = {}) => [
             icon: 'protein',
             required: true,
             numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
     },
 ];
 
-export const getMineralsEntries = ({ compact = true } = {}) => [
+export const getMineralsEntries = (inputConfig = {}) => [
     {
         labelText: 'Salt',
         inputConfig: {
@@ -206,7 +209,7 @@ export const getMineralsEntries = ({ compact = true } = {}) => [
             type: 'number',
             icon: 'salt',
             numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -217,7 +220,7 @@ export const getMineralsEntries = ({ compact = true } = {}) => [
             type: 'number',
             icon: 'magnesium',
             numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -228,7 +231,7 @@ export const getMineralsEntries = ({ compact = true } = {}) => [
             type: 'number',
             icon: 'potassium',
             numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -239,7 +242,7 @@ export const getMineralsEntries = ({ compact = true } = {}) => [
             type: 'number',
             icon: 'sodium',
             numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -250,14 +253,14 @@ export const getMineralsEntries = ({ compact = true } = {}) => [
             type: 'number',
             icon: 'calcium',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-            compact,
+            ...inputConfig,
         },
     },
     // { name: 'iron', label: 'Iron (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
     // { name: 'zinc', label: 'Zinc (mg)', type: 'number', numberConfig: { min: 0, max: 9999, step: 0.1 } },
 ];
 
-export const getVitaminsEntries = ({ compact = true } = {}) => [
+export const getVitaminsEntries = (inputConfig = {}) => [
     {
         labelText: 'Vitamin A',
         inputConfig: {
@@ -265,7 +268,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminA',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'IU' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -275,7 +278,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminB1',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'mg' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -285,7 +288,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminB2',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'mg' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -295,7 +298,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminB3',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'mg' },
-            compact,
+            ...inputConfig,
         },
     },
     // name: 'B5 (Pantothenic acid)',
@@ -306,7 +309,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminB6',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'mg' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -316,7 +319,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminB12',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'mcg' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -326,7 +329,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminC',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'mg' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -336,7 +339,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminD',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'IU' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -346,7 +349,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminE',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'IU' },
-            compact,
+            ...inputConfig,
         },
     },
     {
@@ -356,7 +359,7 @@ export const getVitaminsEntries = ({ compact = true } = {}) => [
             id: 'vitaminK',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'mcg' },
-            compact,
+            ...inputConfig,
         },
     },
 ];
