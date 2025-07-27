@@ -22,7 +22,7 @@ export default defineConfig([
                 ...globals.browser,
                 ...globals.node,
             },
-            ecmaVersion: 2024,
+            ecmaVersion: 'latest',
             sourceType: 'module',
 
             parserOptions: {
