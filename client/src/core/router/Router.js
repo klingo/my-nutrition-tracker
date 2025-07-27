@@ -95,7 +95,7 @@ class Router {
         await this.navigate(path);
     }
 
-    async renderPage(PageComponent) {
+    async renderPage(PageComponentLoader) {
         // Abort any previous page loading operation
         if (this.abortController) {
             if (this.pageInstance && this.pageInstance.unmount) {
@@ -121,6 +121,13 @@ class Router {
             // Show loader
             const loaderElement = new Loader({ size: 'large', centered: true });
             loaderElement.mount(this.mainContainer);
+
+            // Dynamically load the page component
+            // PageComponentLoader is now a function that returns a Promise
+            const PageComponent = await PageComponentLoader();
+
+            // Check if the operation was aborted during component loading
+            if (signal.aborted) return;
 
             // Create the new page instance
             const page = new PageComponent(this, signal);
@@ -159,6 +166,29 @@ class Router {
             result[key] = value;
         }
         return result;
+    }
+
+    /**
+     * Prefetches a route by triggering the dynamic import of its page component
+     * without actually rendering it. This can improve performance by loading
+     * the code for a route before the user navigates to it.
+     *
+     * @param {string} path - The path of the route to prefetch
+     * @returns {Promise<void>} - A promise that resolves when prefetching is complete
+     */
+    prefetchRoute(path) {
+        try {
+            const route = this.routes[path];
+            if (route && route.pageComponent) {
+                // This will trigger the dynamic import but not execute the component
+                console.log(`Prefetching route: ${path}`);
+                route.pageComponent();
+            } else {
+                console.warn(`Cannot prefetch route: ${path} - Route not found`);
+            }
+        } catch (error) {
+            console.error(`Error prefetching route: ${path}`, error);
+        }
     }
 }
 

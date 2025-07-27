@@ -1,9 +1,11 @@
-import { LoginPage } from '@features/login';
-import { RegisterPage } from '@features/register';
-import { OverviewPage } from '@features/overview';
-import { ProductsPage, ProductAddPage } from '@features/products';
-import { ProfilePage } from '@features/profile';
-import { NotFoundPage } from '@features/common';
+// Using dynamic imports for lazy loading
+const LoginPage = () => import('@features/login').then((m) => m.LoginPage);
+const RegisterPage = () => import('@features/register').then((m) => m.RegisterPage);
+const OverviewPage = () => import('@features/overview').then((m) => m.OverviewPage);
+const ProductsPage = () => import('@features/products').then((m) => m.ProductsPage);
+const ProductAddPage = () => import('@features/products').then((m) => m.ProductAddPage);
+const ProfilePage = () => import('@features/profile').then((m) => m.ProfilePage);
+const NotFoundPage = () => import('@features/common').then((m) => m.NotFoundPage);
 
 const PATH_LOGIN = '/login';
 const PATH_REGISTER = '/register';

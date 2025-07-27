@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { codecovVitePlugin } from '@codecov/vite-plugin';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { resolve } from 'path';
 import fs from 'fs';
 import 'dotenv/config';
@@ -44,11 +45,59 @@ export default defineConfig({
     build: {
         rollupOptions: {
             external: ['**/*.test.js'],
+            output: {
+                manualChunks: (id) => {
+                    // Create a vendors chunk for node_modules
+                    if (id.includes('node_modules')) {
+                        if (id.includes('tabulator-tables')) {
+                            return 'vendor-tabulator';
+                        }
+                        return 'vendors';
+                    }
+
+                    // Split by feature
+                    if (id.includes('/features/')) {
+                        if (id.includes('/login/')) {
+                            return 'feature-login';
+                        } else if (id.includes('/register/')) {
+                            return 'feature-register';
+                        } else if (id.includes('/overview/')) {
+                            return 'feature-overview';
+                        } else if (id.includes('/products/')) {
+                            return 'feature-products';
+                        } else if (id.includes('/profile/')) {
+                            return 'feature-profile';
+                        }
+                        return 'features';
+                    }
+
+                    // Common components and utilities
+                    if (id.includes('/common/')) {
+                        if (id.includes('/components/')) {
+                            return 'common-components';
+                        }
+                        return 'common';
+                    }
+                    if (id.includes('/core/')) {
+                        return 'core';
+                    }
+                },
+            },
         },
         outDir: 'dist',
         emptyOutDir: true,
+        chunkSizeWarningLimit: 500,
+        sourcemap: true,
     },
     plugins: [
+        // Add visualizer plugin to analyze bundle sizes
+        visualizer({
+            filename: 'dist/stats.html',
+            open: true,
+            gzipSize: true,
+            brotliSize: true,
+            template: 'treemap', // Options: sunburst, treemap, network
+        }),
         // Put the Codecov vite plugin after all other plugins
         codecovVitePlugin({
             enableBundleAnalysis: process.env.CI === 'true' || process.env.CODECOV_TOKEN !== undefined,
