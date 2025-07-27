@@ -112,6 +112,7 @@ export default class Accordion extends BaseComponent {
     #createButton() {
         const button = document.createElement('button');
         button.setAttribute('aria-expanded', this.initiallyExpanded.toString());
+        button.type = 'button';
 
         const titleSpan = document.createElement('span');
         titleSpan.textContent = this.title;
