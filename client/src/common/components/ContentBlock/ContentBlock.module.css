@@ -5,5 +5,5 @@
 }
 
 .content-block + .content-block {
-    margin-top: var(--page-margin);
+    margin-top: 24px;
 }
