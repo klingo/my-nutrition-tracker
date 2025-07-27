@@ -1,7 +1,7 @@
 .page {
     width: 100%;
-    padding-right: var(--grid-margin);
-    padding-left: var(--grid-margin);
+    padding-right: var(--page-margin);
+    padding-left: var(--page-margin);
     margin-right: auto;
     margin-left: auto;
     box-sizing: border-box;

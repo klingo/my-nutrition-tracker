@@ -2,7 +2,7 @@
     display: flex;
     list-style: none;
     margin: 0;
-    padding: 0 24px;
+    padding: 0 var(--nav-padding);
     height: 48px;
 }
 
@@ -18,7 +18,7 @@
 .nav ul li a {
     display: block;
     height: 48px;
-    padding: 0 16px;
+    padding: 0 var(--nav-item-padding);
     align-content: center;
     text-align: center;
     white-space: nowrap;
@@ -30,7 +30,7 @@
 }
 
 .nav ul li a:has(div.icon) {
-    padding: 0 16px;
+    padding: 0 var(--nav-item-padding);
 }
 
 .nav ul li a:hover,

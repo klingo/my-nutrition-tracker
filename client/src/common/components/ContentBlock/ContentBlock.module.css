@@ -1,9 +1,9 @@
 .content-block {
     background-color: var(--color-surface);
-    padding: 16px;
+    padding: var(--content-padding);
     box-sizing: border-box;
 }
 
 .content-block + .content-block {
-    margin-top: 16px;
+    margin-top: var(--page-margin);
 }
