@@ -51,7 +51,7 @@ export default defineConfig({
     plugins: [
         // Put the Codecov vite plugin after all other plugins
         codecovVitePlugin({
-            enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+            enableBundleAnalysis: process.env.CI === 'true' || process.env.CODECOV_TOKEN !== undefined,
             bundleName: 'my-nutrition-tracker-client',
             uploadToken: process.env.CODECOV_TOKEN,
             telemetry: false,

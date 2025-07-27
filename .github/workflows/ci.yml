@@ -51,6 +51,7 @@ jobs:
             - name: Upload frontend coverage to Codecov
               uses: codecov/codecov-action@v5
               with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
                   files: ./client/coverage/lcov.info
                   flags: frontend
                   name: codecov-frontend
@@ -64,8 +65,11 @@ jobs:
               with:
                   token: ${{ secrets.CODECOV_TOKEN }} # From GitHub secrets
 
-            # Step 8: Build frontend project
+            # Step 8: Build frontend project with CodeCov bundle analysis
             - name: Build frontend project
+              env:
+                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+                  CI: true
               run: npm run build -w client
 
             # Step 9: Cache frontend build artifacts
@@ -116,6 +120,7 @@ jobs:
               uses: codecov/codecov-action@v5
               if: hashFiles('./server/coverage/lcov.info') != ''
               with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
                   files: ./server/coverage/lcov.info
                   flags: backend
                   name: codecov-backend
