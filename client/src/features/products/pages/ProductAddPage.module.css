@@ -43,11 +43,15 @@ table tbody tr {
     height: 48px;
 }
 
-table tbody tr:first-child td {
+table:not(.borders) tbody tr:first-child td {
     padding-top: 8px;
 }
 
-table tbody tr:last-child td {
+table.borders tbody tr:not(:last-child) td {
+    border-bottom: 1px solid var(--color-secondary);
+}
+
+table:not(.borders) tbody tr:last-child td {
     padding-bottom: 8px;
 }
 
