@@ -144,6 +144,8 @@ class RegisterPage extends BasePage {
                 min: 1,
                 max: 300,
                 step: 1,
+                inputmode: 'numeric',
+                suffix: 'cm',
             },
         });
         this.heightInput.mount(form);
@@ -161,6 +163,8 @@ class RegisterPage extends BasePage {
                 min: 1,
                 max: 1000,
                 step: 1,
+                inputmode: 'numeric',
+                suffix: 'kg',
             },
         });
         this.weightInput.mount(form);
