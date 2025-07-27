@@ -178,8 +178,8 @@ export default class Input extends BaseComponent {
         const input = this.#createInput();
         label.appendChild(input);
 
-        this.#addSuffix(input);
         this.#addOutline(label);
+        this.#addSuffix(label);
         this.#addErrorIcon(label);
         container.append(this.#createHelperLine(input));
 
@@ -298,12 +298,12 @@ export default class Input extends BaseComponent {
      * Adds a suffix to the input if specified
      * @param {HTMLInputElement} input - The input element
      */
-    #addSuffix(input) {
+    #addSuffix(label) {
         if (this.numberConfig?.suffix) {
             const suffixElement = document.createElement('span');
             suffixElement.textContent = this.numberConfig.suffix;
             suffixElement.classList.add(styles.suffixText);
-            input.after(suffixElement);
+            label.append(suffixElement);
         }
     }
 

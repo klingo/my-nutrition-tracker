@@ -74,6 +74,10 @@
     margin-left: 4px;
 }
 
+.input .label:not(.compact) span.suffix-text {
+    margin-top: 12px;
+}
+
 .input .label .outline {
     display: flex;
     position: absolute;
