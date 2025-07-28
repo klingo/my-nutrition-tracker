@@ -109,23 +109,33 @@ export const getCarbohydratesEntries = (inputConfig = {}) => [
                     ...inputConfig,
                 },
             },
+            {
+                labelText: 'Fiber',
+                inputConfig: {
+                    name: 'fiber',
+                    id: 'fiber',
+                    type: 'number',
+                    icon: 'fiber',
+                    numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
+                    ...inputConfig,
+                },
+            },
+            // {
+            //     labelText: 'Starch',
+            //     inputConfig: {
+            //         name: 'starch',
+            //         id: 'starch',
+            //         type: 'number',
+            //         // icon: 'starch',
+            //         numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
+            //         ...inputConfig,
+            //     }
+            // }
         ],
     },
     {
-        labelText: 'Fiber',
-        inputConfig: {
-            name: 'fiber',
-            id: 'fiber',
-            type: 'number',
-            icon: 'fiber',
-            numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
-            ...inputConfig,
-        },
-    },
-    // Starch
-    {
         labelText: 'Net Carbohydrates',
-        labelConfig: {
+        spanConfig: {
             name: 'netCarbs',
             id: 'netCarbs',
         },

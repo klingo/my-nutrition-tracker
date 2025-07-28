@@ -12,6 +12,7 @@ import {
     getProteinsEntries,
     getVitaminsEntries,
 } from '@features/products/constants/productFormConfig';
+import calculateNetCarbs from '@features/products/utils/calculateNetCarbs';
 
 class ProductAddPage extends BasePage {
     constructor(router, signal) {
@@ -45,6 +46,10 @@ class ProductAddPage extends BasePage {
         form.append(buttonWrapper);
 
         this.element.append(form);
+
+        // Add event listeners for net carbs calculation after the form is rendered
+        this.#setupNetCarbsCalculation();
+
         return this.element;
     }
 
@@ -122,6 +127,7 @@ class ProductAddPage extends BasePage {
             const sectionCell = document.createElement('td');
             const label = document.createElement('label');
             label.textContent = entry.labelText;
+            if (entry.spanConfig?.id) label.htmlFor = entry.spanConfig?.id;
             if (entry.inputConfig?.id) label.htmlFor = entry.inputConfig?.id;
             if (entry.inputConfig?.required) label.classList.add(styles.required);
             sectionCell.append(label);
@@ -131,18 +137,16 @@ class ProductAddPage extends BasePage {
             if (entry.inputConfig) {
                 const inputElement = new Input(entry.inputConfig);
                 inputElement.mount(amountCell);
-            } else if (entry.labelConfig) {
-                const labelElement = document.createElement('label');
-                labelElement.setAttribute('name', entry.labelConfig.name);
-                labelElement.setAttribute('id', entry.labelConfig.id);
-                if (entry.labelConfig.textAlignRight) labelElement.style.textAlign = 'right';
-                amountCell.append(labelElement);
+            } else if (entry.spanConfig) {
+                const spanElement = document.createElement('span');
+                spanElement.setAttribute('name', entry.spanConfig.name);
+                spanElement.setAttribute('id', entry.spanConfig.id);
+                amountCell.append(spanElement);
             }
             row.append(amountCell);
 
             for (const subEntry of entry.subEntries || []) {
                 const subRow = document.createElement('tr');
-                subRow.classList.add(styles.subRow);
                 tableBodyElement.append(subRow);
 
                 const subSectionCell = document.createElement('td');
@@ -162,6 +166,41 @@ class ProductAddPage extends BasePage {
         }
 
         parent.append(tableElement);
+    }
+
+    // Set up event listeners for net carbs calculation
+    #setupNetCarbsCalculation() {
+        // Find the input elements in the DOM by their IDs
+        const carbsInput = this.element.querySelector('#carbs');
+        const fiberInput = this.element.querySelector('#fiber');
+        const polyolsInput = this.element.querySelector('#polyols');
+        const netCarbsSpan = this.element.querySelector('#netCarbs');
+
+        // If all elements are found, add event listeners
+        if (carbsInput && fiberInput && polyolsInput && netCarbsSpan) {
+            const amountSpan = document.createElement('span');
+            amountSpan.classList.add(styles.amount);
+
+            const unitSpan = document.createElement('span');
+            unitSpan.classList.add(styles.unit);
+            unitSpan.textContent = 'g';
+
+            netCarbsSpan.append(amountSpan, unitSpan);
+
+            // Add event listeners to the input elements
+            const updateNetCarbs = () => {
+                amountSpan.textContent = calculateNetCarbs(carbsInput.value, fiberInput.value, polyolsInput.value);
+            };
+
+            carbsInput.addEventListener('input', updateNetCarbs);
+            fiberInput.addEventListener('input', updateNetCarbs);
+            polyolsInput.addEventListener('input', updateNetCarbs);
+
+            netCarbsSpan.classList.add(styles.netCarbs);
+
+            // Initialize with the default value
+            updateNetCarbs();
+        }
     }
 
     handleSubmit = async (event) => {
@@ -228,12 +267,6 @@ class ProductAddPage extends BasePage {
 
     createSectionHeading(text) {
         const heading = document.createElement('h2');
-        heading.textContent = text;
-        return heading;
-    }
-
-    createSubSectionHeading(text) {
-        const heading = document.createElement('h3');
         heading.textContent = text;
         return heading;
     }

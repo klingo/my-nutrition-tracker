@@ -43,6 +43,10 @@ table tbody tr {
     height: 48px;
 }
 
+table tbody tr td {
+    vertical-align: middle;
+}
+
 table:not(.borders) tbody tr:first-child td {
     padding-top: 8px;
 }
@@ -56,8 +60,14 @@ table:not(.borders) tbody tr:last-child td {
 }
 
 table tbody tr td:nth-child(2) {
-    display: flex;
-    justify-content: end;
+    text-align: right;
+    min-height: 40px;
+    vertical-align: middle;
+}
+
+table tbody tr td:nth-child(2) > div {
+    display: inline-block;
+    text-align: right;
 }
 
 table tbody tr td label.required::after {
@@ -68,4 +78,20 @@ table tbody tr td label.required::after {
 
 table + table {
     margin-top: 24px;
+}
+
+/* Specific elements */
+span.net-carbs {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 14px;
+}
+
+span.net-carbs .amount {
+}
+
+span.net-carbs .unit {
+    align-self: center;
+    color: var(--color-primary-variant);
+    margin-left: 4px;
 }

@@ -5,6 +5,7 @@
 }
 
 .input .label {
+    width: 100%;
     height: 56px;
     overflow: visible;
     padding: 0 16px;
