@@ -5,5 +5,5 @@
 }
 
 .content-block:has(+ .content-block) {
-    margin-bottom: 24px;
+    margin-bottom: var(--content-margin);
 }

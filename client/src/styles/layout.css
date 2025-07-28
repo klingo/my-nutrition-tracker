@@ -19,6 +19,7 @@
     /* Page and content variables */
     --page-margin: 24px;
     --content-padding: 16px;
+    --content-margin: 16px;
 
     @media only screen and (max-width: 600px) {
         --nav-padding: 8px;
