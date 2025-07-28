@@ -88,12 +88,12 @@ export const getCarbohydratesEntries = (inputConfig = {}) => [
         },
         subEntries: [
             {
-                labelText: 'Sugars',
+                labelText: 'Sugar',
                 inputConfig: {
-                    name: 'sugars',
-                    id: 'sugars',
+                    name: 'sugar',
+                    id: 'sugar',
                     type: 'number',
-                    icon: 'sugars',
+                    icon: 'sugar',
                     numberConfig: { min: 0, max: 999, step: 1, inputmode: 'numeric', suffix: 'g' },
                     ...inputConfig,
                 },

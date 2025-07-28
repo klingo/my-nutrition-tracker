@@ -160,8 +160,8 @@
     -webkit-mask-image: url('@assets/icons/mnt/sodium.svg');
 }
 
-.icon.sugars {
+.icon.sugar {
     background-color: #fff;
-    mask-image: url('@assets/icons/mnt/sugars.svg');
-    -webkit-mask-image: url('@assets/icons/mnt/sugars.svg');
+    mask-image: url('@assets/icons/mnt/sugar.svg');
+    -webkit-mask-image: url('@assets/icons/mnt/sugar.svg');
 }

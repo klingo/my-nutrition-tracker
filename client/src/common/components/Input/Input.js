@@ -31,7 +31,7 @@ const VALID_ICONS = new Set([
     'saturated-fat',
     'serving-size',
     'sodium',
-    'sugars',
+    'sugar',
 ]);
 
 /**
