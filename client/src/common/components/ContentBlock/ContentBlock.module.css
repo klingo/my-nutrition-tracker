@@ -4,6 +4,6 @@
     box-sizing: border-box;
 }
 
-.content-block + .content-block {
-    margin-top: 24px;
+.content-block:has(+ .content-block) {
+    margin-bottom: 24px;
 }
