@@ -1,4 +1,5 @@
 import { Product } from '../models/index.js';
+import { WEIGHT_UNITS } from '../models/constants/units.js';
 
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 25;
@@ -84,8 +85,60 @@ export const getProductById = async (req, res) => {
 
 export const createProduct = async (req, res) => {
     try {
-        const { name, fat, protein, fiber, carbs } = req.body;
-        const product = new Product({ name, fat, protein, fiber, carbs });
+        const body = req.body;
+        const mappedProductData = {
+            name: body.name,
+            // brand: body.brand,
+            category: 'other',
+            creator: req.user.userId,
+            barcode: body.barcode,
+            package: {
+                amount: body.packageAmount,
+                unit: WEIGHT_UNITS.GRAM,
+            },
+            nutrients: {
+                referenceAmount: {
+                    amount: body.referenceAmount,
+                    unit: WEIGHT_UNITS.GRAM,
+                },
+                values: {
+                    kcal: body.calories,
+                    carbs: {
+                        total: body.carbs,
+                        sugars: body.sugars,
+                        polyols: body.polyols,
+                        fiber: body.fiber,
+                    },
+                    lipids: {
+                        total: body.fat,
+                        saturated: body.saturatedFat,
+                        monounsaturated: body.monounsaturatedFat,
+                        polyunsaturated: body.polyunsaturatedFat,
+                    },
+                    protein: body.protein,
+                    minerals: {
+                        salt: body.salt,
+                        magnesium: body.magnesium,
+                        potassium: body.potassium,
+                        sodium: body.sodium,
+                        calcium: body.calcium,
+                    },
+                    vitamins: {
+                        a: body.vitaminA,
+                        b1: body.vitaminB1,
+                        b2: body.vitaminB2,
+                        b3: body.vitaminB3,
+                        b6: body.vitaminB6,
+                        b12: body.vitaminB12,
+                        c: body.vitaminC,
+                        d: body.vitaminD,
+                        e: body.vitaminE,
+                        k: body.vitaminK,
+                    },
+                },
+            },
+        };
+        const product = new Product(mappedProductData);
         await product.save();
         res.status(201).json({
             _embedded: {

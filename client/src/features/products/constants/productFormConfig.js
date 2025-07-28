@@ -94,7 +94,7 @@ export const getCarbohydratesEntries = (inputConfig = {}) => [
                     id: 'sugar',
                     type: 'number',
                     icon: 'sugar',
-                    numberConfig: { min: 0, max: 999, step: 1, inputmode: 'numeric', suffix: 'g' },
+                    numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'numeric', suffix: 'g' },
                     ...inputConfig,
                 },
             },
@@ -218,7 +218,7 @@ export const getMineralsEntries = (inputConfig = {}) => [
             id: 'salt',
             type: 'number',
             icon: 'salt',
-            numberConfig: { min: 0, max: 999, step: 0.1, inputmode: 'decimal', suffix: 'g' },
+            numberConfig: { min: 0, max: 999, step: 0.01, inputmode: 'decimal', suffix: 'g' },
             ...inputConfig,
         },
     },
@@ -335,7 +335,7 @@ export const getVitaminsEntries = (inputConfig = {}) => [
     {
         labelText: 'Vitamin C',
         inputConfig: {
-            name: 'viatminC',
+            name: 'vitaminC',
             id: 'vitaminC',
             type: 'number',
             numberConfig: { min: 0, max: 9999, step: 0.1, inputmode: 'decimal', suffix: 'mg' },

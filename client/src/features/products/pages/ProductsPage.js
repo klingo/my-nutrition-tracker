@@ -34,11 +34,13 @@ class ProductsPage extends BasePage {
         // Initialize Tabulator in the container
         this.tabulator = new Tabulator(tableContainer, {
             columns: [
-                { title: 'Name', field: 'name', width: 200 },
-                { title: 'Fat (g)', field: 'fat', width: 100, hozAlign: 'right' },
-                { title: 'Protein (g)', field: 'protein', width: 120, hozAlign: 'right' },
-                { title: 'Fiber (g)', field: 'fiber', width: 100, hozAlign: 'right' },
-                { title: 'Carbs (g)', field: 'carbs', width: 120, hozAlign: 'right' },
+                { title: 'Name', field: 'name' },
+                { title: 'Package', field: 'package.amount' },
+                { title: 'Calories (kcal)', field: 'nutrients.values.kcal', hozAlign: 'right' },
+                { title: 'Carbs (g)', field: 'nutrients.values.carbs.total', hozAlign: 'right' },
+                { title: 'Fiber (g)', field: 'nutrients.values.carbs.fiber', hozAlign: 'right' },
+                { title: 'Protein (g)', field: 'nutrients.values.protein', hozAlign: 'right' },
+                { title: 'Fat (g)', field: 'nutrients.values.lipids.total', hozAlign: 'right' },
             ],
             layout: 'fitColumns',
             pagination: 'remote',

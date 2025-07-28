@@ -13,12 +13,14 @@ import {
     getVitaminsEntries,
 } from '@features/products/constants/productFormConfig';
 import calculateNetCarbs from '@features/products/utils/calculateNetCarbs';
+import callApi from '@common/utils/callApi.js';
 
 class ProductAddPage extends BasePage {
     constructor(router, signal) {
         super(router, signal);
 
         this.pageTitle = 'Add New Product';
+        this.submitButton = null;
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
     }
@@ -37,12 +39,12 @@ class ProductAddPage extends BasePage {
         // Submit button
         const buttonWrapper = document.createElement('div');
         buttonWrapper.style.marginTop = '20px';
-        const submitButton = new Button({
+        this.submitButton = new Button({
             text: 'Add Product',
             type: 'primary',
             buttonType: 'submit',
         });
-        submitButton.mount(buttonWrapper);
+        this.submitButton.mount(buttonWrapper);
         form.append(buttonWrapper);
 
         this.element.append(form);
@@ -221,24 +223,42 @@ class ProductAddPage extends BasePage {
 
             // Convert string values to numbers where needed
             const numericFields = [
-                'barcode',
+                /* Info */
                 'packageAmount',
                 'referenceAmount',
+                /* Advanced Info */
+                'barcode',
+                /* General */
                 'calories',
+                /* Carbohydrates */
                 'carbs',
-                'sugars',
+                'sugar',
                 'polyols',
+                'fiber',
+                /* Lipids */
                 'fat',
                 'saturatedFat',
                 'monounsaturatedFat',
                 'polyunsaturatedFat',
+                /* Proteins */
                 'protein',
-                'fiber',
+                /* Minerals */
                 'salt',
                 'magnesium',
                 'potassium',
                 'sodium',
                 'calcium',
+                /* Vitamins */
+                'vitaminA',
+                'vitaminB1',
+                'vitaminB2',
+                'vitaminB3',
+                'vitaminB6',
+                'vitaminB12',
+                'vitaminC',
+                'vitaminD',
+                'vitaminE',
+                'vitaminK',
                 /* other numeric fields */
             ];
             const processedData = Object.entries(formValues).reduce((acc, [key, value]) => {
@@ -251,10 +271,25 @@ class ProductAddPage extends BasePage {
             // TODO: Implement API call to add product
             // After successful submission, navigate back to products list
             // this.router.navigate('/products');
+
+            // Everything is validated
+            this.submitButton.setLoading(true).setText('Adding Product...');
+
+            const result = await callApi('POST', '/api/products', processedData);
+            console.log('Add Product result:', result);
+
+            if (result?._embedded?.product?._id) {
+                console.log('New product added, redirecting...');
+                this.router.navigate('/products');
+            } else {
+                // TODO: Show error to user
+                // this.#handleSignupError(result);
+            }
         } catch (error) {
             console.error('Error adding product:', error);
             // TODO: Show error to user
-            this.renderContent(error);
+        } finally {
+            this.submitButton.setLoading(false).setText('Add Product');
         }
     };
 

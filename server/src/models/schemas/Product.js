@@ -5,18 +5,26 @@ const nutrientValuesSchema = {
     kcal: { type: Number, required: true, min: 0 },
     carbs: {
         total: { type: Number, required: true, min: 0 },
-        sugars: { type: Number, required: true, min: 0 },
+        sugars: { type: Number, min: 0 },
         polyols: { type: Number, min: 0 },
+        fiber: { type: Number, min: 0 },
     },
-    fat: {
+    lipids: {
         total: { type: Number, required: true, min: 0 },
-        saturated: { type: Number, required: true, min: 0 },
+        saturated: { type: Number, min: 0 },
         monounsaturated: { type: Number, min: 0 },
         polyunsaturated: { type: Number, min: 0 },
     },
     protein: { type: Number, required: true, min: 0 },
-    fiber: { type: Number, required: true, min: 0 },
-    salt: { type: Number, required: true, min: 0 },
+    minerals: {
+        salt: { type: Number, min: 0 }, // in g
+        magnesium: { type: Number, min: 0 }, // in mg
+        potassium: { type: Number, min: 0 }, // in mg
+        sodium: { type: Number, min: 0 }, // in mg
+        calcium: { type: Number, min: 0 }, // in mg
+        iron: { type: Number, min: 0 }, // in mg
+        zinc: { type: Number, min: 0 }, // in mg
+    },
     vitamins: {
         a: { type: Number, min: 0 }, // in IU
         c: { type: Number, min: 0 }, // in mg
@@ -28,14 +36,6 @@ const nutrientValuesSchema = {
         b3: { type: Number, min: 0 }, // in mg
         b6: { type: Number, min: 0 }, // in mg
         b12: { type: Number, min: 0 }, // in mcg
-    },
-    minerals: {
-        magnesium: { type: Number, min: 0 }, // in mg
-        potassium: { type: Number, min: 0 }, // in mg
-        sodium: { type: Number, min: 0 }, // in mg
-        calcium: { type: Number, min: 0 }, // in mg
-        iron: { type: Number, min: 0 }, // in mg
-        zinc: { type: Number, min: 0 }, // in mg
     },
 };
 
@@ -50,7 +50,7 @@ const ProductSchema = new mongoose.Schema(
         brand: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Brand',
-            required: true,
+            // required: true,
         },
         category: {
             type: String,
