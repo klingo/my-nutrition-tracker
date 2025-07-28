@@ -73,7 +73,7 @@ export default class MasonryContainer extends BaseComponent {
                 // columnWidth: gutterSize,
                 percentPosition: false,
                 gutter: gutterSize,
-                transitionDuration: 0,
+                transitionDuration: 200,
             };
         } else {
             // Column span mode (default) - use percentage-based layout
@@ -81,7 +81,7 @@ export default class MasonryContainer extends BaseComponent {
                 itemSelector: `.${styles.masonryItem}`,
                 columnWidth: `.${styles.col1}`,
                 percentPosition: true,
-                transitionDuration: 0,
+                transitionDuration: 200,
             };
         }
 

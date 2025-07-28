@@ -42,7 +42,7 @@ class ProfilePage extends BasePage {
         if (!userData) return this.renderError(new Error('No user data available'));
 
         const { profile, username, email, accessLevel, status } = userData;
-        const masonryContainer = new MasonryContainer();
+        const masonryContainer = new MasonryContainer({ layoutMode: 'fixedWidth' });
 
         // Account Section
         const accountContentBlock = new ContentBlock();
@@ -51,7 +51,7 @@ class ProfilePage extends BasePage {
         this.renderField(accountContentBlock, 'EMail', email);
         this.renderField(accountContentBlock, 'Account type', accessLevel);
         this.renderField(accountContentBlock, 'Status', status);
-        masonryContainer.add(accountContentBlock, { colSpan: 6 });
+        masonryContainer.add(accountContentBlock, { fixedWidth: 380 });
 
         // Profile Section
         const profileContentBlock = new ContentBlock();
@@ -64,7 +64,7 @@ class ProfilePage extends BasePage {
         this.renderField(profileContentBlock, 'Height', `${profile.height.value} ${profile.height.unit}`);
         this.renderField(profileContentBlock, 'Weight', `${profile.weight.value} ${profile.weight.unit}`);
         this.renderField(profileContentBlock, 'Activity Level', profile.activityLevel);
-        masonryContainer.add(profileContentBlock, { colSpan: 6 });
+        masonryContainer.add(profileContentBlock, { fixedWidth: 380 });
 
         // Calculations Section
         const calculationsContentBlock = new ContentBlock();
@@ -72,7 +72,7 @@ class ProfilePage extends BasePage {
         this.renderField(calculationsContentBlock, 'Body Mass Index (BMI)', profile.calculations?.bmi);
         this.renderField(calculationsContentBlock, 'Basal Metabolic Rate (BMR)', profile.calculations?.bmr);
         this.renderField(calculationsContentBlock, 'Total Daily Energy Expenditure (TDEE)', profile.calculations?.tdee);
-        masonryContainer.add(calculationsContentBlock, { colSpan: 6 });
+        masonryContainer.add(calculationsContentBlock, { fixedWidth: 380 });
 
         masonryContainer.mount(this.element);
     }
