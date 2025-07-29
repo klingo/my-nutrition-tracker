@@ -192,11 +192,24 @@ ProductSchema.virtual('packageNutrients').get(function () {
     return result;
 });
 
+ProductSchema.virtual('nutrients.values.carbohydrates.netCarbs').get(function () {
+    const { total = 0, fiber = 0, polyols = {} } = this.nutrients.values.carbohydrates;
+    return Math.max(0, total - fiber - (polyols.total || 0) * 0.5);
+});
+
 // TODO: resolve user-id?
 
-// TODO: add virtual for net-carbs
-
 // Ensure virtuals are included in toJSON output
-ProductSchema.set('toJSON', { virtuals: true });
+ProductSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false, // Remove __v
+    transform: (doc, ret) => {
+        // Remove _id and add id as a string
+        ret.id = ret._id.toString();
+        delete ret._id;
+
+        return ret;
+    },
+});
 
 export default mongoose.model('Product', ProductSchema);

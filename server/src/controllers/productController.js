@@ -3,13 +3,6 @@ import { Product } from '../models/index.js';
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 25;
 
-const transformProduct = (product) => {
-    // TODO: implement product transformation
-    const transformedProduct = product;
-
-    return transformedProduct;
-};
-
 // Controller function to get all products
 export const getAllProducts = async (req, res) => {
     try {
@@ -29,7 +22,7 @@ export const getAllProducts = async (req, res) => {
 
         // Execute query with pagination
         const [products, total] = await Promise.all([
-            Product.find().sort(sort).skip(skip).limit(limit).lean(),
+            Product.find().sort(sort).skip(skip).limit(limit),
             Product.countDocuments(),
         ]);
 
@@ -38,13 +31,10 @@ export const getAllProducts = async (req, res) => {
         const hasNextPage = page < totalPages;
         const hasPreviousPage = page > 1;
 
-        // Transform products
-        const transformedProducts = products.map(transformProduct);
-
         // Return paginated response
         res.json({
             _embedded: {
-                products: transformedProducts,
+                products,
             },
             pagination: {
                 currentPage: page,
@@ -70,10 +60,10 @@ export const getProductById = async (req, res) => {
         if (!product) {
             return res.status(404).send('Product not found');
         }
-        const transformedProduct = transformProduct(product);
+
         res.json({
             _embedded: {
-                product: transformedProduct,
+                product,
             },
         });
     } catch (error) {
@@ -92,7 +82,7 @@ export const createProduct = async (req, res) => {
         await product.save();
         res.status(201).json({
             _embedded: {
-                product: transformProduct(product),
+                product,
             },
         });
     } catch (error) {
@@ -123,7 +113,7 @@ export const updateProduct = async (req, res) => {
         }
         res.json({
             _embedded: {
-                product: transformProduct(product),
+                product,
             },
         });
     } catch (error) {
