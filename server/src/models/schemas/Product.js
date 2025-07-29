@@ -173,23 +173,33 @@ const ProductSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
+// Helper function to deeply multiply all number values by a ratio
+const multiplyNestedValues = (obj, ratio) => {
+    if (obj === null || typeof obj !== 'object') return obj;
+
+    // Handle arrays
+    if (Array.isArray(obj)) return obj.map((item) => multiplyNestedValues(item, ratio));
+
+    // Handle objects
+    const result = {};
+    for (const [key, value] of Object.entries(obj)) {
+        if (value !== null && typeof value === 'object') {
+            // Recursively handle nested objects
+            result[key] = multiplyNestedValues(value, ratio);
+        } else if (typeof value === 'number') {
+            // Multiply only number values
+            result[key] = value * ratio;
+        } else {
+            // Keep other values as is
+            result[key] = value;
+        }
+    }
+    return result;
+};
+
 ProductSchema.virtual('packageNutrients').get(function () {
     const ratio = this.package.amount / this.nutrients.referenceAmount.amount;
-    const result = {};
-
-    // Deep clone and multiply values by ratio
-    Object.keys(this.nutrients.values).forEach((key) => {
-        if (typeof this.nutrients.values[key] === 'object') {
-            result[key] = {};
-            Object.keys(this.nutrients.values[key]).forEach((subKey) => {
-                result[key][subKey] = this.nutrients.values[key][subKey] * ratio;
-            });
-        } else {
-            result[key] = this.nutrients.values[key] * ratio;
-        }
-    });
-
-    return result;
+    return multiplyNestedValues(this.nutrients.values, ratio);
 });
 
 ProductSchema.virtual('nutrients.values.carbohydrates.netCarbs').get(function () {
