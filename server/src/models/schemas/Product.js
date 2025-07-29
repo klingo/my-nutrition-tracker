@@ -207,17 +207,15 @@ ProductSchema.virtual('nutrients.values.carbohydrates.netCarbs').get(function ()
     return Math.max(0, total - fiber - (polyols.total || 0) * 0.5);
 });
 
-// TODO: resolve user-id?
-
 // Ensure virtuals are included in toJSON output
 ProductSchema.set('toJSON', {
     virtuals: true,
     versionKey: false, // Remove __v
     transform: (doc, ret) => {
-        // Remove _id and add id as a string
-        ret.id = ret._id.toString();
-        delete ret._id;
-
+        // Ensure _id is a string
+        ret._id = ret._id.toString();
+        // Remove any id field to prevent duplicates
+        delete ret.id;
         return ret;
     },
 });

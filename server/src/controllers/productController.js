@@ -22,7 +22,7 @@ export const getAllProducts = async (req, res) => {
 
         // Execute query with pagination
         const [products, total] = await Promise.all([
-            Product.find().sort(sort).skip(skip).limit(limit),
+            Product.find().populate('creator', 'username').sort(sort).skip(skip).limit(limit),
             Product.countDocuments(),
         ]);
 
@@ -56,7 +56,7 @@ export const getAllProducts = async (req, res) => {
 // Controller function to get a product by ID
 export const getProductById = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
+        const product = await Product.findById(req.params.id).populate('creator', 'username');
         if (!product) {
             return res.status(404).send('Product not found');
         }
