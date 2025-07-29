@@ -2,11 +2,23 @@ import mongoose from 'mongoose';
 import { UNITS, WEIGHT_UNITS } from '../constants/units.js';
 
 const nutrientValuesSchema = {
-    kcal: { type: Number, required: true, min: 0 },
-    carbs: {
+    energy: {
+        kcal: { type: Number, required: true, min: 0 },
+    },
+    carbohydrates: {
         total: { type: Number, required: true, min: 0 },
         sugars: { type: Number, min: 0 },
-        polyols: { type: Number, min: 0 },
+        polyols: {
+            total: { type: Number, min: 0 },
+            erythritol: { type: Number, min: 0 }, // 100% subtracted from carbs
+            //mannitol: { type: Number, min: 0 }, // 100% subtracted from carbs
+            //isomalt: { type: Number, min: 0 }, // 70% subtracted from carbs
+            sorbitol: { type: Number, min: 0 }, // 50-75% subtracted from carbs
+            xylitol: { type: Number, min: 0 }, // 50-65% subtracted from carbs
+            maltitol: { type: Number, min: 0 }, // 50% subtracted from carbs
+            //glycerol: { type: Number, min: 0 }, // 50% subtracted from carbs
+        },
+        starches: { type: Number, min: 0 },
         fiber: { type: Number, min: 0 },
     },
     lipids: {
@@ -27,15 +39,15 @@ const nutrientValuesSchema = {
     },
     vitamins: {
         a: { type: Number, min: 0 }, // in IU
-        c: { type: Number, min: 0 }, // in mg
-        d: { type: Number, min: 0 }, // in IU
-        e: { type: Number, min: 0 }, // in IU
-        k: { type: Number, min: 0 }, // in mcg
         b1: { type: Number, min: 0 }, // in mg
         b2: { type: Number, min: 0 }, // in mg
         b3: { type: Number, min: 0 }, // in mg
         b6: { type: Number, min: 0 }, // in mg
         b12: { type: Number, min: 0 }, // in mcg
+        c: { type: Number, min: 0 }, // in mg
+        d: { type: Number, min: 0 }, // in IU
+        e: { type: Number, min: 0 }, // in IU
+        k: { type: Number, min: 0 }, // in mcg
     },
 };
 
@@ -54,7 +66,6 @@ const ProductSchema = new mongoose.Schema(
         },
         category: {
             type: String,
-            required: true,
             enum: [
                 'fruits',
                 'vegetables',
@@ -67,7 +78,6 @@ const ProductSchema = new mongoose.Schema(
                 'prepared_meals',
                 'other',
             ],
-            index: true,
         },
         creator: {
             type: mongoose.Schema.Types.ObjectId,
@@ -134,12 +144,12 @@ const ProductSchema = new mongoose.Schema(
             values: nutrientValuesSchema,
         },
         // Nutrient level ratings
-        nutrient_levels: {
+        nutrientLevels: {
             fat: {
                 type: String,
                 enum: ['low', 'medium', 'high'],
             },
-            saturated_fat: {
+            saturatedFat: {
                 type: String,
                 enum: ['low', 'medium', 'high'],
             },
@@ -181,6 +191,10 @@ ProductSchema.virtual('packageNutrients').get(function () {
 
     return result;
 });
+
+// TODO: resolve user-id?
+
+// TODO: add virtual for net-carbs
 
 // Ensure virtuals are included in toJSON output
 ProductSchema.set('toJSON', { virtuals: true });

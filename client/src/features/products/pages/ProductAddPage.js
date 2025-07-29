@@ -13,6 +13,7 @@ import {
     getVitaminsEntries,
 } from '@features/products/constants/productFormConfig';
 import calculateNetCarbs from '@features/products/utils/calculateNetCarbs';
+import transformProductFormData from '@features/products/utils/transformProductFormData';
 import callApi from '@common/utils/callApi.js';
 
 class ProductAddPage extends BasePage {
@@ -221,61 +222,15 @@ class ProductAddPage extends BasePage {
             const formData = new FormData(event.target);
             const formValues = Object.fromEntries(formData.entries());
 
-            // Convert string values to numbers where needed
-            const numericFields = [
-                /* Info */
-                'packageAmount',
-                'referenceAmount',
-                /* Advanced Info */
-                'barcode',
-                /* General */
-                'calories',
-                /* Carbohydrates */
-                'carbs',
-                'sugar',
-                'polyols',
-                'fiber',
-                /* Lipids */
-                'fat',
-                'saturatedFat',
-                'monounsaturatedFat',
-                'polyunsaturatedFat',
-                /* Proteins */
-                'protein',
-                /* Minerals */
-                'salt',
-                'magnesium',
-                'potassium',
-                'sodium',
-                'calcium',
-                /* Vitamins */
-                'vitaminA',
-                'vitaminB1',
-                'vitaminB2',
-                'vitaminB3',
-                'vitaminB6',
-                'vitaminB12',
-                'vitaminC',
-                'vitaminD',
-                'vitaminE',
-                'vitaminK',
-                /* other numeric fields */
-            ];
-            const processedData = Object.entries(formValues).reduce((acc, [key, value]) => {
-                acc[key] = numericFields.includes(key) ? (value ? parseFloat(value) : 0) : value;
-                return acc;
-            }, {});
+            // Transform form data to the structure expected by the server
+            const productData = transformProductFormData(formValues);
 
-            console.log('Submitting product:', processedData);
-
-            // TODO: Implement API call to add product
-            // After successful submission, navigate back to products list
-            // this.router.navigate('/products');
+            console.log('Submitting product:', productData);
 
             // Everything is validated
             this.submitButton.setLoading(true).setText('Adding Product...');
 
-            const result = await callApi('POST', '/api/products', processedData);
+            const result = await callApi('POST', '/api/products', productData);
             console.log('Add Product result:', result);
 
             if (result?._embedded?.product?._id) {
