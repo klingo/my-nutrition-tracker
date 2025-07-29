@@ -11,11 +11,11 @@ const genderMap = {
 };
 
 const accessLevelMap = {
-    [ACCESS_LEVELS.NO_ACCESS]: 'No access',
-    [ACCESS_LEVELS.TRIAL_USER]: 'Trial User',
-    [ACCESS_LEVELS.REGULAR_USER]: 'Regular User',
-    [ACCESS_LEVELS.MODERATOR]: 'Moderator',
-    [ACCESS_LEVELS.ADMIN]: 'Administrator',
+    [ACCESS_LEVELS.NO_ACCESS_0]: 'No access',
+    [ACCESS_LEVELS.TRIAL_USER_1]: 'Trial User',
+    [ACCESS_LEVELS.REGULAR_USER_3]: 'Regular User',
+    [ACCESS_LEVELS.MODERATOR_5]: 'Moderator',
+    [ACCESS_LEVELS.ADMIN_6]: 'Administrator',
 };
 
 const activityLevelMap = {
@@ -218,7 +218,7 @@ export const deleteUserById = async (req, res) => {
 
         if (!user) return res.status(404).send({ message: 'User not found' });
 
-        if (user.accessLevel >= ACCESS_LEVELS.ADMIN) {
+        if (user.accessLevel >= ACCESS_LEVELS.ADMIN_6) {
             return res.status(403).send({ message: 'Admin cannot be deleted' });
         }
 

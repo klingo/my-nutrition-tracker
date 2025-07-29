@@ -20,15 +20,15 @@ const upload = multer({
 });
 
 // Upload an image
-router.post('/upload', mutationLimiter, auth(ACCESS_LEVELS.REGULAR_USER), upload.single('image'), uploadImage);
+router.post('/upload', mutationLimiter, auth(ACCESS_LEVELS.REGULAR_USER_3), upload.single('image'), uploadImage);
 
 // Retrieve/get an image by ID
-router.get('/:id', queryLimiter, auth(ACCESS_LEVELS.TRIAL_USER), getImageById);
+router.get('/:id', queryLimiter, auth(ACCESS_LEVELS.TRIAL_USER_1), getImageById);
 
 // Approve an image (moderator or admin)
-router.patch('/:id/approve', mutationLimiter, auth(ACCESS_LEVELS.MODERATOR), approveImage);
+router.patch('/:id/approve', mutationLimiter, auth(ACCESS_LEVELS.MODERATOR_5), approveImage);
 
 // Delete an image (admin only)
-router.delete('/:id', mutationLimiter, auth(ACCESS_LEVELS.ADMIN), deleteImage);
+router.delete('/:id', mutationLimiter, auth(ACCESS_LEVELS.ADMIN_6), deleteImage);
 
 export default router;

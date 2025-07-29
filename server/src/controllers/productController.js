@@ -15,31 +15,31 @@ const generateLinks = (req, resourceId = null, resourceCreatorId = null) => {
     };
 
     const user = req.user;
-    const userAccesLevel = user?.accessLevel || 0;
+    const userAccesLevel = user?.accessLevel || ACCESS_LEVELS.NO_ACCESS_0;
     const isCreator = resourceCreatorId && user?._id?.toString() === resourceCreatorId.toString();
 
     if (resourceId) {
         // For individual resources
         const resourceUrl = `${baseUrl}/${resourceId}`;
 
-        // Add update link if user is EDITOR (4+), or creator and REGULAR_USER (3+)
-        if (userAccesLevel >= ACCESS_LEVELS.EDITOR || (isCreator && userAccesLevel >= ACCESS_LEVELS.REGULAR_USER)) {
+        // Add update link if user is EDITOR_4+, or creator and REGULAR_USER_3+
+        if (userAccesLevel >= ACCESS_LEVELS.EDITOR_4 || (isCreator && userAccesLevel >= ACCESS_LEVELS.REGULAR_USER_3)) {
             links.update = {
                 href: resourceUrl,
                 method: 'PUT',
             };
         }
 
-        // Add delete link if user is MODERATOR (5+)
-        if (userAccesLevel >= ACCESS_LEVELS.MODERATOR) {
+        // Add delete link if user is MODERATOR_5+
+        if (userAccesLevel >= ACCESS_LEVELS.MODERATOR_5) {
             links.delete = {
                 href: resourceUrl,
                 method: 'DELETE',
             };
         }
     } else {
-        // For collections, add create link if user is REGULAR_USER (3+)
-        if (userAccesLevel >= ACCESS_LEVELS.REGULAR_USER) {
+        // For collections, add create link if user is REGULAR_USER_3+
+        if (userAccesLevel >= ACCESS_LEVELS.REGULAR_USER_3) {
             links.create = {
                 href: baseUrl,
                 method: 'POST',

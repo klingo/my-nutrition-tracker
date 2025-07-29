@@ -20,13 +20,13 @@ router.post('/register', authLimiter, registerUser);
 router.post('/login', authLimiter, loginUser);
 
 // Refresh tokens
-router.post('/refresh', refreshLimiter, auth(ACCESS_LEVELS.TRIAL_USER), refreshUserTokens);
+router.post('/refresh', refreshLimiter, auth(ACCESS_LEVELS.TRIAL_USER_1), refreshUserTokens);
 
 // Logs the user out by revoking their refresh token and clearing their authentication cookies.
-router.post('/logout', mutationLimiter, auth(ACCESS_LEVELS.TRIAL_USER), logoutUser);
+router.post('/logout', mutationLimiter, auth(ACCESS_LEVELS.TRIAL_USER_1), logoutUser);
 
 // Logs the user out from all devices by revoking their refresh token and clearing their authentication cookies.
-router.post('/logout-everywhere', mutationLimiter, auth(ACCESS_LEVELS.TRIAL_USER), logoutUserEverywhere);
+router.post('/logout-everywhere', mutationLimiter, auth(ACCESS_LEVELS.TRIAL_USER_1), logoutUserEverywhere);
 
 // Check the authentication status, refresh access token and fetch minimal user data
 router.get('/status', statusLimiter, auth(), checkAuthStatus);

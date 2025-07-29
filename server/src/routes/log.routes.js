@@ -7,12 +7,12 @@ import { getDailyTotals, getUserIntakeLogs, logProductIntake } from '../controll
 const router = express.Router();
 
 // Log product intake
-router.post('/', mutationLimiter, auth(ACCESS_LEVELS.TRIAL_USER), logProductIntake);
+router.post('/', mutationLimiter, auth(ACCESS_LEVELS.TRIAL_USER_1), logProductIntake);
 
 // Get daily totals for the current user
-router.get('/daily-totals', queryLimiter, auth(ACCESS_LEVELS.TRIAL_USER), getDailyTotals);
+router.get('/daily-totals', queryLimiter, auth(ACCESS_LEVELS.TRIAL_USER_1), getDailyTotals);
 
 // Get intake logs for a specific user
-router.get('/user/:userId', queryLimiter, auth(ACCESS_LEVELS.MODERATOR), getUserIntakeLogs);
+router.get('/user/:userId', queryLimiter, auth(ACCESS_LEVELS.MODERATOR_5), getUserIntakeLogs);
 
 export default router;

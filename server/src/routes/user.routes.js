@@ -14,27 +14,27 @@ import { mutationLimiter, queryLimiter } from '../middleware/rateLimiters.js';
 const router = express.Router();
 
 // Get user details (excluding password) with energy calculations
-router.get('/me', queryLimiter, auth(ACCESS_LEVELS.TRIAL_USER), getUserById);
+router.get('/me', queryLimiter, auth(ACCESS_LEVELS.TRIAL_USER_1), getUserById);
 
 // Update user details (with restrictions)
-router.patch('/me', mutationLimiter, auth(ACCESS_LEVELS.TRIAL_USER), updateUserById);
+router.patch('/me', mutationLimiter, auth(ACCESS_LEVELS.TRIAL_USER_1), updateUserById);
 
 // Get total number of non-blocked users
-router.get('/count', queryLimiter, auth(ACCESS_LEVELS.MODERATOR), getActiveUserCount);
+router.get('/count', queryLimiter, auth(ACCESS_LEVELS.MODERATOR_5), getActiveUserCount);
 
 // Update calculations
-router.post('/update-calculations', mutationLimiter, auth(ACCESS_LEVELS.REGULAR_USER), updateCalculations);
+router.post('/update-calculations', mutationLimiter, auth(ACCESS_LEVELS.REGULAR_USER_3), updateCalculations);
 
 // Get all users (admin only)
-router.get('/', queryLimiter, auth(ACCESS_LEVELS.ADMIN), getAllUsers);
+router.get('/', queryLimiter, auth(ACCESS_LEVELS.ADMIN_6), getAllUsers);
 
 // Get user by ID (admin or moderator)
-router.get('/:id', queryLimiter, auth(ACCESS_LEVELS.MODERATOR), getUserById);
+router.get('/:id', queryLimiter, auth(ACCESS_LEVELS.MODERATOR_5), getUserById);
 
 // Update user (admin only)
-router.patch('/:id', mutationLimiter, auth(ACCESS_LEVELS.ADMIN), updateUserById);
+router.patch('/:id', mutationLimiter, auth(ACCESS_LEVELS.ADMIN_6), updateUserById);
 
 // Delete user (admin only)
-router.delete('/:id', mutationLimiter, auth(ACCESS_LEVELS.ADMIN), deleteUserById);
+router.delete('/:id', mutationLimiter, auth(ACCESS_LEVELS.ADMIN_6), deleteUserById);
 
 export default router;
