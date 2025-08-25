@@ -54,7 +54,7 @@ const transformUser = (user) => {
                 unit: user.profile.weight.unit,
             },
             gender: genderMap[user.profile.gender],
-            activityLevel: activityLevelMap[user.profile.activityLevel],
+            activityLevel: activityLevelMap[user.profile.activityLevel] || null,
             calculations: {
                 bmi: user.profile.calculations.bmi,
                 bmr: user.profile.calculations.bmr,

@@ -44,8 +44,8 @@ const UserSchema = new mongoose.Schema(
             lockedUntil: { type: Date, default: null },
         },
         profile: {
-            firstName: { type: String, trim: true },
-            lastName: { type: String, trim: true },
+            firstName: { type: String, trim: true, default: null },
+            lastName: { type: String, trim: true, default: null },
             dateOfBirth: {
                 type: Date,
                 validate: {
@@ -69,6 +69,7 @@ const UserSchema = new mongoose.Schema(
             activityLevel: {
                 type: String,
                 enum: Object.values(ACTIVITY_LEVEL),
+                default: null,
             },
             calculations: {
                 bmi: { type: Number },
