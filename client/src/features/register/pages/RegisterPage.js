@@ -1,6 +1,6 @@
 import styles from './RegisterPage.module.css';
 import BasePage from '@core/base/BasePage';
-import { Button, Fieldset, Input, Link, MessageBox } from '@common/components';
+import { Button, Fieldset, Input, Link, MessageBox, RadioButtons } from '@common/components';
 import authService from '@common/services/AuthService.js';
 import { appInstance } from '@/main.js';
 import { defaultAuthenticatedRoute } from '@core/config/routes.js';
@@ -99,21 +99,21 @@ class RegisterPage extends BasePage {
 
         // Gender
         const genderFieldset = new Fieldset({ label: 'Gender', icon: 'gender' });
-        const genderOptions = ['Male', 'Female', 'Other'];
-        genderOptions.forEach((option) => {
-            const labelElement = document.createElement('label');
-            const inputElement = document.createElement('input');
-            inputElement.type = 'radio';
-            inputElement.name = 'gender';
-            inputElement.value = option.toLowerCase();
-            labelElement.append(inputElement, option);
-            genderFieldset.append(labelElement);
-        });
-        genderFieldset.mount(form);
+        const radioButtonConfig = {
+            name: 'gender',
+            options: [
+                { value: 'male', text: 'Male' },
+                { value: 'female', text: 'Female' },
+                { value: 'other', text: 'Other' },
+            ],
+        };
+        const radioButtons = new RadioButtons(radioButtonConfig);
+        radioButtons.mount(genderFieldset);
 
         // Birthday
         const minDate = new Date();
         minDate.setFullYear(minDate.getFullYear() - 120);
+        // TODO: rename to "dateOfBirth"
         this.birthdayInput = new Input({
             type: 'date',
             name: 'birthday',

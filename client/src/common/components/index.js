@@ -9,4 +9,5 @@ export { default as Loader } from './Loader/index.js';
 export { default as MasonryContainer } from './MasonryContainer/index.js';
 export { default as MessageBox } from './MessageBox/index.js';
 export { default as Navigation } from './Navigation/index.js';
+export { default as RadioButtons } from './RadioButtons/index.js';
 // ... other UI components
