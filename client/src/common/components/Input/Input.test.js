@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import Input from './Input';
 import styles from './Input.module.css';
-import iconStyles from '@styles/icons.module.css';
+import iconStyles from '../../../styles/icons.module.css';
 
 describe('Input', () => {
     // Define top-level test variables here
