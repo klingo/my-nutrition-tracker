@@ -1,6 +1,7 @@
 .field-container {
     display: flex;
     justify-content: space-between;
+    min-height: 44px;
 }
 
 .field-container:not(:last-child) {
@@ -8,9 +9,17 @@
 }
 
 .label {
-    width: 70%;
+    width: 50%;
 }
 
 .value {
-    width: 30%;
+    width: 50%;
+}
+
+.actions {
+    margin-top: 16px;
+}
+
+button + button {
+    margin-left: 16px;
 }
