@@ -37,8 +37,10 @@ export default class Fieldset extends BaseComponent {
     render() {
         this.element = this.#createFieldsetElement(this.required);
 
-        const legend = this.#createLegendElement(this.label);
-        this.element.appendChild(legend);
+        if (this.label) {
+            const legend = this.#createLegendElement(this.label);
+            this.element.appendChild(legend);
+        }
 
         this.#addIcon(this.contentElement);
 

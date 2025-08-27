@@ -61,7 +61,7 @@
     -webkit-mask-image: url('@assets/icons/social/wc_24dp.svg');
 }
 
-.fieldset .content {
+.fieldset .content:has(+ .legend) {
     display: inline-block;
     padding-top: 24px;
     min-height: 32px;

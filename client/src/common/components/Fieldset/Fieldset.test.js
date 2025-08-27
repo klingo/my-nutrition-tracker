@@ -35,6 +35,17 @@ describe('Fieldset', () => {
                 'Invalid fieldset icon "invalid-icon". Must be one of: gender, birthday',
             );
         });
+
+        it('should handle empty string values correctly', () => {
+            const emptyFieldset = new Fieldset({
+                label: '',
+                icon: '',
+                required: false,
+            });
+            expect(emptyFieldset.label).toBe('');
+            expect(emptyFieldset.icon).toBe('');
+            expect(emptyFieldset.required).toBe(false);
+        });
     });
 
     describe('render', () => {
@@ -80,6 +91,28 @@ describe('Fieldset', () => {
             expect(icon.getAttribute('aria-hidden')).toBe('true');
             expect(icon.getAttribute('alt')).toBe('');
         });
+
+        it('should create fieldset without legend when label is empty', () => {
+            fieldset = new Fieldset({ label: '' });
+            const element = fieldset.render();
+            const legend = element.querySelector('legend');
+            expect(legend).toBeNull();
+        });
+
+        it('should create fieldset with empty string label', () => {
+            fieldset = new Fieldset({ label: '' });
+            const element = fieldset.render();
+            // Should not have a legend when label is empty
+            const legend = element.querySelector('legend');
+            expect(legend).toBeNull();
+        });
+
+        it('should not add icon when icon is empty', () => {
+            fieldset = new Fieldset({ icon: '' });
+            const element = fieldset.render();
+            const icon = element.querySelector(`.${styles.icon}`);
+            expect(icon).toBeNull();
+        });
     });
 
     describe('append', () => {
@@ -97,7 +130,6 @@ describe('Fieldset', () => {
 
         it('should render fieldset if not already rendered when appending', () => {
             const child = document.createElement('div');
-
             expect(fieldset.element).toBeNull();
             fieldset.append(child);
             expect(fieldset.element).toBeDefined();
@@ -110,6 +142,22 @@ describe('Fieldset', () => {
             const child = document.createElement('div');
             const result = fieldset.append(child);
             expect(result).toBe(fieldset);
+        });
+
+        it('should append multiple children to content element', () => {
+            const child1 = document.createElement('div');
+            child1.textContent = 'Child 1';
+            const child2 = document.createElement('span');
+            child2.textContent = 'Child 2';
+
+            fieldset.render();
+            fieldset.append(child1);
+            fieldset.append(child2);
+
+            const content = fieldset.element.querySelector(`.${styles.content}`);
+            expect(content.contains(child1)).toBe(true);
+            expect(content.contains(child2)).toBe(true);
+            expect(content.children.length).toBe(2);
         });
     });
 
@@ -124,6 +172,39 @@ describe('Fieldset', () => {
                 expect(() => new Fieldset({ icon: 'gender' })).not.toThrow();
                 expect(() => new Fieldset({ icon: 'birthday' })).not.toThrow();
             });
+
+            it('should not throw error when icon is empty', () => {
+                expect(() => new Fieldset({ icon: '' })).not.toThrow();
+            });
+        });
+    });
+
+    describe('inherited methods', () => {
+        it('should mount to parent element', () => {
+            const parent = document.createElement('div');
+            const element = fieldset.render();
+
+            fieldset.mount(parent);
+            expect(parent.contains(element)).toBe(true);
+        });
+
+        it('should unmount from parent element', () => {
+            const parent = document.createElement('div');
+            const element = fieldset.render();
+            parent.appendChild(element);
+
+            expect(parent.contains(element)).toBe(true);
+            fieldset.unmount();
+            expect(parent.contains(element)).toBe(false);
+        });
+
+        it('should render when mounting if not already rendered', () => {
+            const parent = document.createElement('div');
+            expect(fieldset.element).toBeNull();
+
+            fieldset.mount(parent);
+            expect(fieldset.element).toBeDefined();
+            expect(parent.contains(fieldset.element)).toBe(true);
         });
     });
 });
