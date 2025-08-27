@@ -29,7 +29,6 @@
 }
 
 .input .label input {
-    display: flex;
     align-self: end;
     margin-bottom: 8px;
     height: 28px;
