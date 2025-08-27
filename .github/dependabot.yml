@@ -11,4 +11,6 @@ updates:
       - "/client"
       - "/server"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    
